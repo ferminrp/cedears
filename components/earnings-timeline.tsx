@@ -94,17 +94,19 @@ export function EarningsTimelineView({ timeline }: { timeline: EarningsTimeline 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <p className="text-sm text-muted-foreground">
-          {visibleCedears} CEDEAR{visibleCedears === 1 ? "" : "s"} con earnings entre{" "}
-          <span className="text-foreground">
-            {formatRangeDate(timeline.dateRange.start)}
-          </span>{" "}
-          y{" "}
-          <span className="text-foreground">
-            {formatRangeDate(timeline.dateRange.end)}
-          </span>
-          .
-        </p>
+        {!(query.trim() && filteredDays.length === 0) ? (
+          <p className="text-sm text-muted-foreground">
+            {visibleCedears} CEDEAR{visibleCedears === 1 ? "" : "s"} con earnings entre{" "}
+            <span className="text-foreground">
+              {formatRangeDate(timeline.dateRange.start)}
+            </span>{" "}
+            y{" "}
+            <span className="text-foreground">
+              {formatRangeDate(timeline.dateRange.end)}
+            </span>
+            .
+          </p>
+        ) : null}
 
         <div className="relative w-full sm:max-w-xs">
           <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
