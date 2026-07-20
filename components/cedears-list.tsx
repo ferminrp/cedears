@@ -74,6 +74,7 @@ function pctChangeClassName(value: number | null): string {
 }
 
 const numericCellClassName = "text-right font-pixel-square tabular-nums"
+const empresaCellClassName = "max-w-52 text-muted-foreground"
 
 export function CedearsList({ cedears }: { cedears: Cedear[] }) {
   const [query, setQuery] = useState("")
@@ -179,11 +180,11 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
         </Empty>
       ) : (
         <div className="overflow-hidden rounded-lg border">
-          <Table>
+          <Table className="table-fixed">
             <TableHeader>
               <TableRow className="bg-muted hover:bg-muted">
                 <TableHead className="w-28">Ticker</TableHead>
-                <TableHead>Empresa</TableHead>
+                <TableHead className="w-52">Empresa</TableHead>
                 <TableHead>Mercado</TableHead>
                 <TableHead className="text-right">Precio</TableHead>
                 <TableHead className="text-right">Var. %</TableHead>
@@ -197,7 +198,11 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
                   <TableCell>
                     <span className="font-mono font-medium">{c.Cedears}</span>
                   </TableCell>
-                  <TableCell className="text-muted-foreground">{c.Name}</TableCell>
+                  <TableCell className={empresaCellClassName}>
+                    <span className="block truncate" title={c.Name}>
+                      {c.Name}
+                    </span>
+                  </TableCell>
                   <TableCell>
                     <Badge variant="secondary">{c.Market}</Badge>
                   </TableCell>
