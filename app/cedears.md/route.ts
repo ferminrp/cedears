@@ -1,6 +1,6 @@
 import { getCedears, toMarkdown } from '@/lib/cedears'
 
-export const revalidate = 86400
+export const revalidate = 60
 
 export async function GET() {
   try {
