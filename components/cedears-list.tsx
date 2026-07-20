@@ -46,6 +46,33 @@ import {
 
 const ALL_MARKETS = "all"
 
+const priceFormatter = new Intl.NumberFormat("es-AR", {
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 2,
+})
+
+const pctFormatter = new Intl.NumberFormat("es-AR", {
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 2,
+  signDisplay: "exceptZero",
+})
+
+function formatPrice(value: number | null): string {
+  if (value === null) return "—"
+  return priceFormatter.format(value)
+}
+
+function formatPctChange(value: number | null): string {
+  if (value === null) return "—"
+  return `${pctFormatter.format(value)}%`
+}
+
+function pctChangeClassName(value: number | null): string {
+  if (value === null || value === 0) return "text-muted-foreground"
+  if (value > 0) return "text-emerald-600 dark:text-emerald-400"
+  return "text-red-600 dark:text-red-400"
+}
+
 export function CedearsList({ cedears }: { cedears: Cedear[] }) {
   const [query, setQuery] = useState("")
   const [market, setMarket] = useState(ALL_MARKETS)
@@ -156,6 +183,8 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
                 <TableHead className="w-28">Ticker</TableHead>
                 <TableHead>Empresa</TableHead>
                 <TableHead>Mercado</TableHead>
+                <TableHead className="text-right">Precio</TableHead>
+                <TableHead className="text-right">Var. %</TableHead>
                 <TableHead className="text-right">Ratio</TableHead>
                 <TableHead className="text-right">Ticker original</TableHead>
               </TableRow>
@@ -169,6 +198,14 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
                   <TableCell className="text-muted-foreground">{c.Name}</TableCell>
                   <TableCell>
                     <Badge variant="secondary">{c.Market}</Badge>
+                  </TableCell>
+                  <TableCell className="text-right font-mono tabular-nums">
+                    {formatPrice(c.price)}
+                  </TableCell>
+                  <TableCell
+                    className={`text-right font-mono tabular-nums ${pctChangeClassName(c.pctChange)}`}
+                  >
+                    {formatPctChange(c.pctChange)}
                   </TableCell>
                   <TableCell className="text-right font-mono tabular-nums">
                     {c.Ratio}

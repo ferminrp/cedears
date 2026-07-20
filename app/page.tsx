@@ -45,7 +45,7 @@ function HomeJsonLd({ cedearCount }: { cedearCount: number }) {
         '@id': `${siteUrl}/#dataset`,
         name: 'Listado de CEDEARs en Argentina',
         description:
-          'Base de datos gratuita y actualizada de CEDEARs con ticker, empresa, mercado de origen y ratio de conversión, lista para exportar y compartir con agentes de IA.',
+          'Base de datos gratuita y actualizada de CEDEARs con ticker, empresa, mercado de origen, ratio de conversión, precio y variación diaria, lista para exportar y compartir con agentes de IA.',
         inLanguage: 'es-AR',
         isAccessibleForFree: true,
         keywords: siteConfig.keywords.join(', '),
@@ -69,6 +69,8 @@ function HomeJsonLd({ cedearCount }: { cedearCount: number }) {
           'Ticker CEDEAR',
           'Empresa',
           'Mercado de origen',
+          'Precio',
+          'Variación porcentual diaria',
           'Ratio de conversión',
           'Ticker original',
         ],
@@ -117,10 +119,10 @@ export default async function Page() {
           </h1>
           <p className="max-w-3xl text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
             El listado más actualizado de Certificados de Depósito Argentinos
-            (CEDEARs) en Argentina: ticker, empresa, mercado de origen y ratio de
-            conversión. Es gratuito, está listo para usar y podés compartirlo con
-            agentes de IA como ChatGPT, Claude o Gemini para analizar inversiones en
-            el mercado local.
+            (CEDEARs) en Argentina: ticker, empresa, mercado de origen, ratio de
+            conversión, precio y variación diaria. Es gratuito, está listo para usar
+            y podés compartirlo con agentes de IA como ChatGPT, Claude o Gemini para
+            analizar inversiones en el mercado local.
           </p>
           <ul className="grid gap-2 text-sm text-muted-foreground sm:grid-cols-3">
             <li>✓ Listado completo y actualizado</li>
@@ -148,7 +150,7 @@ export default async function Page() {
         </section>
 
         <footer className="mt-auto border-t pt-6 text-sm text-muted-foreground">
-          Datos provistos por{" "}
+          Listado provisto por{" "}
           <a
             href="https://github.com/ferminrp/google-sheets-argento"
             target="_blank"
@@ -156,6 +158,15 @@ export default async function Page() {
             className="font-medium text-foreground underline underline-offset-4"
           >
             google-sheets-argento
+          </a>
+          . Precios en vivo de{" "}
+          <a
+            href="https://data912.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-foreground underline underline-offset-4"
+          >
+            data912
           </a>
           .
         </footer>
