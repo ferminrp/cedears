@@ -1,3 +1,5 @@
+import { yahooFinance } from "@/lib/yahoo-finance"
+
 export type Cedear = {
   Cedears: string
   Name: string
@@ -30,6 +32,7 @@ const DATA_URL =
 
 const LIVE_QUOTES_URL = "https://data912.com/live/arg_cedears"
 const USA_QUOTES_URL = "https://data912.com/live/usa_stocks"
+const YAHOO_QUOTE_CHUNK_SIZE = 80
 
 function normalizeSymbol(symbol: string): string {
   return symbol.trim().toUpperCase()
@@ -129,6 +132,66 @@ function mergeQuotes(
   })
 }
 
+function chunkSymbols(symbols: string[], size: number): string[][] {
+  const chunks: string[][] = []
+  for (let i = 0; i < symbols.length; i += size) {
+    chunks.push(symbols.slice(i, i + size))
+  }
+  return chunks
+}
+
+async function getYahooUnderlyingPrices(
+  symbols: string[],
+): Promise<Map<string, number>> {
+  const prices = new Map<string, number>()
+  if (symbols.length === 0) return prices
+
+  for (const chunk of chunkSymbols(symbols, YAHOO_QUOTE_CHUNK_SIZE)) {
+    try {
+      const quotes = await yahooFinance.quote(chunk, {
+        fields: ["symbol", "regularMarketPrice"],
+        return: "object",
+      })
+
+      for (const symbol of chunk) {
+        const quote = quotes[symbol]
+        const price = quote?.regularMarketPrice
+        if (typeof price === "number" && Number.isFinite(price)) {
+          prices.set(normalizeSymbol(symbol), price)
+        }
+      }
+    } catch (error) {
+      console.error(
+        "No se pudieron obtener precios de Yahoo Finance",
+        { symbols: chunk, error },
+      )
+    }
+  }
+
+  return prices
+}
+
+async function fillMissingUsPrices(cedears: Cedear[]): Promise<Cedear[]> {
+  const missing = [
+    ...new Set(
+      cedears
+        .filter((c) => c.usPrice === null)
+        .map((c) => normalizeSymbol(c.TickerOriginal)),
+    ),
+  ]
+  if (missing.length === 0) return cedears
+
+  const yahooPrices = await getYahooUnderlyingPrices(missing)
+  if (yahooPrices.size === 0) return cedears
+
+  return cedears.map((c) => {
+    if (c.usPrice !== null) return c
+    const price = yahooPrices.get(normalizeSymbol(c.TickerOriginal))
+    if (price === undefined) return c
+    return { ...c, usPrice: price }
+  })
+}
+
 export async function getCedears(): Promise<Cedear[]> {
   const res = await fetch(DATA_URL, {
     // Revalidate once a day: the list of available CEDEARs changes rarely.
@@ -165,11 +228,12 @@ export async function getCedears(): Promise<Cedear[]> {
     )
   }
 
-  if (!argQuotes && !usaQuotes) {
-    return withEmptyQuotes(data)
-  }
+  const merged =
+    !argQuotes && !usaQuotes
+      ? withEmptyQuotes(data)
+      : mergeQuotes(data, argQuotes, usaQuotes)
 
-  return mergeQuotes(data, argQuotes, usaQuotes)
+  return fillMissingUsPrices(merged)
 }
 
 export function parseRatio(ratio: string): number | null {
