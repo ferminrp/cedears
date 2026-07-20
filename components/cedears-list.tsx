@@ -191,7 +191,7 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
             </TableHeader>
             <TableBody>
               {filtered.map((c) => (
-                <TableRow key={c.Cedears}>
+                <TableRow key={c.Cedears} className="bg-white hover:bg-white dark:bg-white dark:hover:bg-white">
                   <TableCell>
                     <span className="font-mono font-medium">{c.Cedears}</span>
                   </TableCell>
