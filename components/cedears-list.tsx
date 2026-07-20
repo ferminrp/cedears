@@ -48,6 +48,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
+import { CedearDetailSheet } from "@/components/cedear-detail-sheet"
 
 const ALL_MARKETS = "all"
 const DEFAULT_SORT = "default"
@@ -132,7 +133,19 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
   const [market, setMarket] = useState(ALL_MARKETS)
   const [pctSort, setPctSort] = useState<PctSort>(DEFAULT_SORT)
   const [pinned, setPinned] = useState<string[]>([])
+  const [selectedTicker, setSelectedTicker] = useState<string | null>(null)
   const pinsHydratedRef = useRef(false)
+
+  const selected = useMemo(() => {
+    if (!selectedTicker) return null
+    return cedears.find((c) => c.Cedears === selectedTicker) ?? null
+  }, [cedears, selectedTicker])
+
+  useEffect(() => {
+    if (selectedTicker !== null && selected === null) {
+      setSelectedTicker(null)
+    }
+  }, [selectedTicker, selected])
 
   const tickerFingerprint = useMemo(
     () => cedears.map((c) => c.Cedears).sort().join("|"),
@@ -334,18 +347,32 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
             <TableBody>
               {displayed.map((c) => {
                 const isPinned = visiblePins.includes(c.Cedears)
+                const isSelected = selectedTicker === c.Cedears
 
                 return (
                 <TableRow
                   key={c.Cedears}
-                  className={isPinned ? "bg-muted/30 hover:bg-muted/30" : undefined}
+                  tabIndex={0}
+                  data-state={isSelected ? "selected" : undefined}
+                  aria-label={`Ver detalle de ${c.Cedears}`}
+                  className={`cursor-pointer ${isPinned ? "bg-muted/30 hover:bg-muted/40" : ""}`}
+                  onClick={() => setSelectedTicker(c.Cedears)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault()
+                      setSelectedTicker(c.Cedears)
+                    }
+                  }}
                 >
                   <TableCell className="px-1">
                     <Button
                       type="button"
                       variant="ghost"
                       size="icon-xs"
-                      onClick={() => togglePin(c.Cedears)}
+                      onClick={(event) => {
+                        event.stopPropagation()
+                        togglePin(c.Cedears)
+                      }}
                       aria-label={
                         isPinned
                           ? `Quitar ${c.Cedears} de fijados`
@@ -459,6 +486,14 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
           </DropdownMenu>
         </div>
       )}
+
+      <CedearDetailSheet
+        cedear={selected}
+        open={selectedTicker !== null}
+        onOpenChange={(open) => {
+          if (!open) setSelectedTicker(null)
+        }}
+      />
     </div>
   )
 }

@@ -6,6 +6,9 @@ export type Cedear = {
   TickerOriginal: string
   price: number | null
   pctChange: number | null
+  usPrice: number | null
+  priceMep: number | null
+  priceCcl: number | null
 }
 
 type CedearBase = {
@@ -26,6 +29,7 @@ const DATA_URL =
   "https://raw.githubusercontent.com/ferminrp/google-sheets-argento/refs/heads/main/data/cedears.json"
 
 const LIVE_QUOTES_URL = "https://data912.com/live/arg_cedears"
+const USA_QUOTES_URL = "https://data912.com/live/usa_stocks"
 
 function normalizeSymbol(symbol: string): string {
   return symbol.trim().toUpperCase()
@@ -63,8 +67,8 @@ function parseLiveQuote(value: unknown): LiveQuote | null {
   }
 }
 
-async function getLiveQuotes(): Promise<Map<string, LiveQuote>> {
-  const res = await fetch(LIVE_QUOTES_URL, {
+async function getLiveQuotes(url: string): Promise<Map<string, LiveQuote>> {
+  const res = await fetch(url, {
     next: { revalidate: 60 },
   })
 
@@ -86,24 +90,41 @@ async function getLiveQuotes(): Promise<Map<string, LiveQuote>> {
   return quotes
 }
 
+function quotePrice(
+  quotes: Map<string, LiveQuote> | null,
+  symbol: string,
+): number | null {
+  if (!quotes) return null
+  return quotes.get(normalizeSymbol(symbol))?.c ?? null
+}
+
 function withEmptyQuotes(cedears: CedearBase[]): Cedear[] {
   return cedears.map((c) => ({
     ...c,
     price: null,
     pctChange: null,
+    usPrice: null,
+    priceMep: null,
+    priceCcl: null,
   }))
 }
 
-function mergeQuotes(cedears: CedearBase[], quotes: Map<string, LiveQuote>): Cedear[] {
+function mergeQuotes(
+  cedears: CedearBase[],
+  argQuotes: Map<string, LiveQuote> | null,
+  usaQuotes: Map<string, LiveQuote> | null,
+): Cedear[] {
   return cedears.map((c) => {
-    const quote = quotes.get(normalizeSymbol(c.Cedears))
-    if (!quote) {
-      return { ...c, price: null, pctChange: null }
-    }
+    const ticker = normalizeSymbol(c.Cedears)
+    const argQuote = argQuotes?.get(ticker)
+
     return {
       ...c,
-      price: quote.c,
-      pctChange: quote.pct_change,
+      price: argQuote?.c ?? null,
+      pctChange: argQuote?.pct_change ?? null,
+      usPrice: quotePrice(usaQuotes, c.TickerOriginal),
+      priceMep: quotePrice(argQuotes, `${ticker}D`),
+      priceCcl: quotePrice(argQuotes, `${ticker}C`),
     }
   })
 }
@@ -123,13 +144,52 @@ export async function getCedears(): Promise<Cedear[]> {
     throw new Error("Lista de CEDEARs inválida")
   }
 
-  try {
-    const quotes = await getLiveQuotes()
-    return mergeQuotes(data, quotes)
-  } catch (error) {
-    console.error("No se pudieron obtener precios de data912", error)
+  const [argResult, usaResult] = await Promise.allSettled([
+    getLiveQuotes(LIVE_QUOTES_URL),
+    getLiveQuotes(USA_QUOTES_URL),
+  ])
+
+  const argQuotes = argResult.status === "fulfilled" ? argResult.value : null
+  const usaQuotes = usaResult.status === "fulfilled" ? usaResult.value : null
+
+  if (!argQuotes) {
+    console.error(
+      "No se pudieron obtener precios AR de data912",
+      argResult.status === "rejected" ? argResult.reason : undefined,
+    )
+  }
+  if (!usaQuotes) {
+    console.error(
+      "No se pudieron obtener precios USA de data912",
+      usaResult.status === "rejected" ? usaResult.reason : undefined,
+    )
+  }
+
+  if (!argQuotes && !usaQuotes) {
     return withEmptyQuotes(data)
   }
+
+  return mergeQuotes(data, argQuotes, usaQuotes)
+}
+
+export function parseRatio(ratio: string): number | null {
+  const value = Number(ratio)
+  if (!Number.isFinite(value) || value <= 0) return null
+  return value
+}
+
+export function fairUsdPrice(cedear: Cedear): number | null {
+  const ratio = parseRatio(cedear.Ratio)
+  if (cedear.usPrice === null || ratio === null) return null
+  return cedear.usPrice / ratio
+}
+
+export function premiumPct(
+  quotedUsd: number | null,
+  fairUsd: number | null,
+): number | null {
+  if (quotedUsd === null || fairUsd === null || fairUsd === 0) return null
+  return ((quotedUsd - fairUsd) / fairUsd) * 100
 }
 
 function formatPrice(value: number | null): string {
