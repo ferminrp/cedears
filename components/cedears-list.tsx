@@ -264,7 +264,7 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <Select value={market} onValueChange={setMarket}>
-            <SelectTrigger className="w-full bg-card sm:w-52" aria-label="Filtrar por mercado">
+            <SelectTrigger className="w-full bg-card dark:bg-card sm:w-52" aria-label="Filtrar por mercado">
               <SelectValue placeholder="Mercado">
                 {(value: string) =>
                   value === ALL_MARKETS ? "Todos los mercados" : value
@@ -284,7 +284,7 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
           </Select>
 
           <Select value={pctSort} onValueChange={(value) => setPctSort(value as PctSort)}>
-            <SelectTrigger className="w-full bg-card sm:w-56" aria-label="Ordenar por variación">
+            <SelectTrigger className="w-full bg-card dark:bg-card sm:w-56" aria-label="Ordenar por variación">
               <SelectValue placeholder="Ordenar">
                 {(value: string) => {
                   if (value === PCT_SORT_DESC) return "Var. % mayor a menor"
