@@ -2,6 +2,9 @@
 
 import { useMemo, useState } from "react"
 import {
+  ArrowDownIcon,
+  ArrowUpDownIcon,
+  ArrowUpIcon,
   CopyIcon,
   DownloadIcon,
   FileTextIcon,
@@ -45,6 +48,22 @@ import {
 } from "@/components/ui/empty"
 
 const ALL_MARKETS = "all"
+const DEFAULT_SORT = "default"
+const PCT_SORT_ASC = "pct-asc"
+const PCT_SORT_DESC = "pct-desc"
+
+type PctSort = typeof DEFAULT_SORT | typeof PCT_SORT_ASC | typeof PCT_SORT_DESC
+
+function comparePctChange(
+  a: number | null,
+  b: number | null,
+  direction: "asc" | "desc",
+): number {
+  if (a === null && b === null) return 0
+  if (a === null) return 1
+  if (b === null) return -1
+  return direction === "asc" ? a - b : b - a
+}
 
 const priceFormatter = new Intl.NumberFormat("es-AR", {
   style: "currency",
@@ -81,6 +100,7 @@ const empresaCellClassName = "max-w-52 text-muted-foreground"
 export function CedearsList({ cedears }: { cedears: Cedear[] }) {
   const [query, setQuery] = useState("")
   const [market, setMarket] = useState(ALL_MARKETS)
+  const [pctSort, setPctSort] = useState<PctSort>(DEFAULT_SORT)
 
   const markets = useMemo(() => {
     const set = new Set(cedears.map((c) => c.Market).filter(Boolean))
@@ -100,11 +120,20 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
     })
   }, [cedears, query, market])
 
+  const displayed = useMemo(() => {
+    if (pctSort === DEFAULT_SORT) return filtered
+
+    const direction = pctSort === PCT_SORT_ASC ? "asc" : "desc"
+    return [...filtered].sort((a, b) =>
+      comparePctChange(a.pctChange, b.pctChange, direction),
+    )
+  }, [filtered, pctSort])
+
   async function copyToClipboard(content: string, label: string) {
     try {
       await navigator.clipboard.writeText(content)
       toast.success(`${label} copiado al portapapeles`, {
-        description: `${filtered.length} CEDEARs`,
+        description: `${displayed.length} CEDEARs`,
       })
     } catch {
       toast.error("No se pudo copiar al portapapeles")
@@ -122,7 +151,7 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
     a.remove()
     URL.revokeObjectURL(url)
     toast.success(`${label} descargado`, {
-      description: `${filtered.length} CEDEARs`,
+      description: `${displayed.length} CEDEARs`,
     })
   }
 
@@ -141,7 +170,7 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
           />
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <Select value={market} onValueChange={setMarket}>
             <SelectTrigger className="w-full sm:w-52" aria-label="Filtrar por mercado">
               <SelectValue placeholder="Mercado">
@@ -158,6 +187,34 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
                     {m}
                   </SelectItem>
                 ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+
+          <Select value={pctSort} onValueChange={(value) => setPctSort(value as PctSort)}>
+            <SelectTrigger className="w-full sm:w-56" aria-label="Ordenar por variación">
+              <SelectValue placeholder="Ordenar">
+                {(value: string) => {
+                  if (value === PCT_SORT_DESC) return "Var. % mayor a menor"
+                  if (value === PCT_SORT_ASC) return "Var. % menor a mayor"
+                  return "Sin ordenar"
+                }}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value={DEFAULT_SORT}>
+                  <ArrowUpDownIcon data-icon="inline-start" />
+                  Sin ordenar
+                </SelectItem>
+                <SelectItem value={PCT_SORT_DESC}>
+                  <ArrowDownIcon data-icon="inline-start" />
+                  Var. % mayor a menor
+                </SelectItem>
+                <SelectItem value={PCT_SORT_ASC}>
+                  <ArrowUpIcon data-icon="inline-start" />
+                  Var. % menor a mayor
+                </SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
@@ -195,7 +252,7 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filtered.map((c) => (
+              {displayed.map((c) => (
                 <TableRow key={c.Cedears}>
                   <TableCell>
                     <span className="font-mono font-medium">{c.Cedears}</span>
@@ -243,7 +300,7 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
             <DropdownMenuContent align="end">
               <DropdownMenuGroup>
                 <DropdownMenuItem
-                  onClick={() => copyToClipboard(toMarkdown(filtered), "Markdown")}
+                  onClick={() => copyToClipboard(toMarkdown(displayed), "Markdown")}
                 >
                   <CopyIcon data-icon="inline-start" />
                   Copiar
@@ -251,7 +308,7 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
                 <DropdownMenuItem
                   onClick={() =>
                     download(
-                      toMarkdown(filtered),
+                      toMarkdown(displayed),
                       "cedears.md",
                       "text/markdown",
                       "Markdown",
@@ -277,14 +334,14 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
             <DropdownMenuContent align="end">
               <DropdownMenuGroup>
                 <DropdownMenuItem
-                  onClick={() => copyToClipboard(toCsv(filtered), "CSV")}
+                  onClick={() => copyToClipboard(toCsv(displayed), "CSV")}
                 >
                   <CopyIcon data-icon="inline-start" />
                   Copiar
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() =>
-                    download(toCsv(filtered), "cedears.csv", "text/csv", "CSV")
+                    download(toCsv(displayed), "cedears.csv", "text/csv", "CSV")
                   }
                 >
                   <DownloadIcon data-icon="inline-start" />
