@@ -140,17 +140,24 @@ export function EarningsTimelineView({ timeline }: { timeline: EarningsTimeline 
                             <p className="truncate text-sm font-medium">
                               {item.name}
                             </p>
-                            <p className="truncate text-sm font-normal text-muted-foreground tabular-nums">
-                              {item.cedear}
+                            <div className="flex min-w-0 items-center">
+                              <p className="min-w-0 truncate text-sm font-normal text-muted-foreground tabular-nums">
+                                {item.cedear}
+                              </p>
                               {timeLabel ? (
                                 <>
-                                  <span aria-hidden className="mx-1">
+                                  <span
+                                    aria-hidden
+                                    className="mx-1 shrink-0 text-muted-foreground"
+                                  >
                                     ·
                                   </span>
-                                  {timeLabel}
+                                  <span className="shrink-0 text-sm font-normal text-muted-foreground tabular-nums">
+                                    {timeLabel}
+                                  </span>
                                 </>
                               ) : null}
-                            </p>
+                            </div>
                           </div>
                           {!item.isDateConfirmed ? (
                             <Badge variant="outline">Fecha estimada</Badge>
