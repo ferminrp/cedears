@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { CalendarIcon, SearchIcon } from "lucide-react"
+import { ArrowUpRight, CalendarIcon, SearchIcon } from "lucide-react"
 import type { EarningsDay, EarningsTimeline } from "@/lib/earnings"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -42,6 +42,10 @@ function logoUrl(ticker: string): string {
     retina: "true",
   })
   return `https://img.logo.dev/ticker/${encoded}?${params.toString()}`
+}
+
+function perplexityEarningsUrl(ticker: string): string {
+  return `https://www.perplexity.ai/finance/${encodeURIComponent(ticker.trim().toUpperCase())}/earnings`
 }
 
 function matchesQuery(
@@ -117,34 +121,45 @@ export function EarningsTimelineView({ timeline }: { timeline: EarningsTimeline 
                     const timeLabel = formatEarningsTime(item.earningsTime)
 
                     return (
-                      <li
-                        key={`${day.date}-${item.cedear}`}
-                        className="flex items-center gap-3"
-                      >
-                        <img
-                          src={logoUrl(item.tickerOriginal)}
-                          alt=""
-                          width={32}
-                          height={32}
-                          className="size-8 shrink-0 rounded-md bg-muted object-contain"
-                          loading="lazy"
-                        />
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-medium">
-                            {item.name}
-                          </p>
-                          <p className="truncate text-sm font-normal text-muted-foreground tabular-nums">
-                            {item.cedear}
-                          </p>
-                        </div>
-                        {!item.isDateConfirmed ? (
-                          <Badge variant="outline">Fecha estimada</Badge>
-                        ) : null}
-                        {timeLabel ? (
-                          <span className="shrink-0 text-sm text-muted-foreground tabular-nums">
-                            {timeLabel}
-                          </span>
-                        ) : null}
+                      <li key={`${day.date}-${item.cedear}`}>
+                        <a
+                          href={perplexityEarningsUrl(item.tickerOriginal)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-3 rounded-md px-2 py-1.5 -mx-2 transition-colors hover:bg-muted/50"
+                        >
+                          <img
+                            src={logoUrl(item.tickerOriginal)}
+                            alt=""
+                            width={32}
+                            height={32}
+                            className="size-8 shrink-0 rounded-md bg-muted object-contain"
+                            loading="lazy"
+                          />
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-sm font-medium">
+                              {item.name}
+                            </p>
+                            <p className="truncate text-sm font-normal text-muted-foreground tabular-nums">
+                              {item.cedear}
+                              {timeLabel ? (
+                                <>
+                                  <span aria-hidden className="mx-1">
+                                    ·
+                                  </span>
+                                  {timeLabel}
+                                </>
+                              ) : null}
+                            </p>
+                          </div>
+                          {!item.isDateConfirmed ? (
+                            <Badge variant="outline">Fecha estimada</Badge>
+                          ) : null}
+                          <ArrowUpRight
+                            aria-hidden
+                            className="size-4 shrink-0 text-muted-foreground"
+                          />
+                        </a>
                       </li>
                     )
                   })}
