@@ -134,8 +134,10 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
   const [pinned, setPinned] = useState<string[]>([])
 
   useEffect(() => {
-    setPinned(readPinnedTickers())
-  }, [])
+    const stored = readPinnedTickers()
+    const validTickers = new Set(cedears.map((c) => c.Cedears))
+    setPinned(stored.filter((ticker) => validTickers.has(ticker)))
+  }, [cedears])
 
   useEffect(() => {
     localStorage.setItem(PINNED_STORAGE_KEY, JSON.stringify(pinned))
