@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import {
   ArrowDownIcon,
   ArrowUpDownIcon,
@@ -132,6 +132,7 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
   const [market, setMarket] = useState(ALL_MARKETS)
   const [pctSort, setPctSort] = useState<PctSort>(DEFAULT_SORT)
   const [pinned, setPinned] = useState<string[]>([])
+  const pinnedHydrated = useRef(false)
 
   useEffect(() => {
     const stored = readPinnedTickers()
@@ -140,6 +141,10 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
   }, [cedears])
 
   useEffect(() => {
+    if (!pinnedHydrated.current) {
+      pinnedHydrated.current = true
+      return
+    }
     localStorage.setItem(PINNED_STORAGE_KEY, JSON.stringify(pinned))
   }, [pinned])
 
