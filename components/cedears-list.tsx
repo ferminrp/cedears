@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import {
   ArrowDownIcon,
   ArrowUpDownIcon,
@@ -8,6 +8,8 @@ import {
   CopyIcon,
   DownloadIcon,
   FileTextIcon,
+  PinIcon,
+  PinOffIcon,
   SearchIcon,
   TableIcon,
 } from "lucide-react"
@@ -51,6 +53,7 @@ const ALL_MARKETS = "all"
 const DEFAULT_SORT = "default"
 const PCT_SORT_ASC = "pct-asc"
 const PCT_SORT_DESC = "pct-desc"
+const PINNED_STORAGE_KEY = "cedears-pinned"
 
 type PctSort = typeof DEFAULT_SORT | typeof PCT_SORT_ASC | typeof PCT_SORT_DESC
 
@@ -63,6 +66,33 @@ function comparePctChange(
   if (a === null) return 1
   if (b === null) return -1
   return direction === "asc" ? a - b : b - a
+}
+
+function orderWithPins(items: Cedear[], pinned: string[]): Cedear[] {
+  if (pinned.length === 0) return items
+
+  const pinnedSet = new Set(pinned)
+  const itemsByTicker = new Map(items.map((item) => [item.Cedears, item]))
+  const pinnedItems = pinned
+    .map((ticker) => itemsByTicker.get(ticker))
+    .filter((item): item is Cedear => item !== undefined)
+  const unpinnedItems = items.filter((item) => !pinnedSet.has(item.Cedears))
+
+  return [...pinnedItems, ...unpinnedItems]
+}
+
+function readPinnedTickers(): string[] {
+  try {
+    const stored = localStorage.getItem(PINNED_STORAGE_KEY)
+    if (!stored) return []
+
+    const parsed: unknown = JSON.parse(stored)
+    if (!Array.isArray(parsed)) return []
+
+    return parsed.filter((ticker): ticker is string => typeof ticker === "string")
+  } catch {
+    return []
+  }
 }
 
 const priceFormatter = new Intl.NumberFormat("es-AR", {
@@ -101,6 +131,24 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
   const [query, setQuery] = useState("")
   const [market, setMarket] = useState(ALL_MARKETS)
   const [pctSort, setPctSort] = useState<PctSort>(DEFAULT_SORT)
+  const [pinned, setPinned] = useState<string[]>([])
+
+  useEffect(() => {
+    setPinned(readPinnedTickers())
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem(PINNED_STORAGE_KEY, JSON.stringify(pinned))
+  }, [pinned])
+
+  function togglePin(ticker: string) {
+    setPinned((current) => {
+      if (current.includes(ticker)) {
+        return current.filter((item) => item !== ticker)
+      }
+      return [ticker, ...current]
+    })
+  }
 
   const markets = useMemo(() => {
     const set = new Set(cedears.map((c) => c.Market).filter(Boolean))
@@ -121,13 +169,17 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
   }, [cedears, query, market])
 
   const displayed = useMemo(() => {
-    if (pctSort === DEFAULT_SORT) return filtered
+    let items = filtered
 
-    const direction = pctSort === PCT_SORT_ASC ? "asc" : "desc"
-    return [...filtered].sort((a, b) =>
-      comparePctChange(a.pctChange, b.pctChange, direction),
-    )
-  }, [filtered, pctSort])
+    if (pctSort !== DEFAULT_SORT) {
+      const direction = pctSort === PCT_SORT_ASC ? "asc" : "desc"
+      items = [...filtered].sort((a, b) =>
+        comparePctChange(a.pctChange, b.pctChange, direction),
+      )
+    }
+
+    return orderWithPins(items, pinned)
+  }, [filtered, pctSort, pinned])
 
   async function copyToClipboard(content: string, label: string) {
     try {
@@ -242,6 +294,9 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
           <Table className="table-fixed">
             <TableHeader>
               <TableRow className="bg-muted hover:bg-muted">
+                <TableHead className="w-10 px-1">
+                  <span className="sr-only">Fijar</span>
+                </TableHead>
                 <TableHead className="w-28">Ticker</TableHead>
                 <TableHead className="w-52">Empresa</TableHead>
                 <TableHead>Mercado</TableHead>
@@ -252,8 +307,34 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {displayed.map((c) => (
-                <TableRow key={c.Cedears}>
+              {displayed.map((c) => {
+                const isPinned = pinned.includes(c.Cedears)
+
+                return (
+                <TableRow
+                  key={c.Cedears}
+                  className={isPinned ? "bg-muted/30 hover:bg-muted/30" : undefined}
+                >
+                  <TableCell className="px-1">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon-xs"
+                      onClick={() => togglePin(c.Cedears)}
+                      aria-label={
+                        isPinned
+                          ? `Quitar ${c.Cedears} de fijados`
+                          : `Fijar ${c.Cedears} arriba`
+                      }
+                      className={
+                        isPinned
+                          ? "text-foreground"
+                          : "text-muted-foreground hover:text-foreground"
+                      }
+                    >
+                      {isPinned ? <PinOffIcon /> : <PinIcon />}
+                    </Button>
+                  </TableCell>
                   <TableCell>
                     <span className="font-mono font-medium">{c.Cedears}</span>
                   </TableCell>
@@ -280,7 +361,8 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
                     {c.TickerOriginal}
                   </TableCell>
                 </TableRow>
-              ))}
+                )
+              })}
             </TableBody>
           </Table>
         </div>
