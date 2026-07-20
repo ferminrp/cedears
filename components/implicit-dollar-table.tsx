@@ -23,7 +23,7 @@ const compactFormatter = new Intl.NumberFormat("es-AR", {
   maximumFractionDigits: 0,
 })
 
-type SortKey = "implicitFx" | "tradedValue" | "ticker"
+type SortKey = "implicitFx" | "tradedValue" | "ticker" | "volume"
 type SortDir = "asc" | "desc"
 
 function formatArs(value: number): string {
@@ -82,6 +82,8 @@ export function ImplicitDollarTable({ rows }: { rows: ImplicitDollarRow[] }) {
       cmp = a.implicitFx - b.implicitFx
     } else if (sortKey === "tradedValue") {
       cmp = a.tradedValue - b.tradedValue
+    } else if (sortKey === "volume") {
+      cmp = (a.cedear.volume ?? 0) - (b.cedear.volume ?? 0)
     } else {
       cmp = a.cedear.Cedears.localeCompare(b.cedear.Cedears)
     }
@@ -110,7 +112,14 @@ export function ImplicitDollarTable({ rows }: { rows: ImplicitDollarRow[] }) {
                 onClick={() => toggleSort("implicitFx")}
               />
             </TableHead>
-            <TableHead className="hidden text-right md:table-cell">Volumen</TableHead>
+            <TableHead className="hidden text-right md:table-cell">
+              <SortButton
+                label="Volumen"
+                active={sortKey === "volume"}
+                direction={sortDir}
+                onClick={() => toggleSort("volume")}
+              />
+            </TableHead>
             <TableHead className="text-right">
               <SortButton
                 label="Vol. × precio"
