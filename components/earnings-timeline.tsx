@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react"
 import { CalendarIcon, SearchIcon } from "lucide-react"
 import type { EarningsDay, EarningsTimeline } from "@/lib/earnings"
+import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import {
   Empty,
@@ -166,6 +167,9 @@ export function EarningsTimelineView({ timeline }: { timeline: EarningsTimeline 
                         <span className="min-w-0 flex-1 truncate text-sm">
                           {item.name}
                         </span>
+                        {!item.isDateConfirmed ? (
+                          <Badge variant="outline">Fecha estimada</Badge>
+                        ) : null}
                         {timeLabel ? (
                           <span className="shrink-0 text-sm text-muted-foreground tabular-nums">
                             {timeLabel}
