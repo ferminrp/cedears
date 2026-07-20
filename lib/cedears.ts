@@ -22,3 +22,35 @@ export async function getCedears(): Promise<Cedear[]> {
   const data = (await res.json()) as Cedear[]
   return data
 }
+
+const COLUMNS = [
+  { key: "Cedears", label: "Ticker" },
+  { key: "Name", label: "Empresa" },
+  { key: "Market", label: "Mercado" },
+  { key: "Ratio", label: "Ratio" },
+  { key: "TickerOriginal", label: "Ticker original" },
+] as const
+
+export function toMarkdown(cedears: Cedear[]): string {
+  const header = `| ${COLUMNS.map((c) => c.label).join(" | ")} |`
+  const divider = `| ${COLUMNS.map(() => "---").join(" | ")} |`
+  const rows = cedears.map(
+    (c) => `| ${COLUMNS.map((col) => String(c[col.key]).replace(/\|/g, "\\|")).join(" | ")} |`,
+  )
+  return [header, divider, ...rows].join("\n")
+}
+
+function escapeCsv(value: string): string {
+  if (/[",\n]/.test(value)) {
+    return `"${value.replace(/"/g, '""')}"`
+  }
+  return value
+}
+
+export function toCsv(cedears: Cedear[]): string {
+  const header = COLUMNS.map((c) => escapeCsv(c.label)).join(",")
+  const rows = cedears.map((c) =>
+    COLUMNS.map((col) => escapeCsv(String(c[col.key]))).join(","),
+  )
+  return [header, ...rows].join("\n")
+}

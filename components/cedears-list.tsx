@@ -1,10 +1,25 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { SearchIcon } from "lucide-react"
-import type { Cedear } from "@/lib/cedears"
+import {
+  CopyIcon,
+  DownloadIcon,
+  FileTextIcon,
+  SearchIcon,
+  TableIcon,
+} from "lucide-react"
+import { toast } from "sonner"
+import { type Cedear, toCsv, toMarkdown } from "@/lib/cedears"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import {
   Select,
   SelectContent,
@@ -52,6 +67,32 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
       return matchesMarket && matchesQuery
     })
   }, [cedears, query, market])
+
+  async function copyToClipboard(content: string, label: string) {
+    try {
+      await navigator.clipboard.writeText(content)
+      toast.success(`${label} copiado al portapapeles`, {
+        description: `${filtered.length} CEDEARs`,
+      })
+    } catch {
+      toast.error("No se pudo copiar al portapapeles")
+    }
+  }
+
+  function download(content: string, filename: string, mime: string, label: string) {
+    const blob = new Blob([content], { type: `${mime};charset=utf-8` })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = filename
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    URL.revokeObjectURL(url)
+    toast.success(`${label} descargado`, {
+      description: `${filtered.length} CEDEARs`,
+    })
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -139,6 +180,73 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
               ))}
             </TableBody>
           </Table>
+        </div>
+      )}
+
+      {filtered.length > 0 && (
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <Button variant="outline">
+                  <FileTextIcon data-icon="inline-start" />
+                  Markdown
+                </Button>
+              }
+            />
+            <DropdownMenuContent align="end">
+              <DropdownMenuGroup>
+                <DropdownMenuItem
+                  onClick={() => copyToClipboard(toMarkdown(filtered), "Markdown")}
+                >
+                  <CopyIcon data-icon="inline-start" />
+                  Copiar
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() =>
+                    download(
+                      toMarkdown(filtered),
+                      "cedears.md",
+                      "text/markdown",
+                      "Markdown",
+                    )
+                  }
+                >
+                  <DownloadIcon data-icon="inline-start" />
+                  Descargar
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <Button variant="outline">
+                  <TableIcon data-icon="inline-start" />
+                  CSV
+                </Button>
+              }
+            />
+            <DropdownMenuContent align="end">
+              <DropdownMenuGroup>
+                <DropdownMenuItem
+                  onClick={() => copyToClipboard(toCsv(filtered), "CSV")}
+                >
+                  <CopyIcon data-icon="inline-start" />
+                  Copiar
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() =>
+                    download(toCsv(filtered), "cedears.csv", "text/csv", "CSV")
+                  }
+                >
+                  <DownloadIcon data-icon="inline-start" />
+                  Descargar
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       )}
     </div>
