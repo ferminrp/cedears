@@ -57,12 +57,12 @@ function HomeJsonLd({ cedearCount }: { cedearCount: number }) {
           {
             '@type': 'DataDownload',
             encodingFormat: 'text/markdown',
-            contentUrl: siteUrl,
+            contentUrl: `${siteUrl}/cedears.md`,
           },
           {
             '@type': 'DataDownload',
             encodingFormat: 'text/csv',
-            contentUrl: siteUrl,
+            contentUrl: `${siteUrl}/cedears.csv`,
           },
         ],
         variableMeasured: [
@@ -88,10 +88,12 @@ function HomeJsonLd({ cedearCount }: { cedearCount: number }) {
 export default async function Page() {
   let content
   let cedearCount = 0
+  let dataLoaded = false
 
   try {
     const cedears = await getCedears()
     cedearCount = cedears.length
+    dataLoaded = true
     content = <CedearsList cedears={cedears} />
   } catch {
     content = (
@@ -107,7 +109,7 @@ export default async function Page() {
 
   return (
     <>
-      <HomeJsonLd cedearCount={cedearCount} />
+      {dataLoaded && <HomeJsonLd cedearCount={cedearCount} />}
       <main className="mx-auto flex min-h-svh w-full max-w-5xl flex-col gap-8 px-4 py-10 md:py-16">
         <header className="flex flex-col gap-4">
           <h1 className="text-balance text-3xl font-semibold tracking-tight md:text-4xl">
