@@ -198,6 +198,16 @@ export async function getCedearBases(): Promise<CedearBase[]> {
   return data
 }
 
+function normalizeTicker(ticker: string): string {
+  return ticker.trim().toUpperCase()
+}
+
+export async function getCedearByTicker(ticker: string): Promise<Cedear | null> {
+  const normalized = normalizeTicker(ticker)
+  const cedears = await getCedears()
+  return cedears.find((c) => normalizeTicker(c.Cedears) === normalized) ?? null
+}
+
 export async function getCedears(): Promise<Cedear[]> {
   const data = await getCedearBases()
 

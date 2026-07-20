@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useRef, useState } from "react"
+import Link from "next/link"
 import {
   ArrowDownIcon,
   ArrowUpDownIcon,
@@ -394,7 +395,13 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
                         className="size-4 shrink-0 rounded-sm bg-muted object-contain"
                         loading="lazy"
                       />
-                      <span className="font-mono font-medium">{c.Cedears}</span>
+                      <Link
+                        href={`/cedear/${c.Cedears}`}
+                        onClick={(event) => event.stopPropagation()}
+                        className="font-mono font-medium underline-offset-4 hover:underline"
+                      >
+                        {c.Cedears}
+                      </Link>
                     </span>
                   </TableCell>
                   <TableCell className={empresaCellClassName}>
