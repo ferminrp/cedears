@@ -2,6 +2,7 @@ import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { Geist } from "next/font/google";
+import { GeistPixelSquare } from "geist/font/pixel";
 import { cn } from "@/lib/utils";
 import { GoogleAnalytics } from "@/components/google-analytics";
 import { getSiteUrl, siteConfig } from "@/lib/site";
@@ -64,7 +65,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="es-AR" className={cn("font-sans", geist.variable)}>
+    <html lang="es-AR" className={cn("font-sans", geist.variable, GeistPixelSquare.variable)}>
       <body className="antialiased">
         {children}
         <Toaster />

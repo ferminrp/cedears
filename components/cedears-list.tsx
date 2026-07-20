@@ -73,6 +73,8 @@ function pctChangeClassName(value: number | null): string {
   return "text-red-600 dark:text-red-400"
 }
 
+const numericCellClassName = "text-right font-pixel-square tabular-nums"
+
 export function CedearsList({ cedears }: { cedears: Cedear[] }) {
   const [query, setQuery] = useState("")
   const [market, setMarket] = useState(ALL_MARKETS)
@@ -199,15 +201,15 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
                   <TableCell>
                     <Badge variant="secondary">{c.Market}</Badge>
                   </TableCell>
-                  <TableCell className="text-right font-mono tabular-nums">
+                  <TableCell className={numericCellClassName}>
                     {formatPrice(c.price)}
                   </TableCell>
                   <TableCell
-                    className={`text-right font-mono tabular-nums ${pctChangeClassName(c.pctChange)}`}
+                    className={`${numericCellClassName} ${pctChangeClassName(c.pctChange)}`}
                   >
                     {formatPctChange(c.pctChange)}
                   </TableCell>
-                  <TableCell className="text-right font-mono tabular-nums">
+                  <TableCell className={numericCellClassName}>
                     {c.Ratio}
                   </TableCell>
                   <TableCell className="text-right font-mono text-muted-foreground">
