@@ -39,24 +39,53 @@ export function implicitFxRate(
   return arsPrice / usdPrice
 }
 
-function formatPrice(value: number | null): string {
+const arsFormatter = new Intl.NumberFormat("es-AR", {
+  style: "currency",
+  currency: "ARS",
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 2,
+})
+
+const usdFormatter = new Intl.NumberFormat("es-AR", {
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+})
+
+const pctFormatter = new Intl.NumberFormat("es-AR", {
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 2,
+  signDisplay: "exceptZero",
+})
+
+export function formatArs(value: number | null): string {
   if (value === null) return "—"
-  return new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  }).format(value)
+  return arsFormatter.format(value)
+}
+
+export function formatUsd(value: number | null): string {
+  if (value === null) return "—"
+  return usdFormatter.format(value)
+}
+
+export function formatPct(value: number | null): string {
+  if (value === null) return "—"
+  return `${pctFormatter.format(value)}%`
+}
+
+export function pctClassName(value: number | null): string {
+  if (value === null || value === 0) return "text-muted-foreground"
+  if (value > 0) return "text-emerald-600 dark:text-emerald-400"
+  return "text-red-600 dark:text-red-400"
+}
+
+function formatPrice(value: number | null): string {
+  return formatArs(value)
 }
 
 function formatPctChange(value: number | null): string {
-  if (value === null) return "—"
-  const formatted = new Intl.NumberFormat("es-AR", {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-    signDisplay: "exceptZero",
-  }).format(value)
-  return `${formatted}%`
+  return formatPct(value)
 }
 
 const COLUMNS = [
