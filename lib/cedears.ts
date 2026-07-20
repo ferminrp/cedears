@@ -6,6 +6,7 @@ export type Cedear = {
   TickerOriginal: string
   price: number | null
   pctChange: number | null
+  volume: number | null
   usPrice: number | null
   priceMep: number | null
   priceCcl: number | null

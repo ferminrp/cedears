@@ -12,6 +12,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
+      url: `${siteUrl}/dolar-mep`,
+      lastModified: new Date(),
+      changeFrequency: 'hourly',
+      priority: 0.9,
+    },
+    {
+      url: `${siteUrl}/dolar-cable`,
+      lastModified: new Date(),
+      changeFrequency: 'hourly',
+      priority: 0.9,
+    },
+    {
       url: `${siteUrl}/earnings`,
       lastModified: new Date(),
       changeFrequency: 'daily',

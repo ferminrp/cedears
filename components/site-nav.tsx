@@ -3,6 +3,8 @@ import { cn } from "@/lib/utils"
 
 const links = [
   { href: "/", label: "Listado" },
+  { href: "/dolar-mep", label: "Dólar MEP" },
+  { href: "/dolar-cable", label: "Dólar cable" },
   { href: "/earnings", label: "Earnings" },
 ] as const
 

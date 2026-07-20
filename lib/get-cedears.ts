@@ -13,6 +13,7 @@ type LiveQuote = {
   symbol: string
   c: number
   pct_change: number
+  q_op: number
 }
 
 const DATA_URL =
@@ -51,10 +52,13 @@ function parseLiveQuote(value: unknown): LiveQuote | null {
   if (typeof value.pct_change !== "number" || !Number.isFinite(value.pct_change)) {
     return null
   }
+  const qOp =
+    typeof value.q_op === "number" && Number.isFinite(value.q_op) ? value.q_op : 0
   return {
     symbol: value.symbol,
     c: value.c,
     pct_change: value.pct_change,
+    q_op: qOp,
   }
 }
 
@@ -94,6 +98,7 @@ function withEmptyQuotes(cedears: CedearBase[]): Cedear[] {
     ...c,
     price: null,
     pctChange: null,
+    volume: null,
     usPrice: null,
     priceMep: null,
     priceCcl: null,
@@ -113,6 +118,7 @@ function mergeQuotes(
       ...c,
       price: argQuote?.c ?? null,
       pctChange: argQuote?.pct_change ?? null,
+      volume: argQuote?.q_op ?? null,
       usPrice: quotePrice(usaQuotes, c.TickerOriginal),
       priceMep: quotePrice(argQuotes, `${ticker}D`),
       priceCcl: quotePrice(argQuotes, `${ticker}C`),
