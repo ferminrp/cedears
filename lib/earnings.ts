@@ -38,35 +38,39 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value)
 }
 
-function parseEarningsEvent(value: unknown): EarningsEvent | null {
+type ParsedEarningsEvent = Omit<EarningsEvent, "earningsDate">
+
+function parseEarningsEvent(value: unknown): ParsedEarningsEvent | null {
   if (!isRecord(value) || typeof value.symbol !== "string") {
     return null
   }
 
-  const earningsDate =
-    typeof value.earningsDate === "string" ? value.earningsDate : null
-  if (!earningsDate) return null
-
   return {
     symbol: value.symbol,
-    earningsDate,
     earningsTime:
       typeof value.earningsTime === "string" ? value.earningsTime : null,
     isDateConfirmed: value.isDateConfirmed === true,
   }
 }
 
-function formatDate(date: Date): string {
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, "0")
-  const day = String(date.getDate()).padStart(2, "0")
-  return `${year}-${month}-${day}`
+const ET_TIMEZONE = "America/New_York"
+
+function formatDateInEastern(date: Date): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: ET_TIMEZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(date)
 }
 
-function addMonths(date: Date, months: number): Date {
-  const result = new Date(date)
-  result.setMonth(result.getMonth() + months)
-  return result
+function addMonthsToDateString(date: string, months: number): string {
+  const [year, month, day] = date.split("-").map(Number)
+  const result = new Date(year, month - 1 + months, day)
+  const resultYear = result.getFullYear()
+  const resultMonth = String(result.getMonth() + 1).padStart(2, "0")
+  const resultDay = String(result.getDate()).padStart(2, "0")
+  return `${resultYear}-${resultMonth}-${resultDay}`
 }
 
 function compareEarningsTime(a: string | null, b: string | null): number {
@@ -144,6 +148,7 @@ function mergeEarningsWithCedears(
 ): EarningsDay[] {
   const cedearMap = buildCedearMap(cedears)
   const days = new Map<string, CedearEarnings[]>()
+  const seenByDay = new Map<string, Set<string>>()
 
   for (const [symbol, events] of calendar) {
     const matchingCedears = cedearMap.get(symbol)
@@ -151,8 +156,12 @@ function mergeEarningsWithCedears(
 
     for (const event of events) {
       const dayItems = days.get(event.earningsDate) ?? []
+      const daySeen = seenByDay.get(event.earningsDate) ?? new Set()
 
       for (const cedear of matchingCedears) {
+        if (daySeen.has(cedear.Cedears)) continue
+        daySeen.add(cedear.Cedears)
+
         dayItems.push({
           cedear: cedear.Cedears,
           name: cedear.Name,
@@ -163,6 +172,7 @@ function mergeEarningsWithCedears(
         })
       }
 
+      seenByDay.set(event.earningsDate, daySeen)
       days.set(event.earningsDate, dayItems)
     }
   }
@@ -180,9 +190,8 @@ function mergeEarningsWithCedears(
 }
 
 export async function getEarningsTimeline(): Promise<EarningsTimeline> {
-  const today = new Date()
-  const start = formatDate(today)
-  const end = formatDate(addMonths(today, 3))
+  const start = formatDateInEastern(new Date())
+  const end = addMonthsToDateString(start, 3)
 
   const [calendar, cedears] = await Promise.all([
     fetchEarningsCalendar(start, end),
