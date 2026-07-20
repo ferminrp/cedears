@@ -22,20 +22,9 @@ const dateFormatter = new Intl.DateTimeFormat("es-AR", {
   year: "numeric",
 })
 
-const rangeFormatter = new Intl.DateTimeFormat("es-AR", {
-  day: "numeric",
-  month: "long",
-  year: "numeric",
-})
-
 function formatDateLabel(date: string): string {
   const [year, month, day] = date.split("-").map(Number)
   return dateFormatter.format(new Date(year, month - 1, day))
-}
-
-function formatRangeDate(date: string): string {
-  const [year, month, day] = date.split("-").map(Number)
-  return rangeFormatter.format(new Date(year, month - 1, day))
 }
 
 function formatEarningsTime(time: string | null): string | null {
@@ -84,40 +73,17 @@ export function EarningsTimelineView({ timeline }: { timeline: EarningsTimeline 
       .filter((day) => day.items.length > 0)
   }, [query, timeline.days])
 
-  const visibleCedears = useMemo(
-    () =>
-      new Set(filteredDays.flatMap((day) => day.items.map((item) => item.cedear)))
-        .size,
-    [filteredDays],
-  )
-
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        {!(query.trim() && filteredDays.length === 0) ? (
-          <p className="text-sm text-muted-foreground">
-            {visibleCedears} CEDEAR{visibleCedears === 1 ? "" : "s"} con earnings entre{" "}
-            <span className="text-foreground">
-              {formatRangeDate(timeline.dateRange.start)}
-            </span>{" "}
-            y{" "}
-            <span className="text-foreground">
-              {formatRangeDate(timeline.dateRange.end)}
-            </span>
-            .
-          </p>
-        ) : null}
-
-        <div className="relative w-full sm:max-w-xs">
-          <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Buscar por ticker o empresa..."
-            className="pl-9"
-            aria-label="Buscar earnings"
-          />
-        </div>
+      <div className="relative w-full sm:max-w-xs">
+        <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder="Buscar por ticker o empresa..."
+          className="pl-9"
+          aria-label="Buscar earnings"
+        />
       </div>
 
       {filteredDays.length === 0 ? (
