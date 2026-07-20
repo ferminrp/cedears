@@ -131,7 +131,7 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
             placeholder="Buscar por ticker o nombre..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="pl-9"
+            className="bg-white pl-9 dark:bg-white"
             aria-label="Buscar CEDEARs"
           />
         </div>
