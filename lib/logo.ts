@@ -1,0 +1,11 @@
+const LOGO_DEV_TOKEN = "pk_aOjcq-uNRdm3AWE9VR3rIA"
+
+export function logoUrl(ticker: string): string {
+  const encoded = encodeURIComponent(ticker.trim().toUpperCase())
+  const params = new URLSearchParams({
+    token: LOGO_DEV_TOKEN,
+    format: "webp",
+    retina: "true",
+  })
+  return `https://img.logo.dev/ticker/${encoded}?${params.toString()}`
+}
