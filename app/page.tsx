@@ -45,7 +45,7 @@ function HomeJsonLd({ cedearCount }: { cedearCount: number }) {
         '@id': `${siteUrl}/#dataset`,
         name: 'Listado de CEDEARs en Argentina',
         description:
-          'Base de datos gratuita y actualizada de CEDEARs con ticker, empresa, mercado de origen y ratio de conversión, lista para exportar y compartir con agentes de IA.',
+          'Base de datos gratuita y actualizada de CEDEARs con ticker, empresa, mercado de origen, ratio de conversión, precio y variación diaria, lista para exportar y compartir con agentes de IA.',
         inLanguage: 'es-AR',
         isAccessibleForFree: true,
         keywords: siteConfig.keywords.join(', '),
