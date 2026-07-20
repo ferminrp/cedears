@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { getCedears } from '@/lib/cedears'
+import { getCedears } from '@/lib/get-cedears'
 import { CedearsList } from '@/components/cedears-list'
 import { SiteNav } from '@/components/site-nav'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'

@@ -6,6 +6,7 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  serverExternalPackages: ["yahoo-finance2"],
 }
 
 export default nextConfig

@@ -1,4 +1,4 @@
-import { type CedearBase, getCedearBases } from "@/lib/cedears"
+import { type CedearBase, getCedearBases } from "@/lib/get-cedears"
 
 const EARNINGS_API_URL =
   "https://api.savvytrader.com/pricing/assets/earnings/calendar/daily"
