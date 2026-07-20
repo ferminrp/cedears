@@ -192,6 +192,14 @@ export function premiumPct(
   return ((quotedUsd - fairUsd) / fairUsd) * 100
 }
 
+export function implicitFxRate(
+  arsPrice: number | null,
+  usdPrice: number | null,
+): number | null {
+  if (arsPrice === null || usdPrice === null || usdPrice === 0) return null
+  return arsPrice / usdPrice
+}
+
 function formatPrice(value: number | null): string {
   if (value === null) return "—"
   return new Intl.NumberFormat("es-AR", {
