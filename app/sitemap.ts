@@ -4,7 +4,12 @@ import { getSiteUrl } from "@/lib/site"
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = getSiteUrl()
-  const bases = await getCedearBases()
+  let bases: Awaited<ReturnType<typeof getCedearBases>> = []
+  try {
+    bases = await getCedearBases()
+  } catch {
+    // Keep static routes when the remote list is unavailable.
+  }
   const now = new Date()
 
   return [

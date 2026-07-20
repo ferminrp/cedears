@@ -5,6 +5,7 @@ import { CedearDetailView } from "@/components/cedear-detail-view"
 import { CedearFaqs } from "@/components/cedear-faqs"
 import { CedearPriceChart } from "@/components/cedear-price-chart"
 import { SiteNav } from "@/components/site-nav"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { buildCedearFaqs } from "@/lib/cedear-faqs"
 import { formatArs } from "@/lib/cedears"
 import { getCedearBases, getCedearByTicker } from "@/lib/get-cedears"
@@ -25,7 +26,15 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { ticker } = await params
-  const cedear = await getCedearByTicker(ticker)
+  let cedear: Awaited<ReturnType<typeof getCedearByTicker>>
+  try {
+    cedear = await getCedearByTicker(ticker)
+  } catch {
+    return {
+      title: "Error al cargar los datos",
+      robots: { index: false, follow: false },
+    }
+  }
 
   if (!cedear) {
     return {
@@ -117,7 +126,25 @@ function CedearJsonLd({
 
 export default async function CedearPage({ params }: PageProps) {
   const { ticker } = await params
-  const cedear = await getCedearByTicker(ticker)
+  let cedear: Awaited<ReturnType<typeof getCedearByTicker>>
+  try {
+    cedear = await getCedearByTicker(ticker)
+  } catch {
+    return (
+      <main className="mx-auto flex min-h-svh w-full max-w-3xl flex-col gap-8 px-4 py-10 md:py-16">
+        <header className="flex flex-col gap-4">
+          <SiteNav currentPath="/" />
+        </header>
+        <Alert variant="destructive">
+          <AlertTitle>Error al cargar los datos</AlertTitle>
+          <AlertDescription>
+            No se pudo obtener la información del CEDEAR. Intentá recargar la página en
+            unos minutos.
+          </AlertDescription>
+        </Alert>
+      </main>
+    )
+  }
 
   if (!cedear) {
     notFound()
