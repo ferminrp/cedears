@@ -26,10 +26,6 @@ export default async function Page() {
         <h1 className="text-balance text-3xl font-semibold tracking-tight md:text-4xl">
           CEDEARs disponibles en Argentina
         </h1>
-        <p className="max-w-2xl text-pretty leading-relaxed text-muted-foreground">
-          Listado de Certificados de Depósito Argentinos con su empresa, mercado de
-          origen y ratio de conversión. Buscá por ticker o nombre y filtrá por mercado.
-        </p>
       </header>
 
       {content}
