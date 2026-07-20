@@ -179,7 +179,7 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
         <div className="overflow-hidden rounded-lg border">
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="bg-muted hover:bg-muted">
                 <TableHead className="w-28">Ticker</TableHead>
                 <TableHead>Empresa</TableHead>
                 <TableHead>Mercado</TableHead>
