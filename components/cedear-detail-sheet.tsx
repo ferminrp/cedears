@@ -26,7 +26,7 @@ const usdFormatter = new Intl.NumberFormat("es-AR", {
   style: "currency",
   currency: "USD",
   minimumFractionDigits: 2,
-  maximumFractionDigits: 4,
+  maximumFractionDigits: 2,
 })
 
 const pctFormatter = new Intl.NumberFormat("es-AR", {
