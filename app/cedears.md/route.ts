@@ -1,4 +1,5 @@
-import { getCedears, toMarkdown } from '@/lib/cedears'
+import { toMarkdown } from '@/lib/cedears'
+import { getCedears } from '@/lib/get-cedears'
 
 export const revalidate = 60
 

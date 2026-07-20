@@ -1,4 +1,5 @@
-import { getCedears, toCsv } from '@/lib/cedears'
+import { toCsv } from '@/lib/cedears'
+import { getCedears } from '@/lib/get-cedears'
 
 export const revalidate = 60
 
