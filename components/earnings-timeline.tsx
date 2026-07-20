@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react"
 import { CalendarIcon, SearchIcon } from "lucide-react"
 import type { EarningsDay, EarningsTimeline } from "@/lib/earnings"
-import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import {
   Empty,
@@ -12,6 +11,8 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
+
+const LOGO_DEV_TOKEN = "pk_aOjcq-uNRdm3AWE9VR3rIA"
 
 const dateFormatter = new Intl.DateTimeFormat("es-AR", {
   weekday: "short",
@@ -41,6 +42,16 @@ function formatEarningsTime(time: string | null): string | null {
   const [hours, minutes] = time.split(":")
   if (!hours || !minutes) return null
   return `${hours}:${minutes} ET`
+}
+
+function logoUrl(ticker: string): string {
+  const encoded = encodeURIComponent(ticker.trim().toUpperCase())
+  const params = new URLSearchParams({
+    token: LOGO_DEV_TOKEN,
+    format: "webp",
+    retina: "true",
+  })
+  return `https://img.logo.dev/ticker/${encoded}?${params.toString()}`
 }
 
 function matchesQuery(
@@ -132,28 +143,34 @@ export function EarningsTimelineView({ timeline }: { timeline: EarningsTimeline 
                   {formatDateLabel(day.date)}
                 </h2>
 
-                <ul className="flex flex-col gap-2">
+                <ul className="flex flex-col gap-3">
                   {day.items.map((item) => {
                     const timeLabel = formatEarningsTime(item.earningsTime)
 
                     return (
                       <li
                         key={`${day.date}-${item.cedear}`}
-                        className="rounded-lg border bg-card px-4 py-3"
+                        className="flex items-center gap-3"
                       >
-                        <div className="flex flex-wrap items-center gap-2">
-                          <Badge variant="secondary">{item.cedear}</Badge>
-                          <span className="font-medium">{item.name}</span>
-                          {!item.isDateConfirmed && (
-                            <Badge variant="outline">Fecha estimada</Badge>
-                          )}
-                        </div>
-
-                        <p className="mt-1 text-sm text-muted-foreground">
-                          {item.tickerOriginal}
-                          {timeLabel ? ` · ${timeLabel}` : ""}
-                          {item.market ? ` · ${item.market}` : ""}
-                        </p>
+                        <img
+                          src={logoUrl(item.tickerOriginal)}
+                          alt=""
+                          width={32}
+                          height={32}
+                          className="size-8 shrink-0 rounded-md bg-muted object-contain"
+                          loading="lazy"
+                        />
+                        <span className="w-14 shrink-0 font-medium tabular-nums">
+                          {item.cedear}
+                        </span>
+                        <span className="min-w-0 flex-1 truncate text-sm">
+                          {item.name}
+                        </span>
+                        {timeLabel ? (
+                          <span className="shrink-0 text-sm text-muted-foreground tabular-nums">
+                            {timeLabel}
+                          </span>
+                        ) : null}
                       </li>
                     )
                   })}
