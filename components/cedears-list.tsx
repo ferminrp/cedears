@@ -73,7 +73,7 @@ function pctChangeClassName(value: number | null): string {
   return "text-red-600 dark:text-red-400"
 }
 
-const numericCellClassName = "text-right font-pixel-square tabular-nums"
+const numericCellClassName = "text-right font-mono tabular-nums"
 const empresaCellClassName = "max-w-52 text-muted-foreground"
 
 export function CedearsList({ cedears }: { cedears: Cedear[] }) {
