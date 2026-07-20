@@ -3,6 +3,7 @@
 import {
   type Cedear,
   fairUsdPrice,
+  implicitFxRate,
   premiumPct,
 } from "@/lib/cedears"
 import { useMediaQuery } from "@/hooks/use-media-query"
@@ -95,6 +96,13 @@ export function CedearDetailSheet({
   const fairUsd = cedear ? fairUsdPrice(cedear) : null
   const premMep = cedear ? premiumPct(cedear.priceMep, fairUsd) : null
   const premCcl = cedear ? premiumPct(cedear.priceCcl, fairUsd) : null
+  const mepImplicit = cedear
+    ? implicitFxRate(cedear.price, cedear.priceMep)
+    : null
+  const cclImplicit = cedear
+    ? implicitFxRate(cedear.price, cedear.priceCcl)
+    : null
+
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -171,6 +179,10 @@ export function CedearDetailSheet({
                   value={formatPct(premMep)}
                   valueClassName={pctClassName(premMep)}
                 />
+                <DetailRow
+                  label="Cotización MEP implícita"
+                  value={formatArs(mepImplicit)}
+                />
               </section>
 
               <section aria-labelledby="ccl-heading" className="mt-4">
@@ -188,6 +200,10 @@ export function CedearDetailSheet({
                   label="vs teórico"
                   value={formatPct(premCcl)}
                   valueClassName={pctClassName(premCcl)}
+                />
+                <DetailRow
+                  label="Cotización Cable implícita"
+                  value={formatArs(cclImplicit)}
                 />
               </section>
             </div>
