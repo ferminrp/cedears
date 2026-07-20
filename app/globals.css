@@ -2,7 +2,16 @@
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark {
+  &:where(.dark, .dark *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:not(:is(.light *)) {
+      @slot;
+    }
+  }
+}
 
 @theme inline {
   --color-sidebar-ring: var(--sidebar-ring);
