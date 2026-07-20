@@ -311,10 +311,6 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
         </div>
       </div>
 
-      <p className="text-sm text-muted-foreground">
-        {filtered.length} de {cedears.length} CEDEARs
-      </p>
-
       {filtered.length === 0 ? (
         <Empty className="rounded-lg border">
           <EmptyHeader>
