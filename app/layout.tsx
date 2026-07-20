@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { GoogleAnalytics } from "@/components/google-analytics";
 import { Toaster } from "@/components/ui/sonner";
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
@@ -49,7 +50,12 @@ export default function RootLayout({
       <body className="antialiased">
         {children}
         <Toaster />
-        {process.env.NODE_ENV === 'production' && <Analytics />}
+        {process.env.NODE_ENV === 'production' && (
+          <>
+            <Analytics />
+            <GoogleAnalytics />
+          </>
+        )}
       </body>
     </html>
   )
