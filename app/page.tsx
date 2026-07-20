@@ -1,4 +1,3 @@
-import { TrendingUpIcon } from "lucide-react"
 import { getCedears } from "@/lib/cedears"
 import { CedearsList } from "@/components/cedears-list"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -24,12 +23,6 @@ export default async function Page() {
   return (
     <main className="mx-auto flex min-h-svh w-full max-w-5xl flex-col gap-8 px-4 py-10 md:py-16">
       <header className="flex flex-col gap-3">
-        <div className="flex items-center gap-2 text-primary">
-          <TrendingUpIcon className="size-6" />
-          <span className="text-sm font-medium uppercase tracking-wide">
-            Mercado argentino
-          </span>
-        </div>
         <h1 className="text-balance text-3xl font-semibold tracking-tight md:text-4xl">
           CEDEARs disponibles en Argentina
         </h1>
