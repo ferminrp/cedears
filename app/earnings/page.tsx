@@ -68,16 +68,9 @@ export default async function EarningsPage() {
     <main className="mx-auto flex min-h-svh w-full max-w-5xl flex-col gap-8 px-4 py-10 md:py-16">
       <header className="flex flex-col gap-4">
         <SiteNav currentPath="/earnings" />
-        <div className="flex flex-col gap-2">
-          <h1 className="text-balance text-3xl font-semibold tracking-tight md:text-4xl">
-            {title}
-          </h1>
-          <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground md:text-base">
-            Fechas de resultados trimestrales de empresas con CEDEAR en Argentina.
-            Solo se muestran días en los que al menos un CEDEAR tiene earnings
-            programado.
-          </p>
-        </div>
+        <h1 className="text-balance text-3xl font-semibold tracking-tight md:text-4xl">
+          {title}
+        </h1>
       </header>
 
       {content}
