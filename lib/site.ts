@@ -17,6 +17,8 @@ export const siteConfig = {
     'agentes de ia',
     'chatgpt inversiones',
     'datos cedears gratis',
+    'earnings cedears',
+    'calendario earnings',
   ],
 } as const
 

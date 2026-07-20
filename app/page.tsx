@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { getCedears } from '@/lib/cedears'
 import { CedearsList } from '@/components/cedears-list'
+import { SiteNav } from '@/components/site-nav'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { getSiteUrl, siteConfig } from '@/lib/site'
 
@@ -114,6 +115,7 @@ export default async function Page() {
       {dataLoaded && <HomeJsonLd cedearCount={cedearCount} />}
       <main className="mx-auto flex min-h-svh w-full max-w-5xl flex-col gap-8 px-4 py-10 md:py-16">
         <header className="flex flex-col gap-4">
+          <SiteNav currentPath="/" />
           <h1 className="text-balance text-3xl font-semibold tracking-tight md:text-4xl">
             {siteConfig.title}
           </h1>
