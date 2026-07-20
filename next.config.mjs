@@ -14,11 +14,27 @@ const withPWA = withPWAInit({
   cacheStartUrl: false,
   dynamicStartUrl: false,
   workboxOptions: {
-    runtimeCaching: runtimeCaching.map((rule) =>
-      LIVE_DATA_CACHE_NAMES.has(rule.options?.cacheName ?? '')
-        ? { ...rule, handler: 'NetworkOnly' }
-        : rule,
-    ),
+    runtimeCaching: [
+      ...runtimeCaching.map((rule) =>
+        LIVE_DATA_CACHE_NAMES.has(rule.options?.cacheName ?? '')
+          ? { ...rule, handler: 'NetworkOnly' }
+          : rule,
+      ),
+      {
+        urlPattern: ({ url }) => url.pathname.startsWith('/api/logo/'),
+        handler: 'CacheFirst',
+        options: {
+          cacheName: 'ticker-logos',
+          expiration: {
+            maxEntries: 500,
+            maxAgeSeconds: 60 * 60 * 24 * 365,
+          },
+          cacheableResponse: {
+            statuses: [0, 200],
+          },
+        },
+      },
+    ],
   },
 })
 
