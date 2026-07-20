@@ -1,7 +1,7 @@
 import { type Cedear } from "@/lib/cedears"
 import { yahooFinance } from "@/lib/yahoo-finance"
 
-type CedearBase = {
+export type CedearBase = {
   Cedears: string
   Name: string
   Market: string
@@ -180,7 +180,7 @@ async function fillMissingUsPrices(cedears: Cedear[]): Promise<Cedear[]> {
   })
 }
 
-export async function getCedears(): Promise<Cedear[]> {
+export async function getCedearBases(): Promise<CedearBase[]> {
   const res = await fetch(DATA_URL, {
     // Revalidate once a day: the list of available CEDEARs changes rarely.
     next: { revalidate: 86400 },
@@ -194,6 +194,12 @@ export async function getCedears(): Promise<Cedear[]> {
   if (!Array.isArray(data) || !data.every(isCedearBase)) {
     throw new Error("Lista de CEDEARs inválida")
   }
+
+  return data
+}
+
+export async function getCedears(): Promise<Cedear[]> {
+  const data = await getCedearBases()
 
   const [argResult, usaResult] = await Promise.allSettled([
     getLiveQuotes(LIVE_QUOTES_URL),
