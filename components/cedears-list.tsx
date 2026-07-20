@@ -316,19 +316,19 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
         </Empty>
       ) : (
         <div className="overflow-hidden rounded-lg border">
-          <Table className="table-fixed">
+          <Table className="min-w-[44rem]">
             <TableHeader>
               <TableRow className="bg-muted hover:bg-muted">
                 <TableHead className="w-10 px-1">
                   <span className="sr-only">Fijar</span>
                 </TableHead>
-                <TableHead className="w-28">Ticker</TableHead>
-                <TableHead className="w-52">Empresa</TableHead>
-                <TableHead>Mercado</TableHead>
-                <TableHead className="text-right">Precio</TableHead>
-                <TableHead className="text-right">Var. %</TableHead>
-                <TableHead className="text-right">Ratio</TableHead>
-                <TableHead className="text-right">Ticker original</TableHead>
+                <TableHead className="min-w-24">Ticker</TableHead>
+                <TableHead className="min-w-40">Empresa</TableHead>
+                <TableHead className="min-w-24">Mercado</TableHead>
+                <TableHead className="min-w-24 text-right">Precio</TableHead>
+                <TableHead className="min-w-20 text-right">Var. %</TableHead>
+                <TableHead className="min-w-16 text-right">Ratio</TableHead>
+                <TableHead className="min-w-28 text-right">Ticker original</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
