@@ -15,6 +15,7 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 import { type Cedear, toCsv, toMarkdown } from "@/lib/cedears"
+import { logoUrl } from "@/lib/logo"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -384,7 +385,17 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
                     </Button>
                   </TableCell>
                   <TableCell>
-                    <span className="font-mono font-medium">{c.Cedears}</span>
+                    <span className="flex items-center gap-1.5">
+                      <img
+                        src={logoUrl(c.TickerOriginal)}
+                        alt=""
+                        width={16}
+                        height={16}
+                        className="size-4 shrink-0 rounded-sm bg-muted object-contain"
+                        loading="lazy"
+                      />
+                      <span className="font-mono font-medium">{c.Cedears}</span>
+                    </span>
                   </TableCell>
                   <TableCell className={empresaCellClassName}>
                     <span className="block truncate" title={c.Name}>

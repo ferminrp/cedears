@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react"
 import { ArrowUpRight, CalendarIcon, SearchIcon } from "lucide-react"
 import type { EarningsDay, EarningsTimeline } from "@/lib/earnings"
+import { logoUrl } from "@/lib/logo"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import {
@@ -12,8 +13,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
-
-const LOGO_DEV_TOKEN = "pk_aOjcq-uNRdm3AWE9VR3rIA"
 
 const dateFormatter = new Intl.DateTimeFormat("es-AR", {
   weekday: "short",
@@ -32,16 +31,6 @@ function formatEarningsTime(time: string | null): string | null {
   const [hours, minutes] = time.split(":")
   if (!hours || !minutes) return null
   return `${hours}:${minutes} ET`
-}
-
-function logoUrl(ticker: string): string {
-  const encoded = encodeURIComponent(ticker.trim().toUpperCase())
-  const params = new URLSearchParams({
-    token: LOGO_DEV_TOKEN,
-    format: "webp",
-    retina: "true",
-  })
-  return `https://img.logo.dev/ticker/${encoded}?${params.toString()}`
 }
 
 function perplexityEarningsUrl(ticker: string): string {
