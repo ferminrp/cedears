@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { CalendarIcon, SearchIcon } from "lucide-react"
+import { ArrowUpRight, CalendarIcon, SearchIcon } from "lucide-react"
 import type { EarningsDay, EarningsTimeline } from "@/lib/earnings"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -22,20 +22,9 @@ const dateFormatter = new Intl.DateTimeFormat("es-AR", {
   year: "numeric",
 })
 
-const rangeFormatter = new Intl.DateTimeFormat("es-AR", {
-  day: "numeric",
-  month: "long",
-  year: "numeric",
-})
-
 function formatDateLabel(date: string): string {
   const [year, month, day] = date.split("-").map(Number)
   return dateFormatter.format(new Date(year, month - 1, day))
-}
-
-function formatRangeDate(date: string): string {
-  const [year, month, day] = date.split("-").map(Number)
-  return rangeFormatter.format(new Date(year, month - 1, day))
 }
 
 function formatEarningsTime(time: string | null): string | null {
@@ -53,6 +42,10 @@ function logoUrl(ticker: string): string {
     retina: "true",
   })
   return `https://img.logo.dev/ticker/${encoded}?${params.toString()}`
+}
+
+function perplexityEarningsUrl(ticker: string): string {
+  return `https://www.perplexity.ai/finance/${encodeURIComponent(ticker.trim().toUpperCase())}/earnings`
 }
 
 function matchesQuery(
@@ -84,40 +77,17 @@ export function EarningsTimelineView({ timeline }: { timeline: EarningsTimeline 
       .filter((day) => day.items.length > 0)
   }, [query, timeline.days])
 
-  const visibleCedears = useMemo(
-    () =>
-      new Set(filteredDays.flatMap((day) => day.items.map((item) => item.cedear)))
-        .size,
-    [filteredDays],
-  )
-
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        {!(query.trim() && filteredDays.length === 0) ? (
-          <p className="text-sm text-muted-foreground">
-            {visibleCedears} CEDEAR{visibleCedears === 1 ? "" : "s"} con earnings entre{" "}
-            <span className="text-foreground">
-              {formatRangeDate(timeline.dateRange.start)}
-            </span>{" "}
-            y{" "}
-            <span className="text-foreground">
-              {formatRangeDate(timeline.dateRange.end)}
-            </span>
-            .
-          </p>
-        ) : null}
-
-        <div className="relative w-full sm:max-w-xs">
-          <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Buscar por ticker o empresa..."
-            className="pl-9"
-            aria-label="Buscar earnings"
-          />
-        </div>
+      <div className="relative w-full sm:max-w-xs">
+        <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder="Buscar por ticker o empresa..."
+          className="pl-9"
+          aria-label="Buscar earnings"
+        />
       </div>
 
       {filteredDays.length === 0 ? (
@@ -151,32 +121,45 @@ export function EarningsTimelineView({ timeline }: { timeline: EarningsTimeline 
                     const timeLabel = formatEarningsTime(item.earningsTime)
 
                     return (
-                      <li
-                        key={`${day.date}-${item.cedear}`}
-                        className="flex items-center gap-3"
-                      >
-                        <img
-                          src={logoUrl(item.tickerOriginal)}
-                          alt=""
-                          width={32}
-                          height={32}
-                          className="size-8 shrink-0 rounded-md bg-muted object-contain"
-                          loading="lazy"
-                        />
-                        <span className="w-14 shrink-0 font-medium tabular-nums">
-                          {item.cedear}
-                        </span>
-                        <span className="min-w-0 flex-1 truncate text-sm">
-                          {item.name}
-                        </span>
-                        {!item.isDateConfirmed ? (
-                          <Badge variant="outline">Fecha estimada</Badge>
-                        ) : null}
-                        {timeLabel ? (
-                          <span className="shrink-0 text-sm text-muted-foreground tabular-nums">
-                            {timeLabel}
-                          </span>
-                        ) : null}
+                      <li key={`${day.date}-${item.cedear}`}>
+                        <a
+                          href={perplexityEarningsUrl(item.tickerOriginal)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-3 rounded-md px-2 py-1.5 -mx-2 transition-colors hover:bg-muted/50"
+                        >
+                          <img
+                            src={logoUrl(item.tickerOriginal)}
+                            alt=""
+                            width={32}
+                            height={32}
+                            className="size-8 shrink-0 rounded-md bg-muted object-contain"
+                            loading="lazy"
+                          />
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-sm font-medium">
+                              {item.name}
+                            </p>
+                            <p className="truncate text-sm font-normal text-muted-foreground tabular-nums">
+                              {item.cedear}
+                              {timeLabel ? (
+                                <>
+                                  <span aria-hidden className="mx-1">
+                                    ·
+                                  </span>
+                                  {timeLabel}
+                                </>
+                              ) : null}
+                            </p>
+                          </div>
+                          {!item.isDateConfirmed ? (
+                            <Badge variant="outline">Fecha estimada</Badge>
+                          ) : null}
+                          <ArrowUpRight
+                            aria-hidden
+                            className="size-4 shrink-0 text-muted-foreground"
+                          />
+                        </a>
                       </li>
                     )
                   })}
