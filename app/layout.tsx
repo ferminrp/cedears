@@ -48,6 +48,14 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/',
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: siteConfig.name,
+  },
+  formatDetection: {
+    telephone: false,
+  },
 }
 
 export const viewport: Viewport = {
