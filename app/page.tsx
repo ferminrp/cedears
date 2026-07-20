@@ -117,13 +117,6 @@ export default async function Page() {
           <h1 className="text-balance text-3xl font-semibold tracking-tight md:text-4xl">
             {siteConfig.title}
           </h1>
-          <p className="max-w-3xl text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
-            El listado más actualizado de Certificados de Depósito Argentinos
-            (CEDEARs) en Argentina: ticker, empresa, mercado de origen, ratio de
-            conversión, precio y variación diaria. Es gratuito, está listo para usar
-            y podés compartirlo con agentes de IA como ChatGPT, Claude o Gemini para
-            analizar inversiones en el mercado local.
-          </p>
           <ul className="grid gap-2 text-sm text-muted-foreground sm:grid-cols-3">
             <li>✓ Listado completo y actualizado</li>
             <li>✓ Exportá en Markdown o CSV</li>
