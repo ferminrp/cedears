@@ -133,7 +133,7 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
             placeholder="Buscar por ticker o nombre..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="bg-white pl-9 dark:bg-white"
+            className="pl-9"
             aria-label="Buscar CEDEARs"
           />
         </div>
@@ -193,7 +193,7 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
             </TableHeader>
             <TableBody>
               {filtered.map((c) => (
-                <TableRow key={c.Cedears} className="bg-white hover:bg-white dark:bg-white dark:hover:bg-white">
+                <TableRow key={c.Cedears}>
                   <TableCell>
                     <span className="font-mono font-medium">{c.Cedears}</span>
                   </TableCell>
