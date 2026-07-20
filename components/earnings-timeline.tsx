@@ -163,12 +163,14 @@ export function EarningsTimelineView({ timeline }: { timeline: EarningsTimeline 
                           className="size-8 shrink-0 rounded-md bg-muted object-contain"
                           loading="lazy"
                         />
-                        <span className="w-14 shrink-0 font-medium tabular-nums">
-                          {item.cedear}
-                        </span>
-                        <span className="min-w-0 flex-1 truncate text-sm">
-                          {item.name}
-                        </span>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-medium">
+                            {item.name}
+                          </p>
+                          <p className="truncate text-sm font-normal text-muted-foreground tabular-nums">
+                            {item.cedear}
+                          </p>
+                        </div>
                         {!item.isDateConfirmed ? (
                           <Badge variant="outline">Fecha estimada</Badge>
                         ) : null}
