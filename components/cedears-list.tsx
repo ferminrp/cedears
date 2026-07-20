@@ -489,7 +489,7 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
 
       <CedearDetailSheet
         cedear={selected}
-        open={selectedTicker !== null}
+        open={selected !== null}
         onOpenChange={(open) => {
           if (!open) setSelectedTicker(null)
         }}
