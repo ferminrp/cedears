@@ -117,11 +117,6 @@ export default async function Page() {
           <h1 className="text-balance text-3xl font-semibold tracking-tight md:text-4xl">
             {siteConfig.title}
           </h1>
-          <ul className="grid gap-2 text-sm text-muted-foreground sm:grid-cols-3">
-            <li>✓ Listado completo y actualizado</li>
-            <li>✓ Exportá en Markdown o CSV</li>
-            <li>✓ Gratis para inversores y agentes de IA</li>
-          </ul>
         </header>
 
         {content}
