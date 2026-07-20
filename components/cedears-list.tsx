@@ -132,19 +132,37 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
   const [market, setMarket] = useState(ALL_MARKETS)
   const [pctSort, setPctSort] = useState<PctSort>(DEFAULT_SORT)
   const [pinned, setPinned] = useState<string[]>([])
-  const pinnedHydrated = useRef(false)
+  const pinsHydratedRef = useRef(false)
+
+  const tickerFingerprint = useMemo(
+    () => cedears.map((c) => c.Cedears).sort().join("|"),
+    [cedears],
+  )
+
+  const validTickers = useMemo(() => {
+    if (!tickerFingerprint) return new Set<string>()
+    return new Set(tickerFingerprint.split("|"))
+  }, [tickerFingerprint])
+
+  const visiblePins = useMemo(
+    () => pinned.filter((ticker) => validTickers.has(ticker)),
+    [pinned, validTickers],
+  )
 
   useEffect(() => {
-    const stored = readPinnedTickers()
-    const validTickers = new Set(cedears.map((c) => c.Cedears))
-    setPinned(stored.filter((ticker) => validTickers.has(ticker)))
-  }, [cedears])
+    setPinned((current) => {
+      if (!pinsHydratedRef.current) {
+        pinsHydratedRef.current = true
+        return readPinnedTickers().filter((ticker) => validTickers.has(ticker))
+      }
+
+      const pruned = current.filter((ticker) => validTickers.has(ticker))
+      return pruned.length === current.length ? current : pruned
+    })
+  }, [validTickers])
 
   useEffect(() => {
-    if (!pinnedHydrated.current) {
-      pinnedHydrated.current = true
-      return
-    }
+    if (!pinsHydratedRef.current) return
     localStorage.setItem(PINNED_STORAGE_KEY, JSON.stringify(pinned))
   }, [pinned])
 
@@ -185,8 +203,8 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
       )
     }
 
-    return orderWithPins(items, pinned)
-  }, [filtered, pctSort, pinned])
+    return orderWithPins(items, visiblePins)
+  }, [filtered, pctSort, visiblePins])
 
   async function copyToClipboard(content: string, label: string) {
     try {
@@ -315,7 +333,7 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
             </TableHeader>
             <TableBody>
               {displayed.map((c) => {
-                const isPinned = pinned.includes(c.Cedears)
+                const isPinned = visiblePins.includes(c.Cedears)
 
                 return (
                 <TableRow
