@@ -64,8 +64,8 @@ function SortButton({
 }
 
 export function ImplicitDollarTable({ rows }: { rows: ImplicitDollarRow[] }) {
-  const [sortKey, setSortKey] = useState<SortKey>("implicitFx")
-  const [sortDir, setSortDir] = useState<SortDir>("asc")
+  const [sortKey, setSortKey] = useState<SortKey>("tradedValue")
+  const [sortDir, setSortDir] = useState<SortDir>("desc")
 
   function toggleSort(key: SortKey) {
     if (sortKey === key) {
@@ -73,7 +73,9 @@ export function ImplicitDollarTable({ rows }: { rows: ImplicitDollarRow[] }) {
       return
     }
     setSortKey(key)
-    setSortDir(key === "ticker" ? "asc" : "asc")
+    setSortDir(
+      key === "ticker" || key === "implicitFx" ? "asc" : "desc",
+    )
   }
 
   const sorted = [...rows].sort((a, b) => {
