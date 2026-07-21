@@ -63,11 +63,16 @@ export function categoriesIndexDescription(categoryCount: number): string {
   return `Explorá ${categoryCount} categorías de empresas con CEDEAR en Argentina. Accedé a precios, ratios y datos actualizados por sector.`
 }
 
-export function getCategoryIndex(cedears: { tags: string[] }[]): {
+const CATEGORY_PREVIEW_LOGO_LIMIT = 3
+
+export function getCategoryIndex(
+  cedears: { tags: string[]; TickerOriginal: string }[],
+): {
   tag: string
   slug: string
   count: number
   href: string
+  previewTickers: string[]
 }[] {
   const tags = getUniqueTags(cedears)
 
@@ -75,13 +80,19 @@ export function getCategoryIndex(cedears: { tags: string[] }[]): {
     .map(({ tag, slug }) => {
       const matchingTags = findTagsBySlug(tags, slug)
       const tagSet = new Set(matchingTags)
-      const count = cedears.filter((c) => c.tags.some((t) => tagSet.has(t))).length
+      const matchingCedears = cedears.filter((c) =>
+        c.tags.some((t) => tagSet.has(t)),
+      )
+      const previewTickers = [
+        ...new Set(matchingCedears.map((c) => c.TickerOriginal)),
+      ].slice(0, CATEGORY_PREVIEW_LOGO_LIMIT)
 
       return {
         tag,
         slug,
-        count,
+        count: matchingCedears.length,
         href: categoryPath(tag),
+        previewTickers,
       }
     })
     .sort((a, b) => a.tag.localeCompare(b.tag, "es"))
