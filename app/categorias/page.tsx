@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import { CategoryCompanyStack } from "@/components/category-company-stack"
 import { SiteNav } from "@/components/site-nav"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import {
@@ -35,10 +36,6 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-function formatCompanyCount(count: number): string {
-  return count === 1 ? "1 empresa" : `${count} empresas`
-}
-
 export default async function CategoriasPage() {
   const title = categoriesIndexTitle()
   let content
@@ -51,16 +48,17 @@ export default async function CategoriasPage() {
 
     content = (
       <ul className="divide-y border-t border-border/60">
-        {categories.map(({ tag, href, count }) => (
+        {categories.map(({ tag, href, count, previewTickers }) => (
           <li key={href}>
             <Link
               href={href}
               className="flex items-center justify-between gap-4 py-3 transition-colors hover:text-foreground"
             >
               <span className="font-medium">{tag}</span>
-              <span className="shrink-0 text-sm text-muted-foreground">
-                {formatCompanyCount(count)}
-              </span>
+              <CategoryCompanyStack
+                previewTickers={previewTickers}
+                totalCount={count}
+              />
             </Link>
           </li>
         ))}
