@@ -16,6 +16,7 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 import { type Cedear, toCsv, toMarkdown } from "@/lib/cedears"
+import { getUniqueTags } from "@/lib/cedear-tags"
 import { logoUrl } from "@/lib/logo"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -53,6 +54,7 @@ import {
 import { CedearDetailSheet } from "@/components/cedear-detail-sheet"
 
 const ALL_MARKETS = "all"
+const ALL_TAGS = "all"
 const DEFAULT_SORT = "default"
 const PCT_SORT_ASC = "pct-asc"
 const PCT_SORT_DESC = "pct-desc"
@@ -133,6 +135,7 @@ const empresaCellClassName = "max-w-52 text-muted-foreground"
 export function CedearsList({ cedears }: { cedears: Cedear[] }) {
   const [query, setQuery] = useState("")
   const [market, setMarket] = useState(ALL_MARKETS)
+  const [tag, setTag] = useState(ALL_TAGS)
   const [pctSort, setPctSort] = useState<PctSort>(DEFAULT_SORT)
   const [pinned, setPinned] = useState<string[]>([])
   const [selectedTicker, setSelectedTicker] = useState<string | null>(null)
@@ -195,18 +198,21 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
     return Array.from(set).sort((a, b) => a.localeCompare(b))
   }, [cedears])
 
+  const tags = useMemo(() => getUniqueTags(cedears), [cedears])
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
     return cedears.filter((c) => {
       const matchesMarket = market === ALL_MARKETS || c.Market === market
+      const matchesTag = tag === ALL_TAGS || c.tags.includes(tag)
       const matchesQuery =
         q === "" ||
         c.Cedears.toLowerCase().includes(q) ||
         c.Name.toLowerCase().includes(q) ||
         c.TickerOriginal.toLowerCase().includes(q)
-      return matchesMarket && matchesQuery
+      return matchesMarket && matchesTag && matchesQuery
     })
-  }, [cedears, query, market])
+  }, [cedears, query, market, tag])
 
   const displayed = useMemo(() => {
     let items = filtered
@@ -277,6 +283,26 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
                 {markets.map((m) => (
                   <SelectItem key={m} value={m}>
                     {m}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+
+          <Select value={tag} onValueChange={setTag}>
+            <SelectTrigger className="w-full bg-card dark:bg-card sm:w-52" aria-label="Filtrar por categoría">
+              <SelectValue placeholder="Categoría">
+                {(value: string) =>
+                  value === ALL_TAGS ? "Todas las categorías" : value
+                }
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value={ALL_TAGS}>Todas las categorías</SelectItem>
+                {tags.map((t) => (
+                  <SelectItem key={t} value={t}>
+                    {t}
                   </SelectItem>
                 ))}
               </SelectGroup>

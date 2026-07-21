@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next"
+import { categoryPath, getUniqueTagSlugs } from "@/lib/cedear-tags"
 import { getCedearBases } from "@/lib/get-cedears"
 import { getSiteUrl } from "@/lib/site"
 
@@ -37,6 +38,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "daily",
       priority: 0.8,
     },
+    ...getUniqueTagSlugs(bases).map(({ tag }) => ({
+      url: `${siteUrl}${categoryPath(tag)}`,
+      lastModified: now,
+      changeFrequency: "daily" as const,
+      priority: 0.8,
+    })),
     ...bases.map((cedear) => ({
       url: `${siteUrl}/cedear/${cedear.Cedears}`,
       lastModified: now,
