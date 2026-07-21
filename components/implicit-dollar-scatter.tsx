@@ -177,7 +177,8 @@ export function ImplicitDollarScatter({
         </text>
       </svg>
       <figcaption className="mt-2 text-xs text-muted-foreground">
-        Línea punteada: promedio sin outliers ({formatAxisFx(average)} ARS).
+        Puntos y línea punteada excluyen outliers (promedio: {formatAxisFx(average)}{" "}
+        ARS).
       </figcaption>
     </figure>
   )
