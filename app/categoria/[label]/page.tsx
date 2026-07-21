@@ -124,7 +124,6 @@ export default async function CategoryPage({ params }: PageProps) {
   const matchingTagSet = new Set(matchingTags)
   const title = categoryTitle(tag)
   const baseCount = countMatchingBases(bases, matchingTags)
-  const pagePath = categoryPath(tag)
 
   let content
 
@@ -151,7 +150,7 @@ export default async function CategoryPage({ params }: PageProps) {
       <CategoryJsonLd tag={tag} count={baseCount} />
       <main className="mx-auto flex min-h-svh w-full max-w-5xl flex-col gap-8 px-4 py-10 md:py-16">
         <header className="flex flex-col gap-4">
-          <SiteNav currentPath={pagePath} />
+          <SiteNav currentPath="/" />
           <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
             <ol className="flex flex-wrap items-center gap-1.5">
               <li>
