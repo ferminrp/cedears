@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
+import { CedearCompanyProfile } from "@/components/cedear-company-profile"
 import { CedearDetailView } from "@/components/cedear-detail-view"
 import { CedearFaqs } from "@/components/cedear-faqs"
 import { CedearPriceChart } from "@/components/cedear-price-chart"
@@ -9,6 +10,7 @@ import { buildCedearFaqs } from "@/lib/cedear-faqs"
 import { formatArs } from "@/lib/cedears"
 import { getCedearBases, getCedearByTicker } from "@/lib/get-cedears"
 import { getCedearHistorical } from "@/lib/historical"
+import { getUnderlyingProfile } from "@/lib/underlying-profile"
 import { logoUrl } from "@/lib/logo"
 import { getSiteUrl } from "@/lib/site"
 
@@ -123,9 +125,10 @@ export default async function CedearPage({ params }: PageProps) {
     notFound()
   }
 
-  const [history, faqs] = await Promise.all([
+  const [history, faqs, profile] = await Promise.all([
     getCedearHistorical(cedear.Cedears),
     Promise.resolve(buildCedearFaqs(cedear)),
+    getUnderlyingProfile(cedear.TickerOriginal),
   ])
 
   return (
@@ -176,6 +179,20 @@ export default async function CedearPage({ params }: PageProps) {
           </h2>
           <CedearDetailView cedear={cedear} />
         </section>
+
+        {profile ? (
+          <section
+            aria-labelledby="empresa-heading"
+            className="rounded-lg border bg-card p-6"
+          >
+            <h2 id="empresa-heading" className="text-xl font-semibold tracking-tight">
+              Empresa subyacente
+            </h2>
+            <div className="mt-4">
+              <CedearCompanyProfile profile={profile} showHeading={false} />
+            </div>
+          </section>
+        ) : null}
 
         <section
           aria-labelledby="historico-heading"

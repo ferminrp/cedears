@@ -2,6 +2,7 @@
 
 import type { Cedear } from "@/lib/cedears"
 import { useMediaQuery } from "@/hooks/use-media-query"
+import { CedearCompanyProfileLoader } from "@/components/cedear-company-profile"
 import { CedearDetailView } from "@/components/cedear-detail-view"
 import {
   Sheet,
@@ -44,6 +45,12 @@ export function CedearDetailSheet({
 
             <div className="px-4 pb-6">
               <CedearDetailView cedear={cedear} />
+              <div className="mt-6 border-t border-border/60 pt-6">
+                <CedearCompanyProfileLoader
+                  tickerOriginal={cedear.TickerOriginal}
+                  compact
+                />
+              </div>
               <Link
                 href={`/cedear/${cedear.Cedears}`}
                 className="mt-6 inline-flex text-sm font-medium text-foreground underline underline-offset-4"
