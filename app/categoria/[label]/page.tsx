@@ -9,8 +9,9 @@ import {
   categoryPath,
   categoryTitle,
   findTagBySlug,
+  findTagsBySlug,
   getUniqueTags,
-  slugifyTag,
+  getUniqueTagSlugs,
 } from "@/lib/cedear-tags"
 import { getCedearBases, getCedears } from "@/lib/get-cedears"
 import { getSiteUrl, buildPageOpenGraph } from "@/lib/site"
@@ -21,10 +22,17 @@ type PageProps = {
   params: Promise<{ label: string }>
 }
 
+function countMatchingBases(
+  bases: Awaited<ReturnType<typeof getCedearBases>>,
+  matchingTags: string[],
+) {
+  const tagSet = new Set(matchingTags)
+  return bases.filter((c) => c.tags.some((t) => tagSet.has(t))).length
+}
+
 export async function generateStaticParams() {
   const bases = await getCedearBases()
-  const tags = getUniqueTags(bases)
-  return tags.map((tag) => ({ label: slugifyTag(tag) }))
+  return getUniqueTagSlugs(bases).map(({ slug }) => ({ label: slug }))
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -40,7 +48,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
   }
 
-  const count = bases.filter((c) => c.tags.includes(tag)).length
+  const matchingTags = findTagsBySlug(tags, label)
+  const count = countMatchingBases(bases, matchingTags)
   const title = categoryTitle(tag)
   const description = categoryDescription(tag, count)
   const canonical = categoryPath(tag)
@@ -111,14 +120,19 @@ export default async function CategoryPage({ params }: PageProps) {
     notFound()
   }
 
+  const matchingTags = findTagsBySlug(tags, label)
+  const matchingTagSet = new Set(matchingTags)
   const title = categoryTitle(tag)
-  const baseCount = bases.filter((c) => c.tags.includes(tag)).length
+  const baseCount = countMatchingBases(bases, matchingTags)
+  const pagePath = categoryPath(tag)
 
   let content
 
   try {
     const cedears = await getCedears()
-    const filtered = cedears.filter((c) => c.tags.includes(tag))
+    const filtered = cedears.filter((c) =>
+      c.tags.some((t) => matchingTagSet.has(t)),
+    )
     content = <CedearsList cedears={filtered} />
   } catch {
     content = (
@@ -137,7 +151,7 @@ export default async function CategoryPage({ params }: PageProps) {
       <CategoryJsonLd tag={tag} count={baseCount} />
       <main className="mx-auto flex min-h-svh w-full max-w-5xl flex-col gap-8 px-4 py-10 md:py-16">
         <header className="flex flex-col gap-4">
-          <SiteNav currentPath="/" />
+          <SiteNav currentPath={pagePath} />
           <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
             <ol className="flex flex-wrap items-center gap-1.5">
               <li>
