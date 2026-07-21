@@ -38,6 +38,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "daily",
       priority: 0.8,
     },
+    {
+      url: `${siteUrl}/portfolio`,
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.8,
+    },
     ...getUniqueTagSlugs(bases).map(({ tag }) => ({
       url: `${siteUrl}${categoryPath(tag)}`,
       lastModified: now,
