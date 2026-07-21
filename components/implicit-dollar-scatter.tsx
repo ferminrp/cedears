@@ -3,8 +3,10 @@
 import { useMemo } from "react"
 import type { ImplicitDollarRow } from "@/lib/implicit-dollar"
 
-const PADDING = { top: 16, right: 16, bottom: 36, left: 80 }
+const PADDING = { top: 16, right: 16, bottom: 48, left: 80 }
 const Y_AXIS_TITLE_X = 12
+const X_TICK_OFFSET = 14
+const X_TITLE_OFFSET = 34
 const AXIS_PADDING_RATIO = 0.08
 
 function paddedDomain(min: number, max: number, ratio = AXIS_PADDING_RATIO) {
@@ -114,6 +116,9 @@ export function ImplicitDollarScatter({
       plotHeight
 
   const avgX = toPlotX(average)
+  const axisY = PADDING.top + plotHeight
+  const xTickY = axisY + X_TICK_OFFSET
+  const xTitleY = axisY + X_TITLE_OFFSET
   const yTicks = [chart.minY, chart.midY, chart.maxY]
   const xTicks = [chart.minX, (chart.minX + chart.maxX) / 2, chart.maxX]
 
@@ -127,16 +132,16 @@ export function ImplicitDollarScatter({
       >
         <line
           x1={PADDING.left}
-          y1={PADDING.top + plotHeight}
+          y1={axisY}
           x2={PADDING.left + plotWidth}
-          y2={PADDING.top + plotHeight}
+          y2={axisY}
           className="stroke-border"
         />
         <line
           x1={PADDING.left}
           y1={PADDING.top}
           x2={PADDING.left}
-          y2={PADDING.top + plotHeight}
+          y2={axisY}
           className="stroke-border"
         />
 
@@ -170,7 +175,7 @@ export function ImplicitDollarScatter({
             <text
               key={`x-${tick}`}
               x={x}
-              y={height - 8}
+              y={xTickY}
               textAnchor="middle"
               className="fill-muted-foreground text-[10px]"
             >
@@ -183,7 +188,7 @@ export function ImplicitDollarScatter({
           x1={avgX}
           y1={PADDING.top}
           x2={avgX}
-          y2={PADDING.top + plotHeight}
+          y2={axisY}
           className="stroke-foreground/50"
           strokeDasharray="4 4"
         />
@@ -204,7 +209,7 @@ export function ImplicitDollarScatter({
 
         <text
           x={width / 2}
-          y={height - 0}
+          y={xTitleY}
           textAnchor="middle"
           className="fill-muted-foreground text-[10px]"
         >
