@@ -1,8 +1,10 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { ArrowDownIcon, ArrowUpDownIcon, ArrowUpIcon } from "lucide-react"
 import type { ImplicitDollarRow } from "@/lib/implicit-dollar"
+import { logoUrl } from "@/lib/logo"
 import {
   Table,
   TableBody,
@@ -22,6 +24,9 @@ const arsFormatter = new Intl.NumberFormat("es-AR", {
 const compactFormatter = new Intl.NumberFormat("es-AR", {
   maximumFractionDigits: 0,
 })
+
+const numericCellClassName = "text-right font-mono tabular-nums"
+const empresaCellClassName = "max-w-52 text-muted-foreground"
 
 type SortKey = "implicitFx" | "tradedValue" | "ticker" | "volume"
 type SortDir = "asc" | "desc"
@@ -64,8 +69,8 @@ function SortButton({
 }
 
 export function ImplicitDollarTable({ rows }: { rows: ImplicitDollarRow[] }) {
-  const [sortKey, setSortKey] = useState<SortKey>("implicitFx")
-  const [sortDir, setSortDir] = useState<SortDir>("asc")
+  const [sortKey, setSortKey] = useState<SortKey>("tradedValue")
+  const [sortDir, setSortDir] = useState<SortDir>("desc")
 
   function toggleSort(key: SortKey) {
     if (sortKey === key) {
@@ -73,7 +78,9 @@ export function ImplicitDollarTable({ rows }: { rows: ImplicitDollarRow[] }) {
       return
     }
     setSortKey(key)
-    setSortDir(key === "ticker" ? "asc" : "asc")
+    setSortDir(
+      key === "ticker" || key === "implicitFx" ? "asc" : "desc",
+    )
   }
 
   const sorted = [...rows].sort((a, b) => {
@@ -91,11 +98,11 @@ export function ImplicitDollarTable({ rows }: { rows: ImplicitDollarRow[] }) {
   })
 
   return (
-    <div className="overflow-x-auto rounded-lg border">
-      <Table>
+    <div className="overflow-hidden rounded-lg border">
+      <Table className="min-w-[44rem]">
         <TableHeader>
-          <TableRow>
-            <TableHead>
+          <TableRow className="bg-muted hover:bg-muted">
+            <TableHead className="min-w-24">
               <SortButton
                 label="Ticker"
                 active={sortKey === "ticker"}
@@ -103,8 +110,8 @@ export function ImplicitDollarTable({ rows }: { rows: ImplicitDollarRow[] }) {
                 onClick={() => toggleSort("ticker")}
               />
             </TableHead>
-            <TableHead className="hidden sm:table-cell">Empresa</TableHead>
-            <TableHead className="text-right">
+            <TableHead className="hidden min-w-40 sm:table-cell">Empresa</TableHead>
+            <TableHead className="min-w-28 text-right">
               <SortButton
                 label="Dólar implícito"
                 active={sortKey === "implicitFx"}
@@ -112,7 +119,7 @@ export function ImplicitDollarTable({ rows }: { rows: ImplicitDollarRow[] }) {
                 onClick={() => toggleSort("implicitFx")}
               />
             </TableHead>
-            <TableHead className="hidden text-right md:table-cell">
+            <TableHead className="hidden min-w-24 text-right md:table-cell">
               <SortButton
                 label="Volumen"
                 active={sortKey === "volume"}
@@ -120,7 +127,7 @@ export function ImplicitDollarTable({ rows }: { rows: ImplicitDollarRow[] }) {
                 onClick={() => toggleSort("volume")}
               />
             </TableHead>
-            <TableHead className="text-right">
+            <TableHead className="min-w-28 text-right">
               <SortButton
                 label="Vol. × precio"
                 active={sortKey === "tradedValue"}
@@ -132,18 +139,37 @@ export function ImplicitDollarTable({ rows }: { rows: ImplicitDollarRow[] }) {
         </TableHeader>
         <TableBody>
           {sorted.map((row) => (
-            <TableRow key={row.cedear.Cedears}>
-              <TableCell className="font-mono text-sm">{row.cedear.Cedears}</TableCell>
-              <TableCell className="hidden max-w-[12rem] truncate sm:table-cell">
-                {row.cedear.Name}
+            <TableRow key={row.cedear.Cedears} className="bg-card hover:bg-muted/50">
+              <TableCell>
+                <span className="flex items-center gap-1.5">
+                  <img
+                    src={logoUrl(row.cedear.TickerOriginal)}
+                    alt=""
+                    width={16}
+                    height={16}
+                    className="size-4 shrink-0 rounded-sm bg-muted object-contain"
+                    loading="lazy"
+                  />
+                  <Link
+                    href={`/cedear/${row.cedear.Cedears}`}
+                    className="font-mono font-medium underline-offset-4 hover:underline"
+                  >
+                    {row.cedear.Cedears}
+                  </Link>
+                </span>
               </TableCell>
-              <TableCell className="text-right font-mono text-sm tabular-nums">
+              <TableCell className={`hidden sm:table-cell ${empresaCellClassName}`}>
+                <span className="block truncate" title={row.cedear.Name}>
+                  {row.cedear.Name}
+                </span>
+              </TableCell>
+              <TableCell className={numericCellClassName}>
                 {formatArs(row.implicitFx)}
               </TableCell>
-              <TableCell className="hidden text-right font-mono text-sm tabular-nums md:table-cell">
+              <TableCell className={`hidden md:table-cell ${numericCellClassName}`}>
                 {row.cedear.volume !== null ? formatCompact(row.cedear.volume) : "—"}
               </TableCell>
-              <TableCell className="text-right font-mono text-sm tabular-nums">
+              <TableCell className={numericCellClassName}>
                 {formatArs(row.tradedValue)}
               </TableCell>
             </TableRow>

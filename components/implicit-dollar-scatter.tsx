@@ -3,18 +3,37 @@
 import { useMemo } from "react"
 import type { ImplicitDollarRow } from "@/lib/implicit-dollar"
 
-const PADDING = { top: 16, right: 16, bottom: 36, left: 56 }
+const PADDING = { top: 16, right: 16, bottom: 36, left: 80 }
+const Y_AXIS_TITLE_X = 12
+
+const arsAxisCompactFormatter = new Intl.NumberFormat("es-AR", {
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 1,
+})
+
+const arsAxisFormatter = new Intl.NumberFormat("es-AR", {
+  style: "currency",
+  currency: "ARS",
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+})
+
+const fxAxisFormatter = new Intl.NumberFormat("es-AR", {
+  style: "currency",
+  currency: "ARS",
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+})
 
 function formatAxisArs(value: number): string {
-  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`
-  if (value >= 1_000) return `${(value / 1_000).toFixed(0)}k`
-  return value.toFixed(0)
+  if (Math.abs(value) >= 1_000_000) {
+    return `$ ${arsAxisCompactFormatter.format(value / 1_000_000)} M`
+  }
+  return arsAxisFormatter.format(value)
 }
 
 function formatAxisFx(value: number): string {
-  return new Intl.NumberFormat("es-AR", {
-    maximumFractionDigits: 0,
-  }).format(value)
+  return fxAxisFormatter.format(value)
 }
 
 export function ImplicitDollarScatter({
@@ -153,7 +172,7 @@ export function ImplicitDollarScatter({
             className="fill-foreground/70"
           >
             <title>
-              {point.id}: ${formatAxisFx(point.x)} · ${formatAxisArs(point.y)}
+              {point.id}: {formatAxisFx(point.x)} · {formatAxisArs(point.y)}
             </title>
           </circle>
         ))}
@@ -167,17 +186,17 @@ export function ImplicitDollarScatter({
           Dólar implícito (ARS)
         </text>
         <text
-          x={14}
+          x={Y_AXIS_TITLE_X}
           y={height / 2}
           textAnchor="middle"
-          transform={`rotate(-90 14 ${height / 2})`}
+          transform={`rotate(-90 ${Y_AXIS_TITLE_X} ${height / 2})`}
           className="fill-muted-foreground text-[10px]"
         >
           Volumen × precio
         </text>
       </svg>
       <figcaption className="mt-2 text-xs text-muted-foreground">
-        Línea punteada: promedio sin outliers ({formatAxisFx(average)} ARS).
+        Puntos y línea punteada excluyen outliers (promedio: {formatAxisFx(average)}).
       </figcaption>
     </figure>
   )

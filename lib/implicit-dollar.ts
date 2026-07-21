@@ -40,8 +40,24 @@ export function getImplicitDollarRows(
   return rows.sort((a, b) => a.implicitFx - b.implicitFx)
 }
 
+function getOutlierBounds(values: number[]): { lower: number; upper: number } | null {
+  if (values.length < 4) return null
+
+  const sorted = [...values].sort((a, b) => a - b)
+  const q1 = percentile(sorted, 0.25)
+  const q3 = percentile(sorted, 0.75)
+  const iqr = q3 - q1
+  return { lower: q1 - 1.5 * iqr, upper: q3 + 1.5 * iqr }
+}
+
 export function getScatterRows(rows: ImplicitDollarRow[]): ImplicitDollarRow[] {
-  return rows.filter((row) => row.tradedValue > 0)
+  const withVolume = rows.filter((row) => row.tradedValue > 0)
+  const bounds = getOutlierBounds(rows.map((row) => row.implicitFx))
+  if (!bounds) return withVolume
+
+  return withVolume.filter(
+    (row) => row.implicitFx >= bounds.lower && row.implicitFx <= bounds.upper,
+  )
 }
 
 function percentile(sorted: number[], p: number): number {
@@ -58,18 +74,12 @@ export function removeOutliers(values: number[]): {
   filtered: number[]
   outlierCount: number
 } {
-  if (values.length < 4) {
-    return { filtered: values, outlierCount: 0 }
-  }
+  const bounds = getOutlierBounds(values)
+  if (!bounds) return { filtered: values, outlierCount: 0 }
 
-  const sorted = [...values].sort((a, b) => a - b)
-  const q1 = percentile(sorted, 0.25)
-  const q3 = percentile(sorted, 0.75)
-  const iqr = q3 - q1
-  const lower = q1 - 1.5 * iqr
-  const upper = q3 + 1.5 * iqr
-
-  const filtered = values.filter((v) => v >= lower && v <= upper)
+  const filtered = values.filter(
+    (v) => v >= bounds.lower && v <= bounds.upper,
+  )
   return {
     filtered,
     outlierCount: values.length - filtered.length,
