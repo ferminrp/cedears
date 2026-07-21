@@ -50,6 +50,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "daily",
       priority: 0.85,
     },
+    {
+      url: `${siteUrl}/herramientas`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    {
+      url: `${siteUrl}/herramientas/rebalanceo`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.75,
+    },
+    {
+      url: `${siteUrl}/herramientas/dca`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.75,
+    },
 
     ...getUniqueTagSlugs(bases).map(({ tag }) => ({
       url: `${siteUrl}${categoryPath(tag)}`,
