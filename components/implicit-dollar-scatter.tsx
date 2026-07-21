@@ -3,7 +3,8 @@
 import { useMemo } from "react"
 import type { ImplicitDollarRow } from "@/lib/implicit-dollar"
 
-const PADDING = { top: 16, right: 16, bottom: 36, left: 56 }
+const PADDING = { top: 16, right: 16, bottom: 36, left: 72 }
+const Y_AXIS_TITLE_X = 12
 
 function formatAxisArs(value: number): string {
   if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`
@@ -167,10 +168,10 @@ export function ImplicitDollarScatter({
           Dólar implícito (ARS)
         </text>
         <text
-          x={14}
+          x={Y_AXIS_TITLE_X}
           y={height / 2}
           textAnchor="middle"
-          transform={`rotate(-90 14 ${height / 2})`}
+          transform={`rotate(-90 ${Y_AXIS_TITLE_X} ${height / 2})`}
           className="fill-muted-foreground text-[10px]"
         >
           Volumen × precio
