@@ -1,5 +1,6 @@
 export const siteConfig = {
   name: 'CEDEARs Argentina',
+  githubRepo: 'https://github.com/ferminrp/cedears',
   title: 'Listado completo de CEDEARs en Argentina',
   description:
     'Listado completo y actualizado de CEDEARs (Certificados de Depósito Argentinos) en Argentina. Ticker, empresa, mercado, ratio, precio y variación diaria. Gratis, listo para usar y compartir con agentes de IA.',

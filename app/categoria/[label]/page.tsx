@@ -3,6 +3,7 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { CedearsList } from "@/components/cedears-list"
 import { SiteNav } from "@/components/site-nav"
+import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import {
   categoryDescription,
@@ -179,8 +180,8 @@ export default async function CategoryPage({ params }: PageProps) {
 
         {content}
 
-        <footer className="mt-auto border-t pt-6 text-sm text-muted-foreground">
-          <Link href="/" className="font-medium text-foreground underline underline-offset-4">
+        <SiteFooter>
+          <Link href="/" className={footerLinkClassName}>
             Volver al listado completo
           </Link>
           {" · "}
@@ -189,12 +190,12 @@ export default async function CategoryPage({ params }: PageProps) {
             href="https://data912.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-medium text-foreground underline underline-offset-4"
+            className={footerLinkClassName}
           >
             data912
           </a>
           .
-        </footer>
+        </SiteFooter>
       </main>
     </>
   )

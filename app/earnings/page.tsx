@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { EarningsTimelineView } from "@/components/earnings-timeline"
 import { SiteNav } from "@/components/site-nav"
+import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import {
   Empty,
@@ -72,13 +73,13 @@ export default async function EarningsPage() {
 
       {content}
 
-      <footer className="mt-auto border-t pt-6 text-sm text-muted-foreground">
+      <SiteFooter>
         Calendario de earnings de{" "}
         <a
           href="https://earningshub.com"
           target="_blank"
           rel="noopener noreferrer"
-          className="font-medium text-foreground underline underline-offset-4"
+          className={footerLinkClassName}
         >
           EarningsHub
         </a>{" "}
@@ -87,12 +88,12 @@ export default async function EarningsPage() {
           href="https://github.com/ferminrp/google-sheets-argento"
           target="_blank"
           rel="noopener noreferrer"
-          className="font-medium text-foreground underline underline-offset-4"
+          className={footerLinkClassName}
         >
           google-sheets-argento
         </a>
         .
-      </footer>
+      </SiteFooter>
     </main>
   )
 }
