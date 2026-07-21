@@ -150,12 +150,18 @@ export default async function CategoryPage({ params }: PageProps) {
       <CategoryJsonLd tag={tag} count={baseCount} />
       <main className="mx-auto flex min-h-svh w-full max-w-5xl flex-col gap-8 px-4 py-10 md:py-16">
         <header className="flex flex-col gap-4">
-          <SiteNav currentPath="/" />
+          <SiteNav currentPath="/categorias" />
           <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
             <ol className="flex flex-wrap items-center gap-1.5">
               <li>
                 <Link href="/" className="hover:text-foreground">
                   Listado
+                </Link>
+              </li>
+              <li aria-hidden>/</li>
+              <li>
+                <Link href="/categorias" className="hover:text-foreground">
+                  Categorías
                 </Link>
               </li>
               <li aria-hidden>/</li>
