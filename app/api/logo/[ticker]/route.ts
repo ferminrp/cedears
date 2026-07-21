@@ -2,8 +2,16 @@ import { logoDevUpstreamUrl } from "@/lib/logo"
 
 export const revalidate = 2592000
 
+function logoDevReferer(request: Request): string {
+  const fromRequest = request.headers.get("referer")
+  if (fromRequest) return fromRequest
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://cedears.com"
+  return `${siteUrl.replace(/\/$/, "")}/`
+}
+
 export async function GET(
-  _request: Request,
+  request: Request,
   context: { params: Promise<{ ticker: string }> },
 ) {
   const { ticker } = await context.params
@@ -14,6 +22,9 @@ export async function GET(
   }
 
   const upstream = await fetch(logoDevUpstreamUrl(decodedTicker), {
+    headers: {
+      Referer: logoDevReferer(request),
+    },
     next: { revalidate: 2592000 },
   })
 
