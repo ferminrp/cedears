@@ -18,7 +18,7 @@ type LiveQuote = {
 }
 
 const DATA_URL =
-  "https://raw.githubusercontent.com/ferminrp/google-sheets-argento/refs/heads/main/data/cedears.json"
+  "https://raw.githubusercontent.com/ferminrp/google-sheets-argento/refs/heads/main/data/cedears.json?v=2"
 
 const LIVE_QUOTES_URL = "https://data912.com/live/arg_cedears"
 const USA_QUOTES_URL = "https://data912.com/live/usa_stocks"
@@ -203,10 +203,13 @@ async function fillMissingUsPrices(cedears: Cedear[]): Promise<Cedear[]> {
   })
 }
 
+export const CEDEAR_BASES_CACHE_TAG = "cedear-bases"
+
 export async function getCedearBases(): Promise<CedearBase[]> {
   const res = await fetch(DATA_URL, {
-    // Revalidate once a day: the list of available CEDEARs changes rarely.
-    next: { revalidate: 86400 },
+    // Revalidate once a day: the list (including tags) changes rarely.
+    // The cache tag lets us invalidate this fetch on deploy when the schema changes.
+    next: { revalidate: 86400, tags: [CEDEAR_BASES_CACHE_TAG] },
   })
 
   if (!res.ok) {
