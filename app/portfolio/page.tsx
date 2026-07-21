@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { PortfolioView } from "@/components/portfolio-view"
 import { SiteNav } from "@/components/site-nav"
+import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { getCedears } from "@/lib/get-cedears"
 import { summarizeImplicitDollar } from "@/lib/implicit-dollar"
@@ -61,13 +62,13 @@ export default async function PortfolioPage() {
 
       {content}
 
-      <footer className="mt-auto border-t pt-6 text-sm text-muted-foreground">
+      <SiteFooter>
         Precios en vivo de{" "}
         <a
           href="https://data912.com"
           target="_blank"
           rel="noopener noreferrer"
-          className="font-medium text-foreground underline underline-offset-4"
+          className={footerLinkClassName}
         >
           data912
         </a>
@@ -76,12 +77,12 @@ export default async function PortfolioPage() {
           href="https://github.com/ferminrp/google-sheets-argento"
           target="_blank"
           rel="noopener noreferrer"
-          className="font-medium text-foreground underline underline-offset-4"
+          className={footerLinkClassName}
         >
           google-sheets-argento
         </a>
         .
-      </footer>
+      </SiteFooter>
     </main>
   )
 }

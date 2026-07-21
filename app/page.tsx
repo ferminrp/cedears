@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { getCedears } from '@/lib/get-cedears'
 import { CedearsList } from '@/components/cedears-list'
 import { SiteNav } from '@/components/site-nav'
+import { SiteFooter, footerLinkClassName } from '@/components/site-footer'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { getSiteUrl, siteConfig, buildPageOpenGraph } from '@/lib/site'
 
@@ -139,13 +140,13 @@ export default async function Page() {
           </p>
         </section>
 
-        <footer className="mt-auto border-t pt-6 text-sm text-muted-foreground">
+        <SiteFooter>
           Listado provisto por{" "}
           <a
             href="https://github.com/ferminrp/google-sheets-argento"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-medium text-foreground underline underline-offset-4"
+            className={footerLinkClassName}
           >
             google-sheets-argento
           </a>
@@ -154,12 +155,12 @@ export default async function Page() {
             href="https://data912.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-medium text-foreground underline underline-offset-4"
+            className={footerLinkClassName}
           >
             data912
           </a>
           .
-        </footer>
+        </SiteFooter>
       </main>
     </>
   )

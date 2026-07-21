@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { CategoryCompanyStack } from "@/components/category-company-stack"
 import { SiteNav } from "@/components/site-nav"
+import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import {
   categoriesIndexDescription,
@@ -93,8 +94,8 @@ export default async function CategoriasPage() {
 
       {content}
 
-      <footer className="mt-auto border-t pt-6 text-sm text-muted-foreground">
-        <Link href="/" className="font-medium text-foreground underline underline-offset-4">
+      <SiteFooter>
+        <Link href="/" className={footerLinkClassName}>
           Volver al listado completo
         </Link>
         {" · "}
@@ -103,12 +104,12 @@ export default async function CategoriasPage() {
           href="https://data912.com"
           target="_blank"
           rel="noopener noreferrer"
-          className="font-medium text-foreground underline underline-offset-4"
+          className={footerLinkClassName}
         >
           data912
         </a>
         .
-      </footer>
+      </SiteFooter>
     </main>
   )
 }
