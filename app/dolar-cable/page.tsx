@@ -3,6 +3,7 @@ import { ImplicitDollarView } from "@/components/implicit-dollar-view"
 import { SiteNav } from "@/components/site-nav"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { getCedears } from "@/lib/get-cedears"
+import { summarizeImplicitDollar } from "@/lib/implicit-dollar"
 import { buildPageOpenGraph } from "@/lib/site"
 
 const title = "Dólar cable implícito en CEDEARs"
