@@ -11,6 +11,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet"
+import { logoUrl } from "@/lib/logo"
 import Link from "next/link"
 
 export function CedearDetailSheet({
@@ -30,20 +31,31 @@ export function CedearDetailSheet({
         side={isDesktop ? "right" : "bottom"}
         className={
           isDesktop
-            ? "w-full sm:max-w-md"
-            : "max-h-[85vh] overflow-y-auto rounded-t-xl"
+            ? "w-full gap-0 overflow-hidden sm:max-w-md"
+            : "max-h-[85vh] gap-0 overflow-hidden rounded-t-xl"
         }
       >
         {cedear ? (
           <>
-            <SheetHeader className="border-b">
-              <SheetTitle className="font-mono text-lg tracking-tight">
-                {cedear.Cedears}
-              </SheetTitle>
-              <SheetDescription>{cedear.Name}</SheetDescription>
+            <SheetHeader className="shrink-0 border-b pr-10">
+              <div className="flex items-start gap-3">
+                <img
+                  src={logoUrl(cedear.TickerOriginal)}
+                  alt=""
+                  width={40}
+                  height={40}
+                  className="size-10 shrink-0 rounded-md bg-muted object-contain"
+                />
+                <div className="min-w-0">
+                  <SheetTitle className="font-mono text-lg tracking-tight">
+                    {cedear.Cedears}
+                  </SheetTitle>
+                  <SheetDescription>{cedear.Name}</SheetDescription>
+                </div>
+              </div>
             </SheetHeader>
 
-            <div className="px-4 pb-6">
+            <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
               <CedearDetailView cedear={cedear} />
               <div className="mt-6 border-t border-border/60 pt-6">
                 <CedearCompanyProfileLoader
