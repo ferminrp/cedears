@@ -50,13 +50,32 @@ function getOutlierBounds(values: number[]): { lower: number; upper: number } | 
   return { lower: q1 - 1.5 * iqr, upper: q3 + 1.5 * iqr }
 }
 
+function filterRowsByBounds(
+  rows: ImplicitDollarRow[],
+  getValue: (row: ImplicitDollarRow) => number,
+  values: number[],
+): ImplicitDollarRow[] {
+  const bounds = getOutlierBounds(values)
+  if (!bounds) return rows
+
+  return rows.filter((row) => {
+    const value = getValue(row)
+    return value >= bounds.lower && value <= bounds.upper
+  })
+}
+
 export function getScatterRows(rows: ImplicitDollarRow[]): ImplicitDollarRow[] {
   const withVolume = rows.filter((row) => row.tradedValue > 0)
-  const bounds = getOutlierBounds(rows.map((row) => row.implicitFx))
-  if (!bounds) return withVolume
+  const afterFx = filterRowsByBounds(
+    withVolume,
+    (row) => row.implicitFx,
+    rows.map((row) => row.implicitFx),
+  )
 
-  return withVolume.filter(
-    (row) => row.implicitFx >= bounds.lower && row.implicitFx <= bounds.upper,
+  return filterRowsByBounds(
+    afterFx,
+    (row) => row.tradedValue,
+    withVolume.map((row) => row.tradedValue),
   )
 }
 
