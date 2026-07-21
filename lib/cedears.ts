@@ -4,6 +4,7 @@ export type Cedear = {
   Market: string
   Ratio: string
   TickerOriginal: string
+  tags: string[]
   price: number | null
   pctChange: number | null
   volume: number | null

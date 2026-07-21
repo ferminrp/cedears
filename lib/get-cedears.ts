@@ -7,6 +7,7 @@ export type CedearBase = {
   Market: string
   Ratio: string
   TickerOriginal: string
+  tags: string[]
 }
 
 type LiveQuote = {
@@ -31,15 +32,31 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value)
 }
 
-function isCedearBase(value: unknown): value is CedearBase {
-  return (
-    isRecord(value) &&
-    typeof value.Cedears === "string" &&
-    typeof value.Name === "string" &&
-    typeof value.Market === "string" &&
-    typeof value.Ratio === "string" &&
-    typeof value.TickerOriginal === "string"
-  )
+function parseTags(value: unknown): string[] {
+  if (!Array.isArray(value)) return []
+  return value.filter((tag): tag is string => typeof tag === "string")
+}
+
+function parseCedearBase(value: unknown): CedearBase | null {
+  if (
+    !isRecord(value) ||
+    typeof value.Cedears !== "string" ||
+    typeof value.Name !== "string" ||
+    typeof value.Market !== "string" ||
+    typeof value.Ratio !== "string" ||
+    typeof value.TickerOriginal !== "string"
+  ) {
+    return null
+  }
+
+  return {
+    Cedears: value.Cedears,
+    Name: value.Name,
+    Market: value.Market,
+    Ratio: value.Ratio,
+    TickerOriginal: value.TickerOriginal,
+    tags: parseTags(value.tags),
+  }
 }
 
 function parseLiveQuote(value: unknown): LiveQuote | null {
@@ -197,11 +214,16 @@ export async function getCedearBases(): Promise<CedearBase[]> {
   }
 
   const data: unknown = await res.json()
-  if (!Array.isArray(data) || !data.every(isCedearBase)) {
+  if (!Array.isArray(data)) {
     throw new Error("Lista de CEDEARs inválida")
   }
 
-  return data
+  const bases = data.map(parseCedearBase)
+  if (!bases.every((base): base is CedearBase => base !== null)) {
+    throw new Error("Lista de CEDEARs inválida")
+  }
+
+  return bases
 }
 
 function normalizeTicker(ticker: string): string {
