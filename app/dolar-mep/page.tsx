@@ -4,6 +4,7 @@ import { SiteNav } from "@/components/site-nav"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { getCedears } from "@/lib/get-cedears"
 import { summarizeImplicitDollar } from "@/lib/implicit-dollar"
+import { buildPageOpenGraph } from "@/lib/site"
 
 const title = "Dólar MEP implícito en CEDEARs"
 const description =
@@ -15,11 +16,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/dolar-mep",
   },
-  openGraph: {
-    title,
-    description,
-    url: "/dolar-mep",
-  },
+  openGraph: buildPageOpenGraph({ title, description, url: "/dolar-mep" }),
 }
 
 export default async function DolarMepPage() {

@@ -3,7 +3,7 @@ import { getCedears } from '@/lib/get-cedears'
 import { CedearsList } from '@/components/cedears-list'
 import { SiteNav } from '@/components/site-nav'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { getSiteUrl, siteConfig } from '@/lib/site'
+import { getSiteUrl, siteConfig, buildPageOpenGraph } from '@/lib/site'
 
 export const metadata: Metadata = {
   title: siteConfig.title,
@@ -11,11 +11,11 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/',
   },
-  openGraph: {
+  openGraph: buildPageOpenGraph({
     title: siteConfig.title,
     description: siteConfig.description,
     url: '/',
-  },
+  }),
 }
 
 function HomeJsonLd({ cedearCount }: { cedearCount: number }) {

@@ -4,6 +4,12 @@ export const siteConfig = {
   description:
     'Listado completo y actualizado de CEDEARs (Certificados de Depósito Argentinos) en Argentina. Ticker, empresa, mercado, ratio, precio y variación diaria. Gratis, listo para usar y compartir con agentes de IA.',
   locale: 'es_AR',
+  ogImage: {
+    url: '/og-image.webp',
+    width: 1200,
+    height: 630,
+    alt: 'Cedears.com — Todos los cedears en un solo lugar',
+  },
   keywords: [
     'cedears',
     'cedears argentina',
@@ -32,4 +38,21 @@ export function getSiteUrl() {
   }
 
   return 'http://localhost:3000'
+}
+
+export function buildPageOpenGraph({
+  title,
+  description,
+  url,
+}: {
+  title: string
+  description: string
+  url: string
+}) {
+  return {
+    title,
+    description,
+    url,
+    images: [siteConfig.ogImage],
+  }
 }

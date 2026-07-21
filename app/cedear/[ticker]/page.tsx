@@ -14,7 +14,7 @@ import { getCedearBases, getCedearByTicker } from "@/lib/get-cedears"
 import { getCedearHistorical } from "@/lib/historical"
 import { getUnderlyingProfile } from "@/lib/underlying-profile"
 import { logoUrl } from "@/lib/logo"
-import { getSiteUrl } from "@/lib/site"
+import { getSiteUrl, buildPageOpenGraph } from "@/lib/site"
 
 export const revalidate = 60
 
@@ -56,11 +56,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       "byma",
     ],
     alternates: { canonical },
-    openGraph: {
-      title,
-      description,
-      url: canonical,
-    },
+    openGraph: buildPageOpenGraph({ title, description, url: canonical }),
   }
 }
 

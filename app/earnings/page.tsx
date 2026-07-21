@@ -10,6 +10,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty"
 import { getEarningsTimeline } from "@/lib/earnings"
+import { buildPageOpenGraph } from "@/lib/site"
 import { CalendarIcon } from "lucide-react"
 
 const title = "Calendario de earnings de CEDEARs"
@@ -22,11 +23,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/earnings",
   },
-  openGraph: {
-    title,
-    description,
-    url: "/earnings",
-  },
+  openGraph: buildPageOpenGraph({ title, description, url: "/earnings" }),
 }
 
 export default async function EarningsPage() {
