@@ -1,7 +1,8 @@
 "use client"
 
-import { useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 import type { ImplicitDollarRow } from "@/lib/implicit-dollar"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const PADDING = { top: 16, right: 16, bottom: 48, left: 80 }
 const Y_AXIS_TITLE_X = 12
@@ -68,6 +69,12 @@ export function ImplicitDollarScatter({
   rows: ImplicitDollarRow[]
   average: number
 }) {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   const chart = useMemo(() => {
     if (rows.length === 0) return null
 
@@ -99,6 +106,17 @@ export function ImplicitDollarScatter({
       <p className="text-sm text-muted-foreground">
         No hay datos suficientes para el gráfico.
       </p>
+    )
+  }
+
+  if (!mounted) {
+    return (
+      <figure className="w-full">
+        <Skeleton
+          className="h-[280px] w-full rounded-md"
+          aria-label="Cargando gráfico de dispersión"
+        />
+      </figure>
     )
   }
 
