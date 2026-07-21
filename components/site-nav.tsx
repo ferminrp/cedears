@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils"
 
 const links = [
   { href: "/", label: "Listado" },
+  { href: "/portfolio", label: "Portfolio" },
   { href: "/categorias", label: "Categorías" },
   { href: "/dolar-mep", label: "Dólar MEP" },
   { href: "/dolar-cable", label: "Dólar cable" },
