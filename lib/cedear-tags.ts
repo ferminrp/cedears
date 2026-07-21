@@ -54,3 +54,35 @@ export function categoryTitle(tag: string): string {
 export function categoryDescription(tag: string, count: number): string {
   return `Consultá ${count} CEDEARs de ${tag} con precios, ratios y datos actualizados en Argentina.`
 }
+
+export function categoriesIndexTitle(): string {
+  return "Categorías de CEDEARs"
+}
+
+export function categoriesIndexDescription(categoryCount: number): string {
+  return `Explorá ${categoryCount} categorías de empresas con CEDEAR en Argentina. Accedé a precios, ratios y datos actualizados por sector.`
+}
+
+export function getCategoryIndex(cedears: { tags: string[] }[]): {
+  tag: string
+  slug: string
+  count: number
+  href: string
+}[] {
+  const tags = getUniqueTags(cedears)
+
+  return getUniqueTagSlugs(cedears)
+    .map(({ tag, slug }) => {
+      const matchingTags = findTagsBySlug(tags, slug)
+      const tagSet = new Set(matchingTags)
+      const count = cedears.filter((c) => c.tags.some((t) => tagSet.has(t))).length
+
+      return {
+        tag,
+        slug,
+        count,
+        href: categoryPath(tag),
+      }
+    })
+    .sort((a, b) => a.tag.localeCompare(b.tag, "es"))
+}
