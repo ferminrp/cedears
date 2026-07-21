@@ -9,9 +9,9 @@ export function CedearFaqs({ faqs }: { faqs: CedearFaq[] }) {
       >
         Preguntas frecuentes
       </h2>
-      <div className="divide-y rounded-lg border">
+      <div className="divide-y rounded-lg border bg-card">
         {faqs.map((faq) => (
-          <details key={faq.question} className="group px-4 py-1">
+          <details key={faq.question} className="group bg-card px-4 py-1">
             <summary className="cursor-pointer list-none py-3 text-sm font-medium marker:content-none [&::-webkit-details-marker]:hidden">
               <span className="flex items-start justify-between gap-3">
                 {faq.question}

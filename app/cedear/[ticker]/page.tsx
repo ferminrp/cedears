@@ -1,11 +1,13 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import { InfoIcon } from "lucide-react"
 import { notFound } from "next/navigation"
 import { CedearCompanyProfile } from "@/components/cedear-company-profile"
 import { CedearDetailView } from "@/components/cedear-detail-view"
 import { CedearFaqs } from "@/components/cedear-faqs"
 import { CedearPriceChart } from "@/components/cedear-price-chart"
 import { SiteNav } from "@/components/site-nav"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import { buildCedearFaqs } from "@/lib/cedear-faqs"
 import { formatArs } from "@/lib/cedears"
 import { getCedearBases, getCedearByTicker } from "@/lib/get-cedears"
@@ -134,7 +136,7 @@ export default async function CedearPage({ params }: PageProps) {
   return (
     <>
       <CedearJsonLd cedear={cedear} faqs={faqs} />
-      <main className="mx-auto flex min-h-svh w-full max-w-3xl flex-col gap-8 px-4 py-10 md:py-16">
+      <main className="mx-auto flex min-h-svh w-full max-w-5xl flex-col gap-8 px-4 py-10 md:py-16">
         <header className="flex flex-col gap-4">
           <SiteNav currentPath="/" />
           <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
@@ -161,24 +163,17 @@ export default async function CedearPage({ params }: PageProps) {
                 CEDEAR {cedear.Cedears}
               </h1>
               <p className="mt-1 text-lg text-muted-foreground">{cedear.Name}</p>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                Sí, existe CEDEAR de {cedear.TickerOriginal} en Argentina. Operás
-                bajo el ticker {cedear.Cedears} en BYMA, con ratio {cedear.Ratio}:1
-                respecto a la acción en {cedear.Market}.
-              </p>
             </div>
           </div>
+          <Alert className="border-border/60 bg-muted/60">
+            <InfoIcon />
+            <AlertDescription className="text-foreground">
+              Sí, existe CEDEAR de {cedear.TickerOriginal} en Argentina. Operás
+              bajo el ticker {cedear.Cedears} en BYMA, con ratio {cedear.Ratio}:1
+              respecto a la acción en {cedear.Market}.
+            </AlertDescription>
+          </Alert>
         </header>
-
-        <section
-          aria-labelledby="cotizacion-heading"
-          className="rounded-lg border bg-card p-6"
-        >
-          <h2 id="cotizacion-heading" className="text-xl font-semibold tracking-tight">
-            Cotización y datos
-          </h2>
-          <CedearDetailView cedear={cedear} />
-        </section>
 
         {profile ? (
           <section
@@ -202,6 +197,16 @@ export default async function CedearPage({ params }: PageProps) {
             Precio histórico
           </h2>
           <CedearPriceChart ticker={cedear.Cedears} history={history} />
+        </section>
+
+        <section
+          aria-labelledby="cotizacion-heading"
+          className="rounded-lg border bg-card p-6"
+        >
+          <h2 id="cotizacion-heading" className="text-xl font-semibold tracking-tight">
+            Cotización y datos
+          </h2>
+          <CedearDetailView cedear={cedear} />
         </section>
 
         <CedearFaqs faqs={faqs} />

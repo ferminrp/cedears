@@ -55,7 +55,7 @@ export function CedearDetailView({ cedear }: { cedear: Cedear }) {
       <section aria-labelledby="cedear-ars-heading" className="mt-4">
         <h3
           id="cedear-ars-heading"
-          className="text-xs font-medium tracking-wide text-muted-foreground uppercase"
+          className="text-xs font-semibold tracking-wide text-foreground uppercase"
         >
           CEDEAR (ARS)
         </h3>
@@ -70,7 +70,7 @@ export function CedearDetailView({ cedear }: { cedear: Cedear }) {
       <section aria-labelledby="underlying-heading" className="mt-4">
         <h3
           id="underlying-heading"
-          className="text-xs font-medium tracking-wide text-muted-foreground uppercase"
+          className="text-xs font-semibold tracking-wide text-foreground uppercase"
         >
           Subyacente (USD)
         </h3>
@@ -88,7 +88,7 @@ export function CedearDetailView({ cedear }: { cedear: Cedear }) {
       <section aria-labelledby="mep-heading" className="mt-4">
         <h3
           id="mep-heading"
-          className="text-xs font-medium tracking-wide text-muted-foreground uppercase"
+          className="text-xs font-semibold tracking-wide text-foreground uppercase"
         >
           Dólar MEP ({cedear.Cedears}D)
         </h3>
@@ -107,7 +107,7 @@ export function CedearDetailView({ cedear }: { cedear: Cedear }) {
       <section aria-labelledby="ccl-heading" className="mt-4">
         <h3
           id="ccl-heading"
-          className="text-xs font-medium tracking-wide text-muted-foreground uppercase"
+          className="text-xs font-semibold tracking-wide text-foreground uppercase"
         >
           Dólar cable ({cedear.Cedears}C)
         </h3>
