@@ -1,10 +1,36 @@
 "use client"
 
-import { useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 import type { ImplicitDollarRow } from "@/lib/implicit-dollar"
+import { Skeleton } from "@/components/ui/skeleton"
 
-const PADDING = { top: 16, right: 16, bottom: 36, left: 80 }
+const PADDING = { top: 16, right: 16, bottom: 48, left: 80 }
 const Y_AXIS_TITLE_X = 12
+const X_TICK_OFFSET = 14
+const X_TITLE_OFFSET = 34
+const AXIS_PADDING_RATIO = 0.08
+
+function paddedDomain(min: number, max: number, ratio = AXIS_PADDING_RATIO) {
+  const span = max - min || Math.abs(max) || 1
+  return { min: min - span * ratio, max: max + span * ratio, span: span * (1 + ratio * 2) }
+}
+
+function paddedLogDomain(min: number, max: number, ratio = AXIS_PADDING_RATIO) {
+  const safeMin = Math.max(min, 1)
+  const safeMax = Math.max(max, safeMin * 1.01)
+  const logMin = Math.log10(safeMin)
+  const logMax = Math.log10(safeMax)
+  const logSpan = logMax - logMin || 1
+  const pad = logSpan * ratio
+
+  return {
+    min: Math.pow(10, logMin - pad),
+    max: Math.pow(10, logMax + pad),
+    logMin: logMin - pad,
+    logMax: logMax + pad,
+    logSpan: logSpan + pad * 2,
+  }
+}
 
 const arsAxisCompactFormatter = new Intl.NumberFormat("es-AR", {
   minimumFractionDigits: 0,
@@ -43,25 +69,30 @@ export function ImplicitDollarScatter({
   rows: ImplicitDollarRow[]
   average: number
 }) {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   const chart = useMemo(() => {
     if (rows.length === 0) return null
 
     const xs = rows.map((row) => row.implicitFx)
     const ys = rows.map((row) => row.tradedValue)
-    const minX = Math.min(...xs)
-    const maxX = Math.max(...xs)
-    const minY = Math.min(...ys)
-    const maxY = Math.max(...ys)
-    const spanX = maxX - minX || 1
-    const spanY = maxY - minY || 1
+    const xDomain = paddedDomain(Math.min(...xs), Math.max(...xs))
+    const yDomain = paddedLogDomain(Math.min(...ys), Math.max(...ys))
+    const midY = Math.sqrt(yDomain.min * yDomain.max)
 
     return {
-      minX,
-      maxX,
-      minY,
-      maxY,
-      spanX,
-      spanY,
+      minX: xDomain.min,
+      maxX: xDomain.max,
+      spanX: xDomain.span,
+      minY: yDomain.min,
+      maxY: yDomain.max,
+      midY,
+      logMinY: yDomain.logMin,
+      logSpanY: yDomain.logSpan,
       points: rows.map((row) => ({
         id: row.cedear.Cedears,
         x: row.implicitFx,
@@ -78,6 +109,17 @@ export function ImplicitDollarScatter({
     )
   }
 
+  if (!mounted) {
+    return (
+      <figure className="w-full">
+        <Skeleton
+          className="h-[280px] w-full rounded-md"
+          aria-label="Cargando gráfico de dispersión"
+        />
+      </figure>
+    )
+  }
+
   const width = 640
   const height = 280
   const plotWidth = width - PADDING.left - PADDING.right
@@ -86,10 +128,16 @@ export function ImplicitDollarScatter({
   const toPlotX = (value: number) =>
     PADDING.left + ((value - chart.minX) / chart.spanX) * plotWidth
   const toPlotY = (value: number) =>
-    PADDING.top + plotHeight - ((value - chart.minY) / chart.spanY) * plotHeight
+    PADDING.top +
+    plotHeight -
+    ((Math.log10(Math.max(value, chart.minY)) - chart.logMinY) / chart.logSpanY) *
+      plotHeight
 
   const avgX = toPlotX(average)
-  const yTicks = [chart.minY, (chart.minY + chart.maxY) / 2, chart.maxY]
+  const axisY = PADDING.top + plotHeight
+  const xTickY = axisY + X_TICK_OFFSET
+  const xTitleY = axisY + X_TITLE_OFFSET
+  const yTicks = [chart.minY, chart.midY, chart.maxY]
   const xTicks = [chart.minX, (chart.minX + chart.maxX) / 2, chart.maxX]
 
   return (
@@ -102,16 +150,16 @@ export function ImplicitDollarScatter({
       >
         <line
           x1={PADDING.left}
-          y1={PADDING.top + plotHeight}
+          y1={axisY}
           x2={PADDING.left + plotWidth}
-          y2={PADDING.top + plotHeight}
+          y2={axisY}
           className="stroke-border"
         />
         <line
           x1={PADDING.left}
           y1={PADDING.top}
           x2={PADDING.left}
-          y2={PADDING.top + plotHeight}
+          y2={axisY}
           className="stroke-border"
         />
 
@@ -145,7 +193,7 @@ export function ImplicitDollarScatter({
             <text
               key={`x-${tick}`}
               x={x}
-              y={height - 8}
+              y={xTickY}
               textAnchor="middle"
               className="fill-muted-foreground text-[10px]"
             >
@@ -158,7 +206,7 @@ export function ImplicitDollarScatter({
           x1={avgX}
           y1={PADDING.top}
           x2={avgX}
-          y2={PADDING.top + plotHeight}
+          y2={axisY}
           className="stroke-foreground/50"
           strokeDasharray="4 4"
         />
@@ -179,7 +227,7 @@ export function ImplicitDollarScatter({
 
         <text
           x={width / 2}
-          y={height - 0}
+          y={xTitleY}
           textAnchor="middle"
           className="fill-muted-foreground text-[10px]"
         >
@@ -196,7 +244,8 @@ export function ImplicitDollarScatter({
         </text>
       </svg>
       <figcaption className="mt-2 text-xs text-muted-foreground">
-        Puntos y línea punteada excluyen outliers (promedio: {formatAxisFx(average)}).
+        Puntos y línea punteada excluyen outliers. Eje Y en escala logarítmica
+        (promedio: {formatAxisFx(average)}).
       </figcaption>
     </figure>
   )
