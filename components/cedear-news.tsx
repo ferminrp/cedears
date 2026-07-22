@@ -60,23 +60,38 @@ export function CedearNews({
         <>
           <div className="divide-y rounded-lg border bg-card">
             {items.map((item) => (
-              <article key={getItemKey(item)} className="space-y-1 px-4 py-3">
-                <a
-                  href={item.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm font-medium underline-offset-4 hover:text-foreground hover:underline"
-                >
-                  {item.headline}
-                </a>
-                <p className="text-xs text-muted-foreground">
-                  {item.source} · {formatNewsDate(item.datetime)}
-                </p>
-                {item.summary ? (
-                  <p className="text-sm leading-relaxed text-muted-foreground">
-                    {truncateSummary(item.summary)}
-                  </p>
-                ) : null}
+              <article key={getItemKey(item)} className="px-4 py-3">
+                <div className="flex gap-3">
+                  {item.image ? (
+                    <img
+                      src={item.image}
+                      alt=""
+                      width={80}
+                      height={56}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-14 w-20 shrink-0 rounded-md bg-muted object-cover"
+                    />
+                  ) : null}
+                  <div className="min-w-0 flex-1 space-y-1">
+                    <a
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm font-medium underline-offset-4 hover:text-foreground hover:underline"
+                    >
+                      {item.headline}
+                    </a>
+                    <p className="text-xs text-muted-foreground">
+                      {item.source} · {formatNewsDate(item.datetime)}
+                    </p>
+                    {item.summary ? (
+                      <p className="text-sm leading-relaxed text-muted-foreground">
+                        {truncateSummary(item.summary)}
+                      </p>
+                    ) : null}
+                  </div>
+                </div>
               </article>
             ))}
           </div>

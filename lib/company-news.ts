@@ -8,6 +8,7 @@ export type CompanyNewsItem = {
   source: string
   datetime: number
   url: string
+  image?: string
 }
 
 function normalizeSymbol(symbol: string): string {
@@ -44,6 +45,7 @@ function parseCompanyNewsItem(value: unknown): CompanyNewsItem | null {
   const source = value.source
   const datetime = value.datetime
   const url = value.url
+  const image = value.image
 
   if (
     typeof id !== "number" ||
@@ -68,6 +70,7 @@ function parseCompanyNewsItem(value: unknown): CompanyNewsItem | null {
     source,
     datetime,
     url,
+    ...(typeof image === "string" && image ? { image } : {}),
   }
 }
 
