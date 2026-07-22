@@ -190,25 +190,25 @@ export function PortfolioView({
     <div className="flex flex-col gap-4">
       <section className="flex flex-col gap-2">
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <div>
+          <div className="rounded-lg border bg-card p-4">
             <p className="text-sm text-muted-foreground">Títulos</p>
             <p className="font-mono text-lg font-semibold tabular-nums">
               {summary.titulos}
             </p>
           </div>
-          <div>
+          <div className="rounded-lg border bg-card p-4">
             <p className="text-sm text-muted-foreground">Valor (ARS)</p>
             <p className="font-mono text-lg font-semibold tabular-nums">
               {formatArs(summary.valorArs)}
             </p>
           </div>
-          <div>
+          <div className="rounded-lg border bg-card p-4">
             <p className="text-sm text-muted-foreground">Valor MEP (USD)</p>
             <p className="font-mono text-lg font-semibold tabular-nums">
               {formatUsd(summary.valorMep)}
             </p>
           </div>
-          <div>
+          <div className="rounded-lg border bg-card p-4">
             <p className="text-sm text-muted-foreground">Valor cable (USD)</p>
             <p className="font-mono text-lg font-semibold tabular-nums">
               {formatUsd(summary.valorCable)}
