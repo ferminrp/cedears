@@ -1,16 +1,18 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 
-import { RebalanceCalculator } from "@/components/rebalance-calculator"
+import { RebalanceLive } from "@/components/rebalance-live"
 import { SiteNav } from "@/components/site-nav"
 import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { getCedears } from "@/lib/get-cedears"
+import { getCedearBases } from "@/lib/get-cedears"
 import { buildPageOpenGraph } from "@/lib/site"
 
 const title = "Calculadora de rebalanceo de CEDEARs"
 const description =
   "Ingresá tus nominales de cada CEDEAR, visualizá la composición actual de tu cartera en un donut chart y calculá las operaciones de compra y venta para llegar a tu distribución objetivo."
+
+export const revalidate = 3600
 
 export const metadata: Metadata = {
   title,
@@ -29,8 +31,8 @@ export default async function RebalanceoPage() {
   let content
 
   try {
-    const cedears = await getCedears()
-    content = <RebalanceCalculator cedears={cedears} />
+    const bases = await getCedearBases()
+    content = <RebalanceLive bases={bases} />
   } catch {
     content = (
       <Alert variant="destructive">

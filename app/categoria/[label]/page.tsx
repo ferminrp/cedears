@@ -1,10 +1,9 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { CedearsList } from "@/components/cedears-list"
+import { CedearsWithQuotes } from "@/components/cedears-with-quotes"
 import { SiteNav } from "@/components/site-nav"
 import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import {
   categoryDescription,
   categoryPath,
@@ -14,10 +13,10 @@ import {
   getUniqueTags,
   getUniqueTagSlugs,
 } from "@/lib/cedear-tags"
-import { getCedearBases, getCedears } from "@/lib/get-cedears"
+import { getCedearBases } from "@/lib/get-cedears"
 import { getSiteUrl, buildPageOpenGraph } from "@/lib/site"
 
-export const revalidate = 60
+export const revalidate = 3600
 
 type PageProps = {
   params: Promise<{ label: string }>
@@ -126,25 +125,10 @@ export default async function CategoryPage({ params }: PageProps) {
   const title = categoryTitle(tag)
   const baseCount = countMatchingBases(bases, matchingTags)
 
-  let content
-
-  try {
-    const cedears = await getCedears()
-    const filtered = cedears.filter((c) =>
-      c.tags.some((t) => matchingTagSet.has(t)),
-    )
-    content = <CedearsList cedears={filtered} />
-  } catch {
-    content = (
-      <Alert variant="destructive">
-        <AlertTitle>Error al cargar los datos</AlertTitle>
-        <AlertDescription>
-          No se pudo obtener la lista de CEDEARs. Intentá recargar la página en unos
-          minutos.
-        </AlertDescription>
-      </Alert>
-    )
-  }
+  const filteredBases = bases.filter((c) =>
+    c.tags.some((t) => matchingTagSet.has(t)),
+  )
+  const content = <CedearsWithQuotes bases={filteredBases} />
 
   return (
     <>

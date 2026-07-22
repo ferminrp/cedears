@@ -1,15 +1,16 @@
 import type { Metadata } from "next"
-import { PortfolioView } from "@/components/portfolio-view"
+import { PortfolioLive } from "@/components/portfolio-live"
 import { SiteNav } from "@/components/site-nav"
 import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { getCedears } from "@/lib/get-cedears"
-import { summarizeImplicitDollar } from "@/lib/implicit-dollar"
+import { getCedearBases } from "@/lib/get-cedears"
 import { buildPageOpenGraph } from "@/lib/site"
 
 const title = "Portfolio de CEDEARs"
 const description =
   "Seguí tus nominales de CEDEARs y valuá tu portfolio en pesos, dólar MEP y dólar cable con el promedio implícito sin outliers."
+
+export const revalidate = 3600
 
 export const metadata: Metadata = {
   title,
@@ -24,21 +25,8 @@ export default async function PortfolioPage() {
   let content
 
   try {
-    const cedears = await getCedears()
-    const mep = summarizeImplicitDollar(cedears, "mep")
-    const cable = summarizeImplicitDollar(cedears, "cable")
-
-    content = (
-      <PortfolioView
-        cedears={cedears}
-        mepAverage={mep.average}
-        cableAverage={cable.average}
-        mepCount={mep.count}
-        mepOutlierCount={mep.outlierCount}
-        cableCount={cable.count}
-        cableOutlierCount={cable.outlierCount}
-      />
-    )
+    const bases = await getCedearBases()
+    content = <PortfolioLive bases={bases} />
   } catch {
     content = (
       <Alert variant="destructive">

@@ -1,29 +1,11 @@
-import {
-  type Cedear,
-  fairUsdPrice,
-  formatArs,
-  formatPct,
-  formatUsd,
-} from "@/lib/cedears"
+import type { CedearBase } from "@/lib/merge-cedear-quotes"
 
 export type CedearFaq = {
   question: string
   answer: string
 }
 
-export function buildCedearFaqs(cedear: Cedear): CedearFaq[] {
-  const fairUsd = fairUsdPrice(cedear)
-  const priceText =
-    cedear.price !== null ? formatArs(cedear.price) : "sin cotización disponible"
-  const usPriceText =
-    cedear.usPrice !== null
-      ? formatUsd(cedear.usPrice)
-      : "sin cotización disponible"
-  const fairUsdText =
-    fairUsd !== null ? formatUsd(fairUsd) : "sin datos suficientes"
-  const pctText =
-    cedear.pctChange !== null ? formatPct(cedear.pctChange) : "sin variación disponible"
-
+export function buildCedearFaqs(cedear: CedearBase): CedearFaq[] {
   return [
     {
       question: `¿Existe CEDEAR de ${cedear.TickerOriginal} en Argentina?`,
@@ -39,15 +21,15 @@ export function buildCedearFaqs(cedear: Cedear): CedearFaq[] {
     },
     {
       question: `¿Cuánto vale el CEDEAR ${cedear.Cedears} hoy?`,
-      answer: `El CEDEAR ${cedear.Cedears} cotiza hoy a ${priceText} en pesos argentinos, con una variación diaria de ${pctText}.`,
+      answer: `Podés ver el precio en vivo de ${cedear.Cedears} en esta página, en la sección «Cotización y datos», con variación diaria y cotizaciones en MEP y cable.`,
     },
     {
       question: `¿Cuánto vale la acción ${cedear.TickerOriginal} en dólares?`,
-      answer: `La acción subyacente ${cedear.TickerOriginal} (${cedear.Name}) cotiza a ${usPriceText} en su mercado de origen (${cedear.Market}).`,
+      answer: `El precio en dólares de ${cedear.TickerOriginal} (${cedear.Name}) en ${cedear.Market} se muestra en vivo en la sección de cotización de esta página.`,
     },
     {
       question: `¿Cuál es el precio teórico del CEDEAR ${cedear.Cedears} en dólares?`,
-      answer: `El precio teórico del CEDEAR ${cedear.Cedears} se calcula dividiendo el precio de ${cedear.TickerOriginal} por el ratio (${cedear.Ratio}). Hoy resulta en ${fairUsdText}.`,
+      answer: `El precio teórico del CEDEAR ${cedear.Cedears} se calcula dividiendo el precio de ${cedear.TickerOriginal} en USD por el ratio (${cedear.Ratio}:1). En la sección de cotización podés ver el valor actualizado.`,
     },
     {
       question: `¿Cómo se opera el CEDEAR ${cedear.Cedears} en dólares?`,

@@ -1,14 +1,13 @@
 import { type Cedear } from "@/lib/cedears"
+import {
+  mergeCedearQuotes,
+  type CedearBase,
+  type CedearQuote,
+} from "@/lib/merge-cedear-quotes"
 import { yahooFinance } from "@/lib/yahoo-finance"
 
-export type CedearBase = {
-  Cedears: string
-  Name: string
-  Market: string
-  Ratio: string
-  TickerOriginal: string
-  tags: string[]
-}
+export type { CedearQuote, CedearBase }
+export { mergeCedearQuotes } from "@/lib/merge-cedear-quotes"
 
 type LiveQuote = {
   symbol: string
@@ -81,7 +80,7 @@ function parseLiveQuote(value: unknown): LiveQuote | null {
 
 async function getLiveQuotes(url: string): Promise<Map<string, LiveQuote>> {
   const res = await fetch(url, {
-    next: { revalidate: 60 },
+    next: { revalidate: 600 },
   })
 
   if (!res.ok) {
@@ -108,18 +107,6 @@ function quotePrice(
 ): number | null {
   if (!quotes) return null
   return quotes.get(normalizeSymbol(symbol))?.c ?? null
-}
-
-function withEmptyQuotes(cedears: CedearBase[]): Cedear[] {
-  return cedears.map((c) => ({
-    ...c,
-    price: null,
-    pctChange: null,
-    volume: null,
-    usPrice: null,
-    priceMep: null,
-    priceCcl: null,
-  }))
 }
 
 function mergeQuotes(
@@ -203,6 +190,63 @@ async function fillMissingUsPrices(cedears: Cedear[]): Promise<Cedear[]> {
   })
 }
 
+function cedearsToQuoteRecord(cedears: Cedear[]): Record<string, CedearQuote> {
+  const record: Record<string, CedearQuote> = {}
+  for (const c of cedears) {
+    record[normalizeSymbol(c.Cedears)] = {
+      price: c.price,
+      pctChange: c.pctChange,
+      volume: c.volume,
+      usPrice: c.usPrice,
+      priceMep: c.priceMep,
+      priceCcl: c.priceCcl,
+    }
+  }
+  return record
+}
+
+async function fetchLiveQuoteMaps(): Promise<{
+  argQuotes: Map<string, LiveQuote> | null
+  usaQuotes: Map<string, LiveQuote> | null
+}> {
+  const [argResult, usaResult] = await Promise.allSettled([
+    getLiveQuotes(LIVE_QUOTES_URL),
+    getLiveQuotes(USA_QUOTES_URL),
+  ])
+
+  const argQuotes = argResult.status === "fulfilled" ? argResult.value : null
+  const usaQuotes = usaResult.status === "fulfilled" ? usaResult.value : null
+
+  if (!argQuotes) {
+    console.error(
+      "No se pudieron obtener precios AR de data912",
+      argResult.status === "rejected" ? argResult.reason : undefined,
+    )
+  }
+  if (!usaQuotes) {
+    console.error(
+      "No se pudieron obtener precios USA de data912",
+      usaResult.status === "rejected" ? usaResult.reason : undefined,
+    )
+  }
+
+  return { argQuotes, usaQuotes }
+}
+
+async function buildQuotesForBases(
+  bases: CedearBase[],
+): Promise<Record<string, CedearQuote>> {
+  const { argQuotes, usaQuotes } = await fetchLiveQuoteMaps()
+
+  if (!argQuotes && !usaQuotes) {
+    return {}
+  }
+
+  const merged = mergeQuotes(bases, argQuotes, usaQuotes)
+  const filled = await fillMissingUsPrices(merged)
+  return cedearsToQuoteRecord(filled)
+}
+
 export const CEDEAR_BASES_CACHE_TAG = "cedear-bases"
 
 export async function getCedearBases(): Promise<CedearBase[]> {
@@ -233,6 +277,19 @@ function normalizeTicker(ticker: string): string {
   return ticker.trim().toUpperCase()
 }
 
+export async function getCedearBaseByTicker(
+  ticker: string,
+): Promise<CedearBase | null> {
+  const normalized = normalizeTicker(ticker)
+  const bases = await getCedearBases()
+  return bases.find((c) => normalizeTicker(c.Cedears) === normalized) ?? null
+}
+
+export async function getCedearQuotes(): Promise<Record<string, CedearQuote>> {
+  const bases = await getCedearBases()
+  return buildQuotesForBases(bases)
+}
+
 export async function getCedearByTicker(ticker: string): Promise<Cedear | null> {
   const normalized = normalizeTicker(ticker)
   const cedears = await getCedears()
@@ -240,33 +297,7 @@ export async function getCedearByTicker(ticker: string): Promise<Cedear | null> 
 }
 
 export async function getCedears(): Promise<Cedear[]> {
-  const data = await getCedearBases()
-
-  const [argResult, usaResult] = await Promise.allSettled([
-    getLiveQuotes(LIVE_QUOTES_URL),
-    getLiveQuotes(USA_QUOTES_URL),
-  ])
-
-  const argQuotes = argResult.status === "fulfilled" ? argResult.value : null
-  const usaQuotes = usaResult.status === "fulfilled" ? usaResult.value : null
-
-  if (!argQuotes) {
-    console.error(
-      "No se pudieron obtener precios AR de data912",
-      argResult.status === "rejected" ? argResult.reason : undefined,
-    )
-  }
-  if (!usaQuotes) {
-    console.error(
-      "No se pudieron obtener precios USA de data912",
-      usaResult.status === "rejected" ? usaResult.reason : undefined,
-    )
-  }
-
-  const merged =
-    !argQuotes && !usaQuotes
-      ? withEmptyQuotes(data)
-      : mergeQuotes(data, argQuotes, usaQuotes)
-
-  return fillMissingUsPrices(merged)
+  const bases = await getCedearBases()
+  const quotes = await buildQuotesForBases(bases)
+  return mergeCedearQuotes(bases, quotes)
 }

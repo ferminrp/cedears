@@ -1,7 +1,7 @@
 import { toCsv } from '@/lib/cedears'
 import { getCedears } from '@/lib/get-cedears'
 
-export const revalidate = 60
+export const revalidate = 600
 
 export async function GET() {
   try {

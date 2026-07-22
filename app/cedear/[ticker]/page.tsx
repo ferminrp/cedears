@@ -3,7 +3,7 @@ import Link from "next/link"
 import { InfoIcon } from "lucide-react"
 import { notFound } from "next/navigation"
 import { CedearCompanyProfile } from "@/components/cedear-company-profile"
-import { CedearDetailView } from "@/components/cedear-detail-view"
+import { CedearDetailLive } from "@/components/cedear-detail-live"
 import { CedearFaqs } from "@/components/cedear-faqs"
 import { CedearNews } from "@/components/cedear-news"
 import { CedearPriceChart } from "@/components/cedear-price-chart"
@@ -11,15 +11,15 @@ import { SiteNav } from "@/components/site-nav"
 import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { buildCedearFaqs } from "@/lib/cedear-faqs"
-import { formatArs } from "@/lib/cedears"
 import { getCompanyNews } from "@/lib/company-news"
-import { getCedearBases, getCedearByTicker } from "@/lib/get-cedears"
+import { getCedearBases, getCedearBaseByTicker } from "@/lib/get-cedears"
+import type { CedearBase } from "@/lib/get-cedears"
 import { getCedearHistorical } from "@/lib/historical"
 import { getUnderlyingProfile } from "@/lib/underlying-profile"
 import { logoUrl } from "@/lib/logo"
 import { getSiteUrl, buildPageOpenGraph } from "@/lib/site"
 
-export const revalidate = 60
+export const revalidate = 3600
 
 type PageProps = {
   params: Promise<{ ticker: string }>
@@ -32,29 +32,27 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { ticker } = await params
-  const cedear = await getCedearByTicker(ticker)
+  const base = await getCedearBaseByTicker(ticker)
 
-  if (!cedear) {
+  if (!base) {
     return {
       title: "CEDEAR no encontrado",
       robots: { index: false, follow: false },
     }
   }
 
-  const title = `CEDEAR ${cedear.Cedears} — ${cedear.Name}`
-  const priceSnippet =
-    cedear.price !== null ? ` Cotiza a ${formatArs(cedear.price)}.` : ""
-  const description = `¿Existe CEDEAR de ${cedear.TickerOriginal}? Sí: ${cedear.Cedears} (${cedear.Name}). Ratio ${cedear.Ratio}:1, precio, MEP, cable y gráfico histórico.${priceSnippet}`
-  const canonical = `/cedear/${cedear.Cedears}`
+  const title = `CEDEAR ${base.Cedears} — ${base.Name}`
+  const description = `¿Existe CEDEAR de ${base.TickerOriginal}? Sí: ${base.Cedears} (${base.Name}). Ratio ${base.Ratio}:1, precio, MEP, cable y gráfico histórico.`
+  const canonical = `/cedear/${base.Cedears}`
 
   return {
     title,
     description,
     keywords: [
-      `cedear ${cedear.TickerOriginal}`,
-      `existe cedear de ${cedear.TickerOriginal}`,
-      `cedear ${cedear.Cedears}`,
-      cedear.Name.toLowerCase(),
+      `cedear ${base.TickerOriginal}`,
+      `existe cedear de ${base.TickerOriginal}`,
+      `cedear ${base.Cedears}`,
+      base.Name.toLowerCase(),
       "cedears argentina",
       "byma",
     ],
@@ -64,14 +62,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 function CedearJsonLd({
-  cedear,
+  base,
   faqs,
 }: {
-  cedear: NonNullable<Awaited<ReturnType<typeof getCedearByTicker>>>
+  base: Pick<CedearBase, "Cedears" | "Name" | "TickerOriginal">
   faqs: ReturnType<typeof buildCedearFaqs>
 }) {
   const siteUrl = getSiteUrl()
-  const pageUrl = `${siteUrl}/cedear/${cedear.Cedears}`
+  const pageUrl = `${siteUrl}/cedear/${base.Cedears}`
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -80,21 +78,21 @@ function CedearJsonLd({
         "@type": "WebPage",
         "@id": `${pageUrl}#webpage`,
         url: pageUrl,
-        name: `CEDEAR ${cedear.Cedears} — ${cedear.Name}`,
-        description: `Información del CEDEAR ${cedear.Cedears} (${cedear.Name}) en Argentina.`,
+        name: `CEDEAR ${base.Cedears} — ${base.Name}`,
+        description: `Información del CEDEAR ${base.Cedears} (${base.Name}) en Argentina.`,
         inLanguage: "es-AR",
         isPartOf: { "@id": `${siteUrl}/#website` },
       },
       {
         "@type": "FinancialProduct",
-        name: `CEDEAR ${cedear.Cedears}`,
-        description: `Certificado de Depósito Argentino de ${cedear.Name} (${cedear.TickerOriginal}).`,
+        name: `CEDEAR ${base.Cedears}`,
+        description: `Certificado de Depósito Argentino de ${base.Name} (${base.TickerOriginal}).`,
         category: "CEDEAR",
         provider: {
           "@type": "Organization",
           name: "BYMA",
         },
-        identifier: cedear.Cedears,
+        identifier: base.Cedears,
       },
       {
         "@type": "FAQPage",
@@ -120,22 +118,22 @@ function CedearJsonLd({
 
 export default async function CedearPage({ params }: PageProps) {
   const { ticker } = await params
-  const cedear = await getCedearByTicker(ticker)
+  const base = await getCedearBaseByTicker(ticker)
 
-  if (!cedear) {
+  if (!base) {
     notFound()
   }
 
   const [history, faqs, profile, news] = await Promise.all([
-    getCedearHistorical(cedear.Cedears),
-    Promise.resolve(buildCedearFaqs(cedear)),
-    getUnderlyingProfile(cedear.TickerOriginal),
-    getCompanyNews(cedear.TickerOriginal),
+    getCedearHistorical(base.Cedears),
+    Promise.resolve(buildCedearFaqs(base)),
+    getUnderlyingProfile(base.TickerOriginal),
+    getCompanyNews(base.TickerOriginal),
   ])
 
   return (
     <>
-      <CedearJsonLd cedear={cedear} faqs={faqs} />
+      <CedearJsonLd base={base} faqs={faqs} />
       <main className="mx-auto flex min-h-svh w-full max-w-5xl flex-col gap-8 px-4 py-10 md:py-16">
         <header className="flex flex-col gap-4">
           <SiteNav currentPath="/" />
@@ -147,12 +145,12 @@ export default async function CedearPage({ params }: PageProps) {
                 </Link>
               </li>
               <li aria-hidden>/</li>
-              <li className="font-medium text-foreground">{cedear.Cedears}</li>
+              <li className="font-medium text-foreground">{base.Cedears}</li>
             </ol>
           </nav>
           <div className="flex items-start gap-4">
             <img
-              src={logoUrl(cedear.TickerOriginal)}
+              src={logoUrl(base.TickerOriginal)}
               alt=""
               width={48}
               height={48}
@@ -160,17 +158,17 @@ export default async function CedearPage({ params }: PageProps) {
             />
             <div className="min-w-0">
               <h1 className="font-mono text-3xl font-semibold tracking-tight md:text-4xl">
-                CEDEAR {cedear.Cedears}
+                CEDEAR {base.Cedears}
               </h1>
-              <p className="mt-1 text-lg text-muted-foreground">{cedear.Name}</p>
+              <p className="mt-1 text-lg text-muted-foreground">{base.Name}</p>
             </div>
           </div>
           <Alert variant="callout">
             <InfoIcon />
             <AlertDescription>
-              Sí, existe CEDEAR de {cedear.TickerOriginal} en Argentina. Operás
-              bajo el ticker {cedear.Cedears} en BYMA, con ratio {cedear.Ratio}:1
-              respecto a la acción en {cedear.Market}.
+              Sí, existe CEDEAR de {base.TickerOriginal} en Argentina. Operás
+              bajo el ticker {base.Cedears} en BYMA, con ratio {base.Ratio}:1
+              respecto a la acción en {base.Market}.
             </AlertDescription>
           </Alert>
         </header>
@@ -196,7 +194,7 @@ export default async function CedearPage({ params }: PageProps) {
           <h2 id="historico-heading" className="mb-4 text-xl font-semibold tracking-tight">
             Precio histórico
           </h2>
-          <CedearPriceChart ticker={cedear.Cedears} history={history} />
+          <CedearPriceChart ticker={base.Cedears} history={history} />
         </section>
 
         <section
@@ -206,12 +204,12 @@ export default async function CedearPage({ params }: PageProps) {
           <h2 id="cotizacion-heading" className="text-xl font-semibold tracking-tight">
             Cotización y datos
           </h2>
-          <CedearDetailView cedear={cedear} />
+          <CedearDetailLive base={base} />
         </section>
 
         <CedearFaqs faqs={faqs} />
 
-        <CedearNews items={news} tickerOriginal={cedear.TickerOriginal} />
+        <CedearNews items={news} tickerOriginal={base.TickerOriginal} />
 
         <SiteFooter>
           <Link href="/" className={footerLinkClassName}>

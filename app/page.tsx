@@ -1,10 +1,12 @@
 import type { Metadata } from 'next'
-import { getCedears } from '@/lib/get-cedears'
-import { CedearsList } from '@/components/cedears-list'
+import { getCedearBases } from '@/lib/get-cedears'
+import { CedearsWithQuotes } from '@/components/cedears-with-quotes'
 import { SiteNav } from '@/components/site-nav'
 import { SiteFooter, footerLinkClassName } from '@/components/site-footer'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { getSiteUrl, siteConfig, buildPageOpenGraph } from '@/lib/site'
+
+export const revalidate = 3600
 
 export const metadata: Metadata = {
   title: siteConfig.title,
@@ -95,10 +97,10 @@ export default async function Page() {
   let dataLoaded = false
 
   try {
-    const cedears = await getCedears()
-    cedearCount = cedears.length
+    const bases = await getCedearBases()
+    cedearCount = bases.length
     dataLoaded = true
-    content = <CedearsList cedears={cedears} />
+    content = <CedearsWithQuotes bases={bases} />
   } catch {
     content = (
       <Alert variant="destructive">

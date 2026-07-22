@@ -1,15 +1,16 @@
 import type { Metadata } from "next"
-import { ImplicitDollarView } from "@/components/implicit-dollar-view"
+import { ImplicitDollarLive } from "@/components/implicit-dollar-live"
 import { SiteNav } from "@/components/site-nav"
 import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { getCedears } from "@/lib/get-cedears"
-import { summarizeImplicitDollar } from "@/lib/implicit-dollar"
+import { getCedearBases } from "@/lib/get-cedears"
 import { buildPageOpenGraph } from "@/lib/site"
 
 const title = "Dólar MEP implícito en CEDEARs"
 const description =
   "Cotización promedio del dólar MEP implícita en CEDEARs, calculada sin outliers, con tabla y gráfico de dispersión."
+
+export const revalidate = 3600
 
 export const metadata: Metadata = {
   title,
@@ -24,27 +25,15 @@ export default async function DolarMepPage() {
   let content
 
   try {
-    const cedears = await getCedears()
-    const summary = summarizeImplicitDollar(cedears, "mep")
-
-    if (summary.count === 0) {
-      content = (
-        <Alert>
-          <AlertTitle>Sin datos de MEP</AlertTitle>
-          <AlertDescription>
-            Ningún CEDEAR tiene cotización MEP implícita disponible en este momento.
-          </AlertDescription>
-        </Alert>
-      )
-    } else {
-      content = (
-        <ImplicitDollarView
-          title="CEDEARs por dólar MEP implícito"
-          description="Dólar MEP implícito promedio (sin outliers)"
-          summary={summary}
-        />
-      )
-    }
+    const bases = await getCedearBases()
+    content = (
+      <ImplicitDollarLive
+        bases={bases}
+        kind="mep"
+        title="CEDEARs por dólar MEP implícito"
+        description="Dólar MEP implícito promedio (sin outliers)"
+      />
+    )
   } catch {
     content = (
       <Alert variant="destructive">

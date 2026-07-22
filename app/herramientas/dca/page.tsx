@@ -1,16 +1,18 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 
-import { DcaCalculator } from "@/components/dca-calculator"
+import { DcaLive } from "@/components/dca-live"
 import { SiteNav } from "@/components/site-nav"
 import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { getCedears } from "@/lib/get-cedears"
+import { getCedearBases } from "@/lib/get-cedears"
 import { buildPageOpenGraph } from "@/lib/site"
 
 const title = "Calculadora de DCA para CEDEARs"
 const description =
   "Definí cuánta plata invertís por mes y en qué porcentajes: la calculadora te dice cuántos nominales comprar de cada CEDEAR y detecta vueltos y desvíos entre lo deseado y lo posible."
+
+export const revalidate = 3600
 
 export const metadata: Metadata = {
   title,
@@ -29,8 +31,8 @@ export default async function DcaPage() {
   let content
 
   try {
-    const cedears = await getCedears()
-    content = <DcaCalculator cedears={cedears} />
+    const bases = await getCedearBases()
+    content = <DcaLive bases={bases} />
   } catch {
     content = (
       <Alert variant="destructive">

@@ -51,6 +51,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
+import { Skeleton } from "@/components/ui/skeleton"
 import { CedearDetailSheet } from "@/components/cedear-detail-sheet"
 
 const ALL_MARKETS = "all"
@@ -132,10 +133,18 @@ function pctChangeClassName(value: number | null): string {
 const numericCellClassName = "text-right font-mono tabular-nums"
 const empresaCellClassName = "max-w-52 text-muted-foreground"
 
-export function CedearsList({ cedears }: { cedears: Cedear[] }) {
+export function CedearsList({
+  cedears,
+  quotesLoading = false,
+  initialTag,
+}: {
+  cedears: Cedear[]
+  quotesLoading?: boolean
+  initialTag?: string
+}) {
   const [query, setQuery] = useState("")
   const [market, setMarket] = useState(ALL_MARKETS)
-  const [tag, setTag] = useState(ALL_TAGS)
+  const [tag, setTag] = useState(initialTag ?? ALL_TAGS)
   const [pctSort, setPctSort] = useState<PctSort>(DEFAULT_SORT)
   const [pinned, setPinned] = useState<string[]>([])
   const [selectedTicker, setSelectedTicker] = useState<string | null>(null)
@@ -353,7 +362,10 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
         </Empty>
       ) : (
         <div className="overflow-hidden rounded-lg border">
-          <Table className="min-w-[44rem]">
+          <Table
+            className="min-w-[44rem]"
+            aria-busy={quotesLoading || undefined}
+          >
             <TableHeader>
               <TableRow className="bg-muted hover:bg-muted">
                 <TableHead className="w-10 px-1">
@@ -439,12 +451,20 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
                     <Badge variant="secondary">{c.Market}</Badge>
                   </TableCell>
                   <TableCell className={numericCellClassName}>
-                    {formatPrice(c.price)}
+                    {quotesLoading ? (
+                      <Skeleton className="ml-auto h-4 w-16" aria-hidden />
+                    ) : (
+                      formatPrice(c.price)
+                    )}
                   </TableCell>
                   <TableCell
-                    className={`${numericCellClassName} ${pctChangeClassName(c.pctChange)}`}
+                    className={`${numericCellClassName} ${quotesLoading ? "" : pctChangeClassName(c.pctChange)}`}
                   >
-                    {formatPctChange(c.pctChange)}
+                    {quotesLoading ? (
+                      <Skeleton className="ml-auto h-4 w-12" aria-hidden />
+                    ) : (
+                      formatPctChange(c.pctChange)
+                    )}
                   </TableCell>
                   <TableCell className={numericCellClassName}>
                     {c.Ratio}
