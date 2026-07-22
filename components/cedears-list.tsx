@@ -379,7 +379,7 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
                   tabIndex={0}
                   data-state={isSelected ? "selected" : undefined}
                   aria-label={`Ver detalle de ${c.Cedears}`}
-                  className={`cursor-pointer bg-card hover:bg-muted/50 ${isPinned ? "bg-muted/30 hover:bg-muted/40" : ""}`}
+                  className={`cursor-pointer bg-card hover:bg-muted/50 ${isPinned ? "!bg-border/40 hover:!bg-border/60 border-l-2 border-l-foreground/20" : ""}`}
                   onClick={() => setSelectedTicker(c.Cedears)}
                   onKeyDown={(event) => {
                     if (event.key === "Enter" || event.key === " ") {
