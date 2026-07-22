@@ -81,7 +81,7 @@ function parseLiveQuote(value: unknown): LiveQuote | null {
 
 async function getLiveQuotes(url: string): Promise<Map<string, LiveQuote>> {
   const res = await fetch(url, {
-    next: { revalidate: 60 },
+    next: { revalidate: 300 },
   })
 
   if (!res.ok) {

@@ -25,7 +25,7 @@ export async function getCedearHistorical(
   const normalized = ticker.trim().toUpperCase()
   const res = await fetch(
     `https://data912.com/historical/cedears/${encodeURIComponent(normalized)}`,
-    { next: { revalidate: 3600 } },
+    { next: { revalidate: 14400 } },
   )
 
   if (!res.ok) {
