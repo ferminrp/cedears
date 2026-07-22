@@ -5,12 +5,14 @@ import { notFound } from "next/navigation"
 import { CedearCompanyProfile } from "@/components/cedear-company-profile"
 import { CedearDetailView } from "@/components/cedear-detail-view"
 import { CedearFaqs } from "@/components/cedear-faqs"
+import { CedearNews } from "@/components/cedear-news"
 import { CedearPriceChart } from "@/components/cedear-price-chart"
 import { SiteNav } from "@/components/site-nav"
 import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { buildCedearFaqs } from "@/lib/cedear-faqs"
 import { formatArs } from "@/lib/cedears"
+import { getCompanyNews } from "@/lib/company-news"
 import { getCedearBases, getCedearByTicker } from "@/lib/get-cedears"
 import { getCedearHistorical } from "@/lib/historical"
 import { getUnderlyingProfile } from "@/lib/underlying-profile"
@@ -124,10 +126,11 @@ export default async function CedearPage({ params }: PageProps) {
     notFound()
   }
 
-  const [history, faqs, profile] = await Promise.all([
+  const [history, faqs, profile, news] = await Promise.all([
     getCedearHistorical(cedear.Cedears),
     Promise.resolve(buildCedearFaqs(cedear)),
     getUnderlyingProfile(cedear.TickerOriginal),
+    getCompanyNews(cedear.TickerOriginal),
   ])
 
   return (
@@ -207,6 +210,8 @@ export default async function CedearPage({ params }: PageProps) {
         </section>
 
         <CedearFaqs faqs={faqs} />
+
+        <CedearNews items={news} tickerOriginal={cedear.TickerOriginal} />
 
         <SiteFooter>
           <Link href="/" className={footerLinkClassName}>
