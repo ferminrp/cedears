@@ -240,7 +240,7 @@ export function PortfolioView({
           onClick={() => setOnlyHoldings((current) => !current)}
           aria-pressed={onlyHoldings}
         >
-          Solo en cartera
+          {onlyHoldings ? "Mostrar todos" : "Solo en cartera"}
         </Button>
       </div>
 
