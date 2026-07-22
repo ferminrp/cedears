@@ -9,3 +9,7 @@ This is a single Next.js 16 (App Router, React 19, Turbopack, Tailwind CSS v4) f
 - `pnpm lint` currently fails: the script is `eslint .` but `eslint` and an ESLint config are not part of the repo dependencies. This is the repo's shipped state, not a broken environment setup. Do not add ESLint unless the task asks for it.
 - `next.config.mjs` sets `typescript.ignoreBuildErrors: true` and `images.unoptimized: true`, so type errors do not fail the build.
 - `pnpm install` logs "Ignored build scripts: msw, sharp" — these are optional and not needed to run or build the app.
+
+## Design system
+
+Visual identity for UI work lives in [`DESIGN.md`](./DESIGN.md) ([design.md](https://github.com/google-labs-code/design.md) format). Read it before changing layout, color, typography, or shared components. Tokens in YAML front matter are normative; prose explains how to apply them. Keep new screens aligned with the existing Stone Utility shell (`max-w-5xl`, Geist, shadcn `base-nova` / stone).
