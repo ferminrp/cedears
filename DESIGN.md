@@ -16,6 +16,8 @@ colors:
   on-surface: "#0c0a09"
   surface-muted: "#f5f5f4"
   on-surface-muted: "#79716b"
+  callout: "#ebe9e6"
+  on-callout: "#0c0a09"
   border: "#e7e5e4"
   input: "#e7e5e4"
   ring: "#a8a29e"
@@ -27,6 +29,8 @@ colors:
   dark-on-background: "#fafaf9"
   dark-surface: "#2e2924"
   dark-on-surface: "#fafaf9"
+  dark-callout: "#3a3530"
+  dark-on-callout: "#fafaf9"
   dark-border: "#ffffff1a"
   dark-positive: "#34d399"
   dark-negative: "#f87171"
@@ -183,6 +187,12 @@ components:
     typography: "{typography.body-md}"
     rounded: "{rounded.lg}"
     padding: 10px
+  callout:
+    backgroundColor: "{colors.callout}"
+    textColor: "{colors.on-callout}"
+    typography: "{typography.body-md}"
+    rounded: "{rounded.lg}"
+    padding: 10px
   table-container:
     backgroundColor: "{colors.surface}"
     rounded: "{rounded.lg}"
@@ -241,6 +251,7 @@ La paleta es casi monocromática: neutros stone cálidos y un primario casi negr
 - **Background (#f5f5f4):** Lienzo de página (alineado con `themeColor` light `#f5f4f1`).
 - **On-background / foreground (#0c0a09):** Texto principal y nav activa (invertida).
 - **Surface (#ffffff):** Cards, inputs, filas de tabla y paneles sobre el fondo.
+- **Callout (#ebe9e6 / dark #3a3530):** Bloques informativos sobre el lienzo de página (respuestas directas, contexto SEO, avisos neutros). Más oscuro que el background en light, ligeramente más claro en dark — sin llegar a `bg-card`.
 - **Border / input (#e7e5e4):** Contornos 1px (`border`, `input`); jerarquía sin sombras pesadas. Tokens de borde no van en `components.*` porque el schema no modela `borderColor` — se aplican vía clases Tailwind.
 - **Ring (#a8a29e):** Focus visible (`ring-3` + `ring-ring/50`); no es color de texto.
 - **Destructive (#e7000b):** Errores y alertas; en botones suele ir como tinte (`/10`) + texto destructive.
@@ -277,6 +288,7 @@ No armar dashboards multi-panel ni hero marketing en páginas de datos.
 Profundidad por **tonos y anillos**, no por sombras decorativas.
 
 - Página = background stone; contenido interactivo = `bg-card` blanco (o superficie dark).
+- Callouts informativos = `bg-callout` (`Alert variant="callout"`): panel tenue entre el fondo y las cards; no usar `bg-muted` semitransparente sobre `bg-background` (en light son el mismo tono).
 - Cards: `ring-1 ring-foreground/10` (ver `components/ui/card.tsx`).
 - Menús / selects: `shadow-md` + el mismo ring — reserva sombra para overlays flotantes.
 - Hover de filas y links de tools: `hover:bg-muted/50` o `hover:border-foreground/30`.
@@ -303,6 +315,7 @@ Stack: **shadcn/ui (base-nova) + Base UI + Lucide**. Preferí los primitives de 
 - **Cards / tool tiles:** Borde + `bg-card`; tiles de herramientas con icono en pozo `bg-muted` `rounded-md`.
 - **Badges:** Altura fija `h-5`, pill, variantes default/secondary/outline/destructive.
 - **Alerts:** `rounded-lg border`; destructive coloreada en texto, no en fondo saturado.
+- **Callouts:** `Alert variant="callout"` para mensajes informativos sobre el fondo de página (p. ej. “Sí, existe CEDEAR de …”). Fondo `bg-callout`, borde `border-border/60`, icono `text-muted-foreground`, cuerpo `text-callout-foreground`. No mezclar con cards ni con alerts de error (`destructive`).
 - **Empty states:** `Empty` centrado dentro de contenedor `rounded-lg border`.
 - **Toasts:** Sonner (`Toaster` en layout).
 - **Sheets:** Detalle de CEDEAR y menú mobile; side panels, no modales centricos para navegación.

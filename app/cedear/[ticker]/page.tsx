@@ -165,9 +165,9 @@ export default async function CedearPage({ params }: PageProps) {
               <p className="mt-1 text-lg text-muted-foreground">{cedear.Name}</p>
             </div>
           </div>
-          <Alert className="border-border/60 bg-muted/60">
+          <Alert variant="callout">
             <InfoIcon />
-            <AlertDescription className="text-foreground">
+            <AlertDescription>
               Sí, existe CEDEAR de {cedear.TickerOriginal} en Argentina. Operás
               bajo el ticker {cedear.Cedears} en BYMA, con ratio {cedear.Ratio}:1
               respecto a la acción en {cedear.Market}.
