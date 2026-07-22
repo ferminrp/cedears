@@ -12,7 +12,7 @@ import {
 import { getCedearBases } from "@/lib/get-cedears"
 import { buildPageOpenGraph } from "@/lib/site"
 
-export const revalidate = 60
+export const revalidate = 86400
 
 export async function generateMetadata(): Promise<Metadata> {
   let categoryCount = 0

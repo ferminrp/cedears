@@ -11,6 +11,8 @@ const title = "Dólar MEP implícito en CEDEARs"
 const description =
   "Cotización promedio del dólar MEP implícita en CEDEARs, calculada sin outliers, con tabla y gráfico de dispersión."
 
+export const revalidate = 300
+
 export const metadata: Metadata = {
   title,
   description,

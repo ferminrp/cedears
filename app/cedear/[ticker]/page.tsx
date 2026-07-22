@@ -19,7 +19,7 @@ import { getUnderlyingProfile } from "@/lib/underlying-profile"
 import { logoUrl } from "@/lib/logo"
 import { getSiteUrl, buildPageOpenGraph } from "@/lib/site"
 
-export const revalidate = 60
+export const revalidate = 3600
 
 type PageProps = {
   params: Promise<{ ticker: string }>

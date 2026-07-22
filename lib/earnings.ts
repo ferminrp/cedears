@@ -94,7 +94,7 @@ export async function fetchEarningsCalendar(
       "x-earningshub-client": "web",
       "x-earningshub-client-build": "284",
     },
-    next: { revalidate: 3600 },
+    next: { revalidate: 21600 },
   })
 
   if (!res.ok) {

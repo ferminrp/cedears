@@ -6,6 +6,8 @@ import { SiteFooter, footerLinkClassName } from '@/components/site-footer'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { getSiteUrl, siteConfig, buildPageOpenGraph } from '@/lib/site'
 
+export const revalidate = 300
+
 export const metadata: Metadata = {
   title: siteConfig.title,
   description: siteConfig.description,
