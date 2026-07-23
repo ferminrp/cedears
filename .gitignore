@@ -22,3 +22,6 @@ public/workbox-*.js
 public/workbox-*.js.map
 public/fallback-*.js
 public/fallback-*.js.map
+/dist/
+.vinext/
+.wrangler/

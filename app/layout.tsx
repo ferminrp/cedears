@@ -1,4 +1,3 @@
-import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { Geist } from "next/font/google";
@@ -78,12 +77,7 @@ export default function RootLayout({
       <body className="antialiased">
         {children}
         <Toaster />
-        {process.env.NODE_ENV === 'production' && (
-          <>
-            <Analytics />
-            <GoogleAnalytics />
-          </>
-        )}
+        {process.env.NODE_ENV === 'production' && <GoogleAnalytics />}
       </body>
     </html>
   )
