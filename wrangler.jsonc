@@ -25,9 +25,6 @@
       "head_sampling_rate": 0.1
     }
   },
-  "images": {
-    "binding": "IMAGES"
-  },
   "vars": {
     "NEXT_PUBLIC_SITE_URL": "https://cedears.com"
   },
