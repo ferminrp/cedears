@@ -28,27 +28,23 @@ Open [http://localhost:3001](http://localhost:3001).
 
 ## Cloudflare deploy
 
-1. Create the KV namespace and update `wrangler.jsonc`:
+`wrangler.jsonc` is configured for Workers with:
 
-   ```bash
-   npx wrangler kv namespace create VINEXT_KV_CACHE
-   ```
+- Worker name `cedears`
+- Custom domain `cedears.com`
+- KV binding `VINEXT_KV_CACHE`
+- `vars.NEXT_PUBLIC_SITE_URL=https://cedears.com`
+- `nodejs_compat` (required for `yahoo-finance2`)
 
-   Paste the returned id into `wrangler.jsonc` under `kv_namespaces`.
+Set the Finnhub secret (once per account/worker), then deploy:
 
-2. Set secrets (via `wrangler secret put` or the Cloudflare dashboard):
+```bash
+printf '%s' "$FINNHUB_API_KEY" | pnpm exec wrangler secret put FINNHUB_API_KEY
+NEXT_PUBLIC_SITE_URL=https://cedears.com pnpm run build:vinext
+pnpm run deploy:vinext
+```
 
-   - `FINNHUB_API_KEY`
-   - `NEXT_PUBLIC_SITE_URL`
-
-3. Deploy:
-
-   ```bash
-   pnpm run build:vinext
-   pnpm run deploy:vinext
-   ```
-
-`wrangler.jsonc` enables `nodejs_compat` (required for `yahoo-finance2`). The migration is non-destructive: Next.js scripts (`pnpm dev`, `pnpm build`, `pnpm start`) continue to work.
+Requires `wrangler login` or `CLOUDFLARE_API_TOKEN` (+ `CLOUDFLARE_ACCOUNT_ID`). The migration is non-destructive: Next.js scripts (`pnpm dev`, `pnpm build`, `pnpm start`) continue to work.
 
 ## v0
 

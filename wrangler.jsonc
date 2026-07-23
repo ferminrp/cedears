@@ -17,11 +17,19 @@
   "images": {
     "binding": "IMAGES"
   },
-  // Before deploy: create the namespace with `npx wrangler kv namespace create VINEXT_KV_CACHE` and paste the returned id below.
+  "vars": {
+    "NEXT_PUBLIC_SITE_URL": "https://cedears.com"
+  },
+  "routes": [
+    {
+      "pattern": "cedears.com",
+      "custom_domain": true
+    }
+  ],
   "kv_namespaces": [
     {
       "binding": "VINEXT_KV_CACHE",
-      "id": "<your-kv-namespace-id>"
+      "id": "171e7aacfae5404bad4d66485dc52e23"
     }
   ]
 }

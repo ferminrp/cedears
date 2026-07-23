@@ -11,7 +11,7 @@ The app can run under **Next.js** or **vinext** (Vite) side-by-side. Next.js rem
 - **vinext:** `pnpm run dev:vinext` (http://localhost:3001), `pnpm run build:vinext`, `pnpm run deploy:vinext`.
 - **Cloudflare Workers:** vinext deploys via `wrangler.jsonc`. `nodejs_compat` is required for `yahoo-finance2`.
 - **Secrets / env:** set `NEXT_PUBLIC_SITE_URL` and `FINNHUB_API_KEY` via `wrangler secret put` or the Cloudflare dashboard before deploy.
-- **KV:** create `VINEXT_KV_CACHE` with `npx wrangler kv namespace create VINEXT_KV_CACHE`, then set the returned id in `wrangler.jsonc` before deploy.
+- **KV:** `VINEXT_KV_CACHE` id is set in `wrangler.jsonc` (vinext data/ISR cache). Custom domain: `cedears.com` via Workers Custom Domains.
 - `pnpm lint` currently fails: the script is `eslint .` but `eslint` and an ESLint config are not part of the repo dependencies. This is the repo's shipped state, not a broken environment setup. Do not add ESLint unless the task asks for it.
 - `next.config.mjs` sets `typescript.ignoreBuildErrors: true` and `images.unoptimized: true`, so type errors do not fail the build.
 - `pnpm install` may log ignored build scripts for `esbuild`, `workerd`, `sharp`, or `msw`. These are listed in `package.json` under `pnpm.onlyBuiltDependencies` and are expected; they are optional for Next.js-only workflows but needed for vinext/Cloudflare builds.
