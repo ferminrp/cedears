@@ -14,6 +14,17 @@
   "cache": {
     "enabled": true
   },
+  "observability": {
+    "enabled": true,
+    "logs": {
+      "invocation_logs": true,
+      "head_sampling_rate": 1
+    },
+    "traces": {
+      "enabled": true,
+      "head_sampling_rate": 0.1
+    }
+  },
   "images": {
     "binding": "IMAGES"
   },
