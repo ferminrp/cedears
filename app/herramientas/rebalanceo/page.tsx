@@ -12,6 +12,8 @@ const title = "Calculadora de rebalanceo de CEDEARs"
 const description =
   "Ingresá tus nominales de cada CEDEAR, visualizá la composición actual de tu cartera en un donut chart y calculá las operaciones de compra y venta para llegar a tu distribución objetivo."
 
+export const revalidate = 300
+
 export const metadata: Metadata = {
   title,
   description,
