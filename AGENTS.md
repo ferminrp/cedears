@@ -14,7 +14,7 @@ This is a single frontend app named "cedears" on **vinext** (Vite), React 19, an
 - **KV:** `VINEXT_KV_CACHE` id is set in `wrangler.jsonc` (vinext data/ISR cache). Custom domain: `cedears.com` via Workers Custom Domains.
 - **Observability:** `wrangler.jsonc` enables Workers Logs (100%) and traces (10%).
 - `pnpm lint` currently fails: the script is `eslint .` but `eslint` and an ESLint config are not part of the repo dependencies. This is the repo's shipped state, not a broken environment setup. Do not add ESLint unless the task asks for it.
-- `next.config.mjs` sets `typescript.ignoreBuildErrors: true` and `images.unoptimized: true`, so type errors do not fail the build.
+- `next.config.mjs` sets `typescript.ignoreBuildErrors: true` and `serverExternalPackages: ['yahoo-finance2']`. Type errors do not fail the build.
 - `pnpm install` may log ignored build scripts for `esbuild`, `workerd`, `sharp`, or `msw`. These are listed in `package.json` under `pnpm.onlyBuiltDependencies` and are expected; they are needed for vinext and Cloudflare builds.
 
 ## Design system
