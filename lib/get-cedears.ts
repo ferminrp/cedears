@@ -203,13 +203,9 @@ async function fillMissingUsPrices(cedears: Cedear[]): Promise<Cedear[]> {
   })
 }
 
-export const CEDEAR_BASES_CACHE_TAG = "cedear-bases"
-
 export async function getCedearBases(): Promise<CedearBase[]> {
   const res = await fetch(DATA_URL, {
-    // Revalidate once a day: the list (including tags) changes rarely.
-    // The cache tag lets us invalidate this fetch on deploy when the schema changes.
-    next: { revalidate: 86400, tags: [CEDEAR_BASES_CACHE_TAG] },
+    next: { revalidate: 86400 },
   })
 
   if (!res.ok) {
