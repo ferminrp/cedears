@@ -18,7 +18,6 @@ export const metadata: Metadata = {
   keywords: [...siteConfig.keywords],
   authors: [{ name: 'ferminrp' }],
   creator: 'ferminrp',
-  generator: 'Next.js',
   applicationName: siteConfig.name,
   referrer: 'origin-when-cross-origin',
   robots: {
