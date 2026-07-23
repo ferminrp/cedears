@@ -12,6 +12,8 @@ const title = "Calculadora de DCA para CEDEARs"
 const description =
   "Definí cuánta plata invertís por mes y en qué porcentajes: la calculadora te dice cuántos nominales comprar de cada CEDEAR y detecta vueltos y desvíos entre lo deseado y lo posible."
 
+export const revalidate = 300
+
 export const metadata: Metadata = {
   title,
   description,

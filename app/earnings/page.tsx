@@ -18,6 +18,8 @@ const title = "Calendario de earnings de CEDEARs"
 const description =
   "Timeline de los próximos 3 meses con fechas de earnings calls de empresas que tienen CEDEAR en Argentina."
 
+export const revalidate = 21600
+
 export const metadata: Metadata = {
   title,
   description,

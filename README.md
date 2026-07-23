@@ -1,6 +1,6 @@
 # cedears
 
-Searchable CEDEARs table built with Next.js 16. The repo also supports a **vinext** (Vite) runtime for Cloudflare Workers deployment alongside the existing Next.js workflow.
+Searchable CEDEARs table on **vinext** (Vite), deployed to Cloudflare Workers. The UI uses React 19 and Tailwind CSS v4.
 
 ## Getting started
 
@@ -10,7 +10,7 @@ Install dependencies:
 pnpm install
 ```
 
-### Next.js (default)
+Run the dev server:
 
 ```bash
 pnpm dev
@@ -18,13 +18,18 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-### vinext (Vite)
+Build the Workers bundle and run it locally:
 
 ```bash
-pnpm run dev:vinext
+pnpm build
+pnpm start
 ```
 
-Open [http://localhost:3001](http://localhost:3001).
+Deploy to Cloudflare:
+
+```bash
+pnpm deploy
+```
 
 ## Cloudflare deploy
 
@@ -39,14 +44,14 @@ Open [http://localhost:3001](http://localhost:3001).
 
 ### Manual deploy
 
-Set the Finnhub secret (once per account/worker), then deploy:
+Set the Finnhub secret once per account or worker, then deploy:
 
 ```bash
 printf '%s' "$FINNHUB_API_KEY" | pnpm exec wrangler secret put FINNHUB_API_KEY
-pnpm run deploy:vinext
+pnpm deploy
 ```
 
-Requires `wrangler login` or `CLOUDFLARE_API_TOKEN` (+ `CLOUDFLARE_ACCOUNT_ID`). The migration is non-destructive: Next.js scripts (`pnpm dev`, `pnpm build`, `pnpm start`) continue to work.
+Requires `wrangler login` or `CLOUDFLARE_API_TOKEN` (+ `CLOUDFLARE_ACCOUNT_ID`).
 
 ### Workers Builds (Git → Cloudflare)
 

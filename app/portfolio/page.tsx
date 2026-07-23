@@ -11,6 +11,8 @@ const title = "Portfolio de CEDEARs"
 const description =
   "Seguí tus nominales de CEDEARs y valuá tu portfolio en pesos, dólar MEP y dólar cable con el promedio implícito sin outliers."
 
+export const revalidate = 300
+
 export const metadata: Metadata = {
   title,
   description,
