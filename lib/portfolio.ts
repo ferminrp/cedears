@@ -83,6 +83,20 @@ export type PortfolioSummary = {
   valorArs: number
   valorMep: number | null
   valorCable: number | null
+  variacionArs: number | null
+  variacionMep: number | null
+  variacionCable: number | null
+  variacionPct: number | null
+}
+
+export function previousPriceFromChange(
+  price: number,
+  pctChange: number,
+): number | null {
+  const factor = 1 + pctChange / 100
+  if (factor === 0 || !Number.isFinite(factor)) return null
+  const previous = price / factor
+  return Number.isFinite(previous) ? previous : null
 }
 
 export function computePortfolioSummary(
@@ -95,6 +109,9 @@ export function computePortfolioSummary(
 
   let titulos = 0
   let valorArs = 0
+  let valorArsHoyConCambio = 0
+  let valorArsPrevio = 0
+  let hasDailyChange = false
 
   for (const [ticker, quantity] of Object.entries(holdings)) {
     if (!isValidQuantity(quantity)) continue
@@ -104,16 +121,41 @@ export function computePortfolioSummary(
 
     titulos += 1
 
-    if (cedear.price !== null) {
-      valorArs += quantity * cedear.price
-    }
+    if (cedear.price === null) continue
+
+    valorArs += quantity * cedear.price
+
+    if (cedear.pctChange === null) continue
+
+    const previous = previousPriceFromChange(cedear.price, cedear.pctChange)
+    if (previous === null) continue
+
+    hasDailyChange = true
+    valorArsHoyConCambio += quantity * cedear.price
+    valorArsPrevio += quantity * previous
   }
+
+  const variacionArs = hasDailyChange
+    ? valorArsHoyConCambio - valorArsPrevio
+    : null
+  const variacionPct =
+    variacionArs !== null && valorArsPrevio > 0
+      ? (variacionArs / valorArsPrevio) * 100
+      : null
 
   return {
     titulos,
     valorArs,
     valorMep: mepAverage > 0 ? valorArs / mepAverage : null,
     valorCable: cableAverage > 0 ? valorArs / cableAverage : null,
+    variacionArs,
+    variacionMep:
+      variacionArs !== null && mepAverage > 0 ? variacionArs / mepAverage : null,
+    variacionCable:
+      variacionArs !== null && cableAverage > 0
+        ? variacionArs / cableAverage
+        : null,
+    variacionPct,
   }
 }
 

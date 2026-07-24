@@ -2,7 +2,13 @@
 
 import { useEffect, useMemo, useRef, useState } from "react"
 import { BriefcaseIcon, SearchIcon } from "lucide-react"
-import { type Cedear, formatArs, formatUsd } from "@/lib/cedears"
+import {
+  type Cedear,
+  formatArs,
+  formatPct,
+  formatUsd,
+  pctClassName,
+} from "@/lib/cedears"
 import { logoUrl } from "@/lib/logo"
 import {
   computePortfolioComposition,
@@ -63,6 +69,45 @@ function formatFxFootnote(
 function holdingValueArs(cedear: Cedear, quantity: number): number | null {
   if (cedear.price === null) return null
   return quantity * cedear.price
+}
+
+function formatSignedMoney(
+  value: number | null,
+  format: (value: number | null) => string,
+): string {
+  if (value === null) return "—"
+  const formatted = format(value)
+  return value > 0 ? `+${formatted}` : formatted
+}
+
+function PortfolioValueChange({
+  absolute,
+  percent,
+  formatAbsolute,
+  showEmpty = false,
+}: {
+  absolute: number | null
+  percent: number | null
+  formatAbsolute: (value: number | null) => string
+  showEmpty?: boolean
+}) {
+  if (absolute === null && percent === null) {
+    if (!showEmpty) return null
+    return (
+      <p className="mt-1 font-mono text-xs tabular-nums text-muted-foreground">
+        —
+      </p>
+    )
+  }
+
+  const tone = pctClassName(percent ?? absolute)
+
+  return (
+    <p className={cn("mt-1 font-mono text-xs tabular-nums", tone)}>
+      {formatSignedMoney(absolute, formatAbsolute)}
+      {percent !== null ? ` (${formatPct(percent)})` : ""}
+    </p>
+  )
 }
 
 export function PortfolioView({
@@ -209,18 +254,36 @@ export function PortfolioView({
             <p className="font-mono text-lg font-semibold tabular-nums">
               {formatArs(summary.valorArs)}
             </p>
+            <PortfolioValueChange
+              absolute={summary.variacionArs}
+              percent={summary.variacionPct}
+              formatAbsolute={formatArs}
+              showEmpty={summary.titulos > 0}
+            />
           </div>
           <div className="rounded-lg border bg-card p-4">
             <p className="text-sm text-muted-foreground">Valor MEP (USD)</p>
             <p className="font-mono text-lg font-semibold tabular-nums">
               {formatUsd(summary.valorMep)}
             </p>
+            <PortfolioValueChange
+              absolute={summary.variacionMep}
+              percent={summary.variacionPct}
+              formatAbsolute={formatUsd}
+              showEmpty={summary.titulos > 0}
+            />
           </div>
           <div className="rounded-lg border bg-card p-4">
             <p className="text-sm text-muted-foreground">Valor cable (USD)</p>
             <p className="font-mono text-lg font-semibold tabular-nums">
               {formatUsd(summary.valorCable)}
             </p>
+            <PortfolioValueChange
+              absolute={summary.variacionCable}
+              percent={summary.variacionPct}
+              formatAbsolute={formatUsd}
+              showEmpty={summary.titulos > 0}
+            />
           </div>
         </div>
         <PortfolioDistribution segments={composition} />
@@ -269,12 +332,13 @@ export function PortfolioView({
         </Empty>
       ) : (
         <div className="overflow-hidden rounded-lg border">
-          <Table className="min-w-[48rem]">
+          <Table className="min-w-[54rem]">
             <TableHeader>
               <TableRow className="bg-muted hover:bg-muted">
                 <TableHead className="min-w-24">Ticker</TableHead>
                 <TableHead className="min-w-40">Empresa</TableHead>
                 <TableHead className="min-w-24 text-right">Precio ARS</TableHead>
+                <TableHead className="min-w-20 text-right">Var. %</TableHead>
                 <TableHead className="min-w-28 text-right">Nominales</TableHead>
                 <TableHead className="min-w-24 text-right">Valor ARS</TableHead>
                 <TableHead className="min-w-16 text-right">%</TableHead>
@@ -315,6 +379,14 @@ export function PortfolioView({
                     </TableCell>
                     <TableCell className={numericCellClassName}>
                       {formatArs(cedear.price)}
+                    </TableCell>
+                    <TableCell
+                      className={cn(
+                        numericCellClassName,
+                        pctClassName(cedear.pctChange),
+                      )}
+                    >
+                      {formatPct(cedear.pctChange)}
                     </TableCell>
                     <TableCell className={numericCellClassName}>
                       <Input
