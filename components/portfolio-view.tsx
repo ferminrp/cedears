@@ -5,6 +5,7 @@ import { BriefcaseIcon, SearchIcon } from "lucide-react"
 import { type Cedear, formatArs, formatUsd } from "@/lib/cedears"
 import { logoUrl } from "@/lib/logo"
 import {
+  computePortfolioComposition,
   computePortfolioSummary,
   prunePortfolioHoldings,
   readPortfolioHoldings,
@@ -12,7 +13,9 @@ import {
   writePortfolioHoldings,
   type PortfolioHoldings,
 } from "@/lib/portfolio"
+import { formatPercent } from "@/lib/tools"
 import { cn } from "@/lib/utils"
+import { PortfolioDistribution } from "@/components/portfolio-distribution"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -122,6 +125,11 @@ export function PortfolioView({
     [cedears, holdings, mepAverage, cableAverage],
   )
 
+  const composition = useMemo(
+    () => computePortfolioComposition(cedears, holdings),
+    [cedears, holdings],
+  )
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
 
@@ -215,6 +223,7 @@ export function PortfolioView({
             </p>
           </div>
         </div>
+        <PortfolioDistribution segments={composition} />
         <p className="text-xs text-muted-foreground">
           {mepFootnote} · {cableFootnote}
         </p>
@@ -260,7 +269,7 @@ export function PortfolioView({
         </Empty>
       ) : (
         <div className="overflow-hidden rounded-lg border">
-          <Table className="min-w-[44rem]">
+          <Table className="min-w-[48rem]">
             <TableHeader>
               <TableRow className="bg-muted hover:bg-muted">
                 <TableHead className="min-w-24">Ticker</TableHead>
@@ -268,12 +277,19 @@ export function PortfolioView({
                 <TableHead className="min-w-24 text-right">Precio ARS</TableHead>
                 <TableHead className="min-w-28 text-right">Nominales</TableHead>
                 <TableHead className="min-w-24 text-right">Valor ARS</TableHead>
+                <TableHead className="min-w-16 text-right">%</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {displayed.map((cedear) => {
                 const quantity = holdings[cedear.Cedears] ?? 0
                 const valueArs = holdingValueArs(cedear, quantity)
+                const portfolioPct =
+                  quantity > 0 &&
+                  valueArs !== null &&
+                  summary.valorArs > 0
+                    ? (valueArs / summary.valorArs) * 100
+                    : null
 
                 return (
                   <TableRow key={cedear.Cedears} className="bg-card hover:bg-muted/50">
@@ -323,6 +339,9 @@ export function PortfolioView({
                       )}
                     >
                       {quantity > 0 ? formatArs(valueArs) : "—"}
+                    </TableCell>
+                    <TableCell className={numericCellClassName}>
+                      {formatPercent(portfolioPct)}
                     </TableCell>
                   </TableRow>
                 )

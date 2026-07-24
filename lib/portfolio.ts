@@ -116,3 +116,44 @@ export function computePortfolioSummary(
     valorCable: cableAverage > 0 ? valorArs / cableAverage : null,
   }
 }
+
+export type PortfolioCompositionSegment = {
+  ticker: string
+  name: string
+  valueArs: number
+  pct: number
+}
+
+export function computePortfolioComposition(
+  cedears: Cedear[],
+  holdings: PortfolioHoldings,
+): PortfolioCompositionSegment[] {
+  const cedearByTicker = new Map(cedears.map((cedear) => [cedear.Cedears, cedear]))
+
+  const segments: Omit<PortfolioCompositionSegment, "pct">[] = []
+  let totalValue = 0
+
+  for (const [ticker, quantity] of Object.entries(holdings)) {
+    if (!isValidQuantity(quantity)) continue
+
+    const cedear = cedearByTicker.get(ticker)
+    if (!cedear || cedear.price === null) continue
+
+    const valueArs = quantity * cedear.price
+    if (valueArs <= 0) continue
+
+    segments.push({
+      ticker,
+      name: cedear.Name,
+      valueArs,
+    })
+    totalValue += valueArs
+  }
+
+  segments.sort((a, b) => b.valueArs - a.valueArs)
+
+  return segments.map((segment) => ({
+    ...segment,
+    pct: totalValue > 0 ? (segment.valueArs / totalValue) * 100 : 0,
+  }))
+}
