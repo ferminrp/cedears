@@ -124,6 +124,9 @@ export function EarningsTimelineView({ timeline }: { timeline: EarningsTimeline 
                             height={32}
                             className="size-8 shrink-0 rounded-md bg-muted object-contain"
                             loading="lazy"
+                            onError={(event) => {
+                              event.currentTarget.src = "/placeholder.svg"
+                            }}
                           />
                           <div className="min-w-0 flex-1">
                             <p className="truncate text-sm font-medium">
