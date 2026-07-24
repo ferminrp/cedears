@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react"
 import { ArrowUpRight, CalendarIcon, SearchIcon } from "lucide-react"
 import type { EarningsDay, EarningsTimeline } from "@/lib/earnings"
-import { logoUrl } from "@/lib/logo"
+import { TickerLogo } from "@/components/ticker-logo"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import {
@@ -117,17 +117,7 @@ export function EarningsTimelineView({ timeline }: { timeline: EarningsTimeline 
                           rel="noopener noreferrer"
                           className="flex items-center gap-3 rounded-md px-2 py-1.5 -mx-2 transition-colors hover:bg-muted/50"
                         >
-                          <img
-                            src={logoUrl(item.tickerOriginal)}
-                            alt=""
-                            width={32}
-                            height={32}
-                            className="size-8 shrink-0 rounded-md bg-muted object-contain"
-                            loading="lazy"
-                            onError={(event) => {
-                              event.currentTarget.src = "/placeholder.svg"
-                            }}
-                          />
+                          <TickerLogo ticker={item.tickerOriginal} />
                           <div className="min-w-0 flex-1">
                             <p className="truncate text-sm font-medium">
                               {item.name}
