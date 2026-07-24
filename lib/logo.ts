@@ -10,7 +10,9 @@ export function logoDevUpstreamUrl(ticker: string): string {
   return `https://img.logo.dev/ticker/${encoded}?${params.toString()}`
 }
 
+const LOGO_PROXY_VERSION = "2"
+
 export function logoUrl(ticker: string): string {
   const encoded = encodeURIComponent(ticker.trim().toUpperCase())
-  return `/api/logo/${encoded}`
+  return `/api/logo/${encoded}?v=${LOGO_PROXY_VERSION}`
 }

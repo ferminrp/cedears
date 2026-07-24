@@ -1,6 +1,8 @@
 import { logoDevUpstreamUrl } from "@/lib/logo"
 
-export const revalidate = 2592000
+// Binary image responses must not use ISR or fetch-level text caching (vinext
+// stores fetch cache bodies via response.text(), which corrupts WebP bytes).
+export const dynamic = "force-dynamic"
 
 function logoDevReferer(request: Request): string {
   const fromRequest = request.headers.get("referer")
@@ -25,7 +27,7 @@ export async function GET(
     headers: {
       Referer: logoDevReferer(request),
     },
-    next: { revalidate: 2592000 },
+    cache: "no-store",
   })
 
   if (!upstream.ok) {
