@@ -162,6 +162,7 @@ export function toMarkdownDocument(cedears: Cedear[]): string {
     "",
     "Precio ARS = cotización BYMA en pesos. Precio US = subyacente en USD. Precio MEP/CCL = cotización del CEDEAR en dólar MEP (tickerD) y cable (tickerC). Precio justo USD = Precio US ÷ Ratio. Prima % = (Precio MEP − Precio justo) / Precio justo.",
     "",
+    "",
   ].join("\n")
 
   return `${preamble}${toMarkdown(cedears)}\n`
