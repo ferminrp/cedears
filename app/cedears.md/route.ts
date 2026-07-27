@@ -1,4 +1,4 @@
-import { toMarkdown } from '@/lib/cedears'
+import { toMarkdownDocument } from '@/lib/cedears'
 import { getCedears } from '@/lib/get-cedears'
 
 export const revalidate = 60
@@ -6,7 +6,7 @@ export const revalidate = 60
 export async function GET() {
   try {
     const cedears = await getCedears()
-    return new Response(toMarkdown(cedears), {
+    return new Response(toMarkdownDocument(cedears), {
       headers: {
         'Content-Type': 'text/markdown; charset=utf-8',
       },
