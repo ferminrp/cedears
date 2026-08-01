@@ -39,7 +39,7 @@ function commissionSortValue(commission: AlycCommission): number {
 const alycsData = [
   {
     id: "iebmas",
-    name: "IEBMas",
+    name: "IEB+",
     domain: "iebmas.com.ar",
     tarifarioUrl: "https://www.iebmas.com.ar/",
     standardCommission: { kind: "exact", percent: 0 },
