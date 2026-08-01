@@ -28,8 +28,7 @@ export function alycFaviconUrl(domain: string): string {
 }
 
 export function formatCommissionPercent(commission: AlycCommission): string {
-  const formatted = `${percentFormatter.format(commission.percent)}%`
-  return commission.kind === "upTo" ? `Hasta ${formatted}` : formatted
+  return `${percentFormatter.format(commission.percent)}%`
 }
 
 function commissionSortValue(commission: AlycCommission): number {
