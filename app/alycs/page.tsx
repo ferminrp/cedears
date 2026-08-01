@@ -39,10 +39,8 @@ export default function AlycsPage() {
       <Alert variant="callout">
         <InfoIcon />
         <AlertDescription>
-          Todas las comisiones publicadas son <strong>+ IVA</strong>. Además del
-          arancel del broker, todas las operaciones incluyen{" "}
-          <strong>derechos de mercado</strong>. Los valores mostrados corresponden a{" "}
-          <strong>personas físicas</strong>.
+          Todas las comisiones publicadas son <strong>+ IVA</strong>. Los valores
+          mostrados corresponden a <strong>personas físicas</strong>.
         </AlertDescription>
       </Alert>
 

@@ -14,7 +14,6 @@ export type Alyc = {
   domain: string
   tarifarioUrl: string
   standardCommission: AlycCommission
-  marketRightsPercent: number | null
   tiers: AlycTier[]
   notes: string[]
 }
@@ -33,22 +32,26 @@ export function formatCommissionPercent(commission: AlycCommission): string {
   return commission.kind === "upTo" ? `Hasta ${formatted}` : formatted
 }
 
-export function formatMarketRightsPercent(percent: number): string {
-  return `+ ${percentFormatter.format(percent)}% derechos de mercado`
-}
-
 function commissionSortValue(commission: AlycCommission): number {
   return commission.percent
 }
 
 const alycsData = [
   {
+    id: "iebmas",
+    name: "IEBMas",
+    domain: "iebmas.com.ar",
+    tarifarioUrl: "https://www.iebmas.com.ar/",
+    standardCommission: { kind: "exact", percent: 0 },
+    tiers: [],
+    notes: ["Suscripción mensual de $5.000 + IVA"],
+  },
+  {
     id: "iol",
     name: "IOL invertironline",
     domain: "invertironline.com",
     tarifarioUrl: "https://www.invertironline.com/tarifas",
     standardCommission: { kind: "exact", percent: 0.5 },
-    marketRightsPercent: 0.05,
     tiers: [
       {
         name: "Gold",
@@ -74,7 +77,6 @@ const alycsData = [
     domain: "balanz.com",
     tarifarioUrl: "https://balanz.com/comisiones/",
     standardCommission: { kind: "upTo", percent: 0.5 },
-    marketRightsPercent: null,
     tiers: [],
     notes: ["Bonifica 50% en operaciones intradiarias"],
   },
@@ -84,7 +86,6 @@ const alycsData = [
     domain: "cocos.capital",
     tarifarioUrl: "https://cocos.capital/tarifario",
     standardCommission: { kind: "exact", percent: 0.45 },
-    marketRightsPercent: null,
     tiers: [
       {
         name: "Web / app",
@@ -111,7 +112,6 @@ const alycsData = [
     tarifarioUrl:
       "https://help.bullmarketbrokers.com/wp-content/uploads/2025/03/Tarifario-Marzo-2025.pdf",
     standardCommission: { kind: "exact", percent: 0.5 },
-    marketRightsPercent: 0.08,
     tiers: [
       {
         name: "Digital",
@@ -137,7 +137,6 @@ const alycsData = [
     domain: "portfoliopersonal.com",
     tarifarioUrl: "https://www.portfoliopersonal.com/Contenido/comisiones",
     standardCommission: { kind: "exact", percent: 0.6 },
-    marketRightsPercent: null,
     tiers: [
       {
         name: "Internet",
@@ -158,7 +157,6 @@ const alycsData = [
     domain: "ecovalores.com.ar",
     tarifarioUrl: "https://www.ecovalores.com.ar/tarifario.php",
     standardCommission: { kind: "exact", percent: 0.33 },
-    marketRightsPercent: 0.05,
     tiers: [
       {
         name: "No asesoradas",
@@ -184,7 +182,6 @@ const alycsData = [
     domain: "rava.com",
     tarifarioUrl: "https://www.rava.com/nuestros-servicios/aranceles",
     standardCommission: { kind: "upTo", percent: 0.8 },
-    marketRightsPercent: 0.08,
     tiers: [],
     notes: [
       "Renta variable contado",
@@ -197,7 +194,6 @@ const alycsData = [
     domain: "allaria.com.ar",
     tarifarioUrl: "https://allaria.com.ar/doc/ArancelesComisiones.pdf",
     standardCommission: { kind: "upTo", percent: 0.5 },
-    marketRightsPercent: null,
     tiers: [
       {
         name: "Autogestionada",
@@ -214,7 +210,6 @@ const alycsData = [
     tarifarioUrl:
       "https://www.gruposbs.com/documentos/arancaeles-trading-20261.pdf",
     standardCommission: { kind: "exact", percent: 0.7 },
-    marketRightsPercent: null,
     tiers: [
       {
         name: "Quicktrade directos",
@@ -236,7 +231,6 @@ const alycsData = [
     tarifarioUrl:
       "https://www3.puentenet.com/repo/arch/tabla-aranceles-puente-2026.pdf",
     standardCommission: { kind: "upTo", percent: 0.5 },
-    marketRightsPercent: 0.06,
     tiers: [
       {
         name: "Internet",
@@ -244,11 +238,7 @@ const alycsData = [
         condition: "Operaciones por internet (acciones)",
       },
     ],
-    notes: [
-      "Mín. USD 10 + IVA",
-      "+0,0351% derechos de Bolsa",
-      "Tarifario de enero 2024",
-    ],
+    notes: ["Mín. USD 10 + IVA", "Tarifario de enero 2024"],
   },
 ] as const satisfies readonly Alyc[]
 

@@ -1,16 +1,12 @@
 import { AlycLogo } from "@/components/alyc-logo"
 import { footerLinkClassName } from "@/components/site-footer"
-import {
-  formatCommissionPercent,
-  formatMarketRightsPercent,
-  type Alyc,
-} from "@/lib/alycs"
+import { formatCommissionPercent, type Alyc } from "@/lib/alycs"
 
 export function AlycsList({ alycs }: { alycs: Alyc[] }) {
   return (
-    <ul className="divide-y border-t border-border/60">
+    <ul className="divide-y divide-border/60">
       {alycs.map((alyc) => (
-        <li key={alyc.id} className="py-4 first:pt-0">
+        <li key={alyc.id} className="py-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex min-w-0 items-start gap-3">
               <AlycLogo name={alyc.name} domain={alyc.domain} />
@@ -18,12 +14,10 @@ export function AlycsList({ alycs }: { alycs: Alyc[] }) {
                 <p className="font-medium leading-tight">{alyc.name}</p>
 
                 {alyc.tiers.length > 0 ? (
-                  <ul className="space-y-1 text-sm text-muted-foreground">
+                  <ul className="space-y-1 text-xs text-muted-foreground">
                     {alyc.tiers.map((tier) => (
                       <li key={`${alyc.id}-${tier.name}`}>
-                        <span className="font-medium text-foreground/80">
-                          {tier.name}
-                        </span>
+                        {tier.name}
                         {": "}
                         <span className="font-mono tabular-nums">
                           {formatCommissionPercent(tier.commission)}
@@ -58,11 +52,6 @@ export function AlycsList({ alycs }: { alycs: Alyc[] }) {
               <p className="font-mono text-lg tabular-nums">
                 {formatCommissionPercent(alyc.standardCommission)}
               </p>
-              {alyc.marketRightsPercent != null ? (
-                <p className="text-sm text-muted-foreground">
-                  {formatMarketRightsPercent(alyc.marketRightsPercent)}
-                </p>
-              ) : null}
             </div>
           </div>
         </li>
