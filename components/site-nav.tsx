@@ -19,6 +19,7 @@ const links = [
   { href: "/portfolio", label: "Portfolio" },
   { href: "/categorias", label: "Categorías" },
   { href: "/herramientas", label: "Herramientas" },
+  { href: "/alycs", label: "ALyCs" },
   { href: "/dolar-mep", label: "Dólar MEP" },
   { href: "/dolar-cable", label: "Dólar cable" },
   { href: "/earnings", label: "Earnings" },
