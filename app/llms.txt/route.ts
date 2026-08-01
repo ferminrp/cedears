@@ -26,6 +26,7 @@ export async function GET() {
     `- [Earnings](${siteUrl}/earnings): calendario de resultados de subyacentes`,
     `- [Portfolio](${siteUrl}/portfolio): seguimiento de tenencias`,
     `- [Herramientas](${siteUrl}/herramientas): rebalanceo y DCA`,
+    `- [ALyCs](${siteUrl}/alycs): comisiones de brokers para operar CEDEARs`,
     '',
   ].join('\n')
 
