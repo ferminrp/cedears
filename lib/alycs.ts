@@ -103,27 +103,26 @@ const alycsData = [
     id: "bull-market",
     name: "Bull Market Brokers",
     domain: "bullmarketbrokers.com",
-    tarifarioUrl:
-      "https://help.bullmarketbrokers.com/wp-content/uploads/2025/03/Tarifario-Marzo-2025.pdf",
+    tarifarioUrl: "https://help.bullmarketbrokers.com/guia/comisiones/",
     standardCommission: { kind: "exact", percent: 0.5 },
     tiers: [
       {
-        name: "Digital",
+        name: "Digital Account",
         commission: { kind: "exact", percent: 0.5 },
-        condition: "Canal digital",
+        condition: "Acciones, CEDEARs, bonos, opciones y ejercicios",
       },
       {
         name: "Active Trader",
         commission: { kind: "exact", percent: 0.25 },
-        condition: "Plan Active Trader",
+        condition: "Desde AR$ 5.000.000 de volumen mensual",
       },
       {
         name: "Active Trader Plus",
         commission: { kind: "exact", percent: 0.1 },
-        condition: "Plan Active Trader Plus",
+        condition: "Desde AR$ 25.000.000 de volumen mensual",
       },
     ],
-    notes: ["Tarifario de marzo 2025"],
+    notes: [],
   },
   {
     id: "ppi",
