@@ -94,12 +94,7 @@ const alycsData = [
       {
         name: "Gold",
         commission: { kind: "exact", percent: 0 },
-        condition: "Publican 0% de comisión (sin incluir el costo del plan)",
-      },
-      {
-        name: "Pro",
-        commission: { kind: "exact", percent: 0 },
-        condition: "Publican 0% de comisión (sin incluir el costo del plan)",
+        condition: "Hasta 0,15% AUM + IVA mensual",
       },
     ],
     notes: [],
