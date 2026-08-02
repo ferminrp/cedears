@@ -2,7 +2,6 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { CalendarClockIcon, ScaleIcon } from "lucide-react"
 
-import { SiteNav } from "@/components/site-nav"
 import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
 import { buildPageOpenGraph } from "@/lib/site"
 
@@ -38,9 +37,8 @@ const tools = [
 
 export default function HerramientasPage() {
   return (
-    <main className="mx-auto flex min-h-svh w-full max-w-5xl flex-col gap-8 px-4 py-10 md:py-16">
+    <>
       <header className="flex flex-col gap-4">
-        <SiteNav currentPath="/herramientas" />
         <h1 className="text-balance text-3xl font-semibold tracking-tight md:text-4xl">
           Herramientas
         </h1>
@@ -84,6 +82,6 @@ export default function HerramientasPage() {
         </a>
         .
       </SiteFooter>
-    </main>
+    </>
   )
 }

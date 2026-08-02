@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { getCedears } from '@/lib/get-cedears'
 import { CedearsList } from '@/components/cedears-list'
-import { SiteNav } from '@/components/site-nav'
 import { SiteFooter, footerLinkClassName } from '@/components/site-footer'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { getSiteUrl, siteConfig, buildPageOpenGraph } from '@/lib/site'
@@ -123,54 +122,51 @@ export default async function Page() {
   return (
     <>
       {dataLoaded && <HomeJsonLd cedearCount={cedearCount} />}
-      <main className="mx-auto flex min-h-svh w-full max-w-5xl flex-col gap-8 px-4 py-10 md:py-16">
-        <header className="flex flex-col gap-4">
-          <SiteNav currentPath="/" />
-          <h1 className="text-balance text-3xl font-semibold tracking-tight md:text-4xl">
-            {siteConfig.title}
-          </h1>
-        </header>
+      <header className="flex flex-col gap-4">
+        <h1 className="text-balance text-3xl font-semibold tracking-tight md:text-4xl">
+          {siteConfig.title}
+        </h1>
+      </header>
 
-        {content}
+      {content}
 
-        <section
-          aria-labelledby="sobre-cedears"
-          className="rounded-lg border bg-muted/30 p-6 text-sm leading-relaxed text-muted-foreground"
+      <section
+        aria-labelledby="sobre-cedears"
+        className="rounded-lg border bg-muted/30 p-6 text-sm leading-relaxed text-muted-foreground"
+      >
+        <h2 id="sobre-cedears" className="mb-2 text-base font-medium text-foreground">
+          ¿Qué son los CEDEARs?
+        </h2>
+        <p>
+          Los CEDEARs (Certificados de Depósito Argentinos) permiten invertir en
+          acciones de empresas extranjeras desde la Bolsa de Comercio de Buenos Aires
+          (BYMA), en pesos argentinos. Este listado reúne todos los CEDEARs
+          disponibles con su ratio de conversión, ideal para consultar antes de operar
+          o alimentar asistentes de inteligencia artificial con datos confiables.
+        </p>
+      </section>
+
+      <SiteFooter>
+        Listado provisto por{" "}
+        <a
+          href="https://github.com/ferminrp/google-sheets-argento"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={footerLinkClassName}
         >
-          <h2 id="sobre-cedears" className="mb-2 text-base font-medium text-foreground">
-            ¿Qué son los CEDEARs?
-          </h2>
-          <p>
-            Los CEDEARs (Certificados de Depósito Argentinos) permiten invertir en
-            acciones de empresas extranjeras desde la Bolsa de Comercio de Buenos Aires
-            (BYMA), en pesos argentinos. Este listado reúne todos los CEDEARs
-            disponibles con su ratio de conversión, ideal para consultar antes de operar
-            o alimentar asistentes de inteligencia artificial con datos confiables.
-          </p>
-        </section>
-
-        <SiteFooter>
-          Listado provisto por{" "}
-          <a
-            href="https://github.com/ferminrp/google-sheets-argento"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={footerLinkClassName}
-          >
-            google-sheets-argento
-          </a>
-          . Precios en vivo de{" "}
-          <a
-            href="https://data912.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={footerLinkClassName}
-          >
-            data912
-          </a>
-          .
-        </SiteFooter>
-      </main>
+          google-sheets-argento
+        </a>
+        . Precios en vivo de{" "}
+        <a
+          href="https://data912.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={footerLinkClassName}
+        >
+          data912
+        </a>
+        .
+      </SiteFooter>
     </>
   )
 }

@@ -1,5 +1,6 @@
+import { cache } from "react"
+import { unstable_cache } from "next/cache"
 import { type Cedear } from "@/lib/cedears"
-import { yahooFinance } from "@/lib/yahoo-finance"
 
 export type CedearBase = {
   Cedears: string
@@ -157,6 +158,8 @@ async function getYahooUnderlyingPrices(
   const prices = new Map<string, number>()
   if (symbols.length === 0) return prices
 
+  const { yahooFinance } = await import("@/lib/yahoo-finance")
+
   for (const chunk of chunkSymbols(symbols, YAHOO_QUOTE_CHUNK_SIZE)) {
     try {
       const quotes = await yahooFinance.quote(chunk, {
@@ -235,13 +238,16 @@ export async function getCedearByTicker(ticker: string): Promise<Cedear | null> 
   return cedears.find((c) => normalizeTicker(c.Cedears) === normalized) ?? null
 }
 
-export async function getCedears(): Promise<Cedear[]> {
-  const data = await getCedearBases()
-
-  const [argResult, usaResult] = await Promise.allSettled([
-    getLiveQuotes(LIVE_QUOTES_URL),
-    getLiveQuotes(USA_QUOTES_URL),
+async function loadCedears(): Promise<Cedear[]> {
+  const [data, liveResults] = await Promise.all([
+    getCedearBases(),
+    Promise.allSettled([
+      getLiveQuotes(LIVE_QUOTES_URL),
+      getLiveQuotes(USA_QUOTES_URL),
+    ]),
   ])
+
+  const [argResult, usaResult] = liveResults
 
   const argQuotes = argResult.status === "fulfilled" ? argResult.value : null
   const usaQuotes = usaResult.status === "fulfilled" ? usaResult.value : null
@@ -266,3 +272,11 @@ export async function getCedears(): Promise<Cedear[]> {
 
   return fillMissingUsPrices(merged)
 }
+
+const getCedearsUncached = unstable_cache(loadCedears, ["cedears-live"], {
+  revalidate: 300,
+})
+
+export const getCedears = cache(async (): Promise<Cedear[]> => {
+  return getCedearsUncached()
+})

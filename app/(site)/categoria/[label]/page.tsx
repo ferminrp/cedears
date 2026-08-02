@@ -2,7 +2,6 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { CedearsList } from "@/components/cedears-list"
-import { SiteNav } from "@/components/site-nav"
 import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import {
@@ -149,54 +148,51 @@ export default async function CategoryPage({ params }: PageProps) {
   return (
     <>
       <CategoryJsonLd tag={tag} count={baseCount} />
-      <main className="mx-auto flex min-h-svh w-full max-w-5xl flex-col gap-8 px-4 py-10 md:py-16">
-        <header className="flex flex-col gap-4">
-          <SiteNav currentPath="/categorias" />
-          <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
-            <ol className="flex flex-wrap items-center gap-1.5">
-              <li>
-                <Link href="/" className="hover:text-foreground">
-                  Listado
-                </Link>
-              </li>
-              <li aria-hidden>/</li>
-              <li>
-                <Link href="/categorias" className="hover:text-foreground">
-                  Categorías
-                </Link>
-              </li>
-              <li aria-hidden>/</li>
-              <li className="font-medium text-foreground">{title}</li>
-            </ol>
-          </nav>
-          <h1 className="text-balance text-3xl font-semibold tracking-tight md:text-4xl">
-            {title}
-          </h1>
-          <p className="text-muted-foreground">
-            Listado de CEDEARs etiquetados como {tag}, con precios, ratios y datos
-            actualizados en Argentina.
-          </p>
-        </header>
+      <header className="flex flex-col gap-4">
+        <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
+          <ol className="flex flex-wrap items-center gap-1.5">
+            <li>
+              <Link href="/" className="hover:text-foreground">
+                Listado
+              </Link>
+            </li>
+            <li aria-hidden>/</li>
+            <li>
+              <Link href="/categorias" className="hover:text-foreground">
+                Categorías
+              </Link>
+            </li>
+            <li aria-hidden>/</li>
+            <li className="font-medium text-foreground">{title}</li>
+          </ol>
+        </nav>
+        <h1 className="text-balance text-3xl font-semibold tracking-tight md:text-4xl">
+          {title}
+        </h1>
+        <p className="text-muted-foreground">
+          Listado de CEDEARs etiquetados como {tag}, con precios, ratios y datos
+          actualizados en Argentina.
+        </p>
+      </header>
 
-        {content}
+      {content}
 
-        <SiteFooter>
-          <Link href="/" className={footerLinkClassName}>
-            Volver al listado completo
-          </Link>
-          {" · "}
-          Datos de{" "}
-          <a
-            href="https://data912.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={footerLinkClassName}
-          >
-            data912
-          </a>
-          .
-        </SiteFooter>
-      </main>
+      <SiteFooter>
+        <Link href="/" className={footerLinkClassName}>
+          Volver al listado completo
+        </Link>
+        {" · "}
+        Datos de{" "}
+        <a
+          href="https://data912.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={footerLinkClassName}
+        >
+          data912
+        </a>
+        .
+      </SiteFooter>
     </>
   )
 }

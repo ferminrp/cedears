@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
+import Link, { useLinkStatus } from "next/link"
+import { usePathname } from "next/navigation"
 import { MenuIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -33,7 +34,29 @@ const isLinkActive = (currentPath: string, href: string) =>
 const activeLabel = (currentPath: string) =>
   links.find((link) => isLinkActive(currentPath, link.href))?.label ?? "Menú"
 
-export function SiteNav({ currentPath }: { currentPath: string }) {
+function NavLinkLabel({
+  label,
+}: {
+  label: string
+}) {
+  const { pending } = useLinkStatus()
+
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5",
+        pending && "animate-pulse opacity-70",
+      )}
+      aria-busy={pending || undefined}
+    >
+      {label}
+      {pending ? <span className="sr-only">Cargando</span> : null}
+    </span>
+  )
+}
+
+export function SiteNav() {
+  const pathname = usePathname() ?? "/"
   const [open, setOpen] = useState(false)
 
   return (
@@ -41,7 +64,7 @@ export function SiteNav({ currentPath }: { currentPath: string }) {
       {/* Desktop: enlaces horizontales */}
       <nav aria-label="Secciones" className="hidden flex-wrap gap-2 md:flex">
         {links.map((link) => {
-          const isActive = isLinkActive(currentPath, link.href)
+          const isActive = isLinkActive(pathname, link.href)
 
           return (
             <Link
@@ -55,7 +78,7 @@ export function SiteNav({ currentPath }: { currentPath: string }) {
                   : "text-muted-foreground hover:bg-muted hover:text-foreground",
               )}
             >
-              {link.label}
+              <NavLinkLabel label={link.label} />
             </Link>
           )
         })}
@@ -68,7 +91,7 @@ export function SiteNav({ currentPath }: { currentPath: string }) {
             render={
               <Button variant="outline" size="sm" className="gap-2">
                 <MenuIcon className="size-4" />
-                {activeLabel(currentPath)}
+                {activeLabel(pathname)}
               </Button>
             }
           />
@@ -78,7 +101,7 @@ export function SiteNav({ currentPath }: { currentPath: string }) {
             </SheetHeader>
             <nav aria-label="Secciones" className="flex flex-col gap-1 px-2 pb-4">
               {links.map((link) => {
-                const isActive = isLinkActive(currentPath, link.href)
+                const isActive = isLinkActive(pathname, link.href)
 
                 return (
                   <Link
@@ -93,7 +116,7 @@ export function SiteNav({ currentPath }: { currentPath: string }) {
                         : "text-muted-foreground hover:bg-muted hover:text-foreground",
                     )}
                   >
-                    {link.label}
+                    <NavLinkLabel label={link.label} />
                   </Link>
                 )
               })}
