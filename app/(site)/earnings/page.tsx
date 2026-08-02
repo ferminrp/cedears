@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
 import { EarningsTimelineView } from "@/components/earnings-timeline"
-import { SiteNav } from "@/components/site-nav"
 import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import {
@@ -65,9 +64,8 @@ export default async function EarningsPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-svh w-full max-w-5xl flex-col gap-8 px-4 py-10 md:py-16">
+    <>
       <header className="flex flex-col gap-4">
-        <SiteNav currentPath="/earnings" />
         <h1 className="text-balance text-3xl font-semibold tracking-tight md:text-4xl">
           {title}
         </h1>
@@ -96,6 +94,6 @@ export default async function EarningsPage() {
         </a>
         .
       </SiteFooter>
-    </main>
+    </>
   )
 }

@@ -3,7 +3,6 @@ import Link from "next/link"
 import { InfoIcon } from "lucide-react"
 
 import { AlycsList } from "@/components/alycs-list"
-import { SiteNav } from "@/components/site-nav"
 import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { getAlycs } from "@/lib/alycs"
@@ -24,9 +23,8 @@ export const metadata: Metadata = {
 
 export default function AlycsPage() {
   return (
-    <main className="mx-auto flex min-h-svh w-full max-w-5xl flex-col gap-8 px-4 py-10 md:py-16">
+    <>
       <header className="flex flex-col gap-4">
-        <SiteNav currentPath="/alycs" />
         <h1 className="text-balance text-3xl font-semibold tracking-tight md:text-4xl">
           ALyCs para operar CEDEARs
         </h1>
@@ -58,6 +56,6 @@ export default function AlycsPage() {
           .
         </p>
       </SiteFooter>
-    </main>
+    </>
   )
 }

@@ -7,7 +7,6 @@ import { CedearDetailView } from "@/components/cedear-detail-view"
 import { CedearFaqs } from "@/components/cedear-faqs"
 import { CedearNews } from "@/components/cedear-news"
 import { CedearPriceChart } from "@/components/cedear-price-chart"
-import { SiteNav } from "@/components/site-nav"
 import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { buildCedearFaqs } from "@/lib/cedear-faqs"
@@ -136,100 +135,97 @@ export default async function CedearPage({ params }: PageProps) {
   return (
     <>
       <CedearJsonLd cedear={cedear} faqs={faqs} />
-      <main className="mx-auto flex min-h-svh w-full max-w-5xl flex-col gap-8 px-4 py-10 md:py-16">
-        <header className="flex flex-col gap-4">
-          <SiteNav currentPath="/" />
-          <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
-            <ol className="flex flex-wrap items-center gap-1.5">
-              <li>
-                <Link href="/" className="hover:text-foreground">
-                  Listado
-                </Link>
-              </li>
-              <li aria-hidden>/</li>
-              <li className="font-medium text-foreground">{cedear.Cedears}</li>
-            </ol>
-          </nav>
-          <div className="flex items-start gap-4">
-            <img
-              src={logoUrl(cedear.TickerOriginal)}
-              alt=""
-              width={48}
-              height={48}
-              className="size-12 shrink-0 rounded-md bg-muted object-contain"
-            />
-            <div className="min-w-0">
-              <h1 className="font-mono text-3xl font-semibold tracking-tight md:text-4xl">
-                CEDEAR {cedear.Cedears}
-              </h1>
-              <p className="mt-1 text-lg text-muted-foreground">{cedear.Name}</p>
-            </div>
+      <header className="flex flex-col gap-4">
+        <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
+          <ol className="flex flex-wrap items-center gap-1.5">
+            <li>
+              <Link href="/" className="hover:text-foreground">
+                Listado
+              </Link>
+            </li>
+            <li aria-hidden>/</li>
+            <li className="font-medium text-foreground">{cedear.Cedears}</li>
+          </ol>
+        </nav>
+        <div className="flex items-start gap-4">
+          <img
+            src={logoUrl(cedear.TickerOriginal)}
+            alt=""
+            width={48}
+            height={48}
+            className="size-12 shrink-0 rounded-md bg-muted object-contain"
+          />
+          <div className="min-w-0">
+            <h1 className="font-mono text-3xl font-semibold tracking-tight md:text-4xl">
+              CEDEAR {cedear.Cedears}
+            </h1>
+            <p className="mt-1 text-lg text-muted-foreground">{cedear.Name}</p>
           </div>
-          <Alert variant="callout">
-            <InfoIcon />
-            <AlertDescription>
-              Sí, existe CEDEAR de {cedear.TickerOriginal} en Argentina. Operás
-              bajo el ticker {cedear.Cedears} en BYMA, con ratio {cedear.Ratio}:1
-              respecto a la acción en {cedear.Market}.
-            </AlertDescription>
-          </Alert>
-        </header>
+        </div>
+        <Alert variant="callout">
+          <InfoIcon />
+          <AlertDescription>
+            Sí, existe CEDEAR de {cedear.TickerOriginal} en Argentina. Operás
+            bajo el ticker {cedear.Cedears} en BYMA, con ratio {cedear.Ratio}:1
+            respecto a la acción en {cedear.Market}.
+          </AlertDescription>
+        </Alert>
+      </header>
 
-        {profile ? (
-          <section
-            aria-labelledby="empresa-heading"
-            className="rounded-lg border bg-card p-6"
-          >
-            <h2 id="empresa-heading" className="text-xl font-semibold tracking-tight">
-              Empresa subyacente
-            </h2>
-            <div className="mt-4">
-              <CedearCompanyProfile profile={profile} showHeading={false} />
-            </div>
-          </section>
-        ) : null}
-
+      {profile ? (
         <section
-          aria-labelledby="historico-heading"
+          aria-labelledby="empresa-heading"
           className="rounded-lg border bg-card p-6"
         >
-          <h2 id="historico-heading" className="mb-4 text-xl font-semibold tracking-tight">
-            Precio histórico
+          <h2 id="empresa-heading" className="text-xl font-semibold tracking-tight">
+            Empresa subyacente
           </h2>
-          <CedearPriceChart ticker={cedear.Cedears} history={history} />
+          <div className="mt-4">
+            <CedearCompanyProfile profile={profile} showHeading={false} />
+          </div>
         </section>
+      ) : null}
 
-        <section
-          aria-labelledby="cotizacion-heading"
-          className="rounded-lg border bg-card p-6"
+      <section
+        aria-labelledby="historico-heading"
+        className="rounded-lg border bg-card p-6"
+      >
+        <h2 id="historico-heading" className="mb-4 text-xl font-semibold tracking-tight">
+          Precio histórico
+        </h2>
+        <CedearPriceChart ticker={cedear.Cedears} history={history} />
+      </section>
+
+      <section
+        aria-labelledby="cotizacion-heading"
+        className="rounded-lg border bg-card p-6"
+      >
+        <h2 id="cotizacion-heading" className="text-xl font-semibold tracking-tight">
+          Cotización y datos
+        </h2>
+        <CedearDetailView cedear={cedear} />
+      </section>
+
+      <CedearFaqs faqs={faqs} />
+
+      <CedearNews items={news} tickerOriginal={cedear.TickerOriginal} />
+
+      <SiteFooter>
+        <Link href="/" className={footerLinkClassName}>
+          Volver al listado completo
+        </Link>
+        {" · "}
+        Datos de{" "}
+        <a
+          href="https://data912.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={footerLinkClassName}
         >
-          <h2 id="cotizacion-heading" className="text-xl font-semibold tracking-tight">
-            Cotización y datos
-          </h2>
-          <CedearDetailView cedear={cedear} />
-        </section>
-
-        <CedearFaqs faqs={faqs} />
-
-        <CedearNews items={news} tickerOriginal={cedear.TickerOriginal} />
-
-        <SiteFooter>
-          <Link href="/" className={footerLinkClassName}>
-            Volver al listado completo
-          </Link>
-          {" · "}
-          Datos de{" "}
-          <a
-            href="https://data912.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={footerLinkClassName}
-          >
-            data912
-          </a>
-          .
-        </SiteFooter>
-      </main>
+          data912
+        </a>
+        .
+      </SiteFooter>
     </>
   )
 }
