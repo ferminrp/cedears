@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation"
 import { MenuIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { useNavPending } from "@/components/nav-pending"
 import { Button } from "@/components/ui/button"
 import {
   Sheet,
@@ -34,11 +35,7 @@ const isLinkActive = (currentPath: string, href: string) =>
 const activeLabel = (currentPath: string) =>
   links.find((link) => isLinkActive(currentPath, link.href))?.label ?? "Menú"
 
-function NavLinkLabel({
-  label,
-}: {
-  label: string
-}) {
+function NavLinkLabel({ label }: { label: string }) {
   const { pending } = useLinkStatus()
 
   return (
@@ -55,6 +52,47 @@ function NavLinkLabel({
   )
 }
 
+function NavLink({
+  href,
+  label,
+  className,
+  onNavigate,
+}: {
+  href: string
+  label: string
+  className?: string
+  onNavigate?: () => void
+}) {
+  const pathname = usePathname() ?? "/"
+  const { pendingHref, setPendingHref } = useNavPending()
+  const isActive = isLinkActive(pathname, href)
+  const isPendingTarget = pendingHref === href
+
+  return (
+    <Link
+      href={href}
+      aria-current={isActive ? "page" : undefined}
+      aria-busy={isPendingTarget || undefined}
+      onNavigate={() => {
+        if (href !== pathname) {
+          setPendingHref(href)
+        }
+        onNavigate?.()
+      }}
+      className={cn(
+        "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+        isActive || isPendingTarget
+          ? "bg-foreground text-background"
+          : "text-muted-foreground hover:bg-muted hover:text-foreground",
+        isPendingTarget && "animate-pulse",
+        className,
+      )}
+    >
+      <NavLinkLabel label={label} />
+    </Link>
+  )
+}
+
 export function SiteNav() {
   const pathname = usePathname() ?? "/"
   const [open, setOpen] = useState(false)
@@ -63,25 +101,9 @@ export function SiteNav() {
     <>
       {/* Desktop: enlaces horizontales */}
       <nav aria-label="Secciones" className="hidden flex-wrap gap-2 md:flex">
-        {links.map((link) => {
-          const isActive = isLinkActive(pathname, link.href)
-
-          return (
-            <Link
-              key={link.href}
-              href={link.href}
-              aria-current={isActive ? "page" : undefined}
-              className={cn(
-                "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
-                isActive
-                  ? "bg-foreground text-background"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
-              )}
-            >
-              <NavLinkLabel label={link.label} />
-            </Link>
-          )
-        })}
+        {links.map((link) => (
+          <NavLink key={link.href} href={link.href} label={link.label} />
+        ))}
       </nav>
 
       {/* Mobile: botón de menú */}
@@ -100,26 +122,15 @@ export function SiteNav() {
               <SheetTitle>Secciones</SheetTitle>
             </SheetHeader>
             <nav aria-label="Secciones" className="flex flex-col gap-1 px-2 pb-4">
-              {links.map((link) => {
-                const isActive = isLinkActive(pathname, link.href)
-
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    aria-current={isActive ? "page" : undefined}
-                    onClick={() => setOpen(false)}
-                    className={cn(
-                      "rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                      isActive
-                        ? "bg-foreground text-background"
-                        : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                    )}
-                  >
-                    <NavLinkLabel label={link.label} />
-                  </Link>
-                )
-              })}
+              {links.map((link) => (
+                <NavLink
+                  key={link.href}
+                  href={link.href}
+                  label={link.label}
+                  className="px-3 py-2"
+                  onNavigate={() => setOpen(false)}
+                />
+              ))}
             </nav>
           </SheetContent>
         </Sheet>
