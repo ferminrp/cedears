@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { AhrefsAnalytics } from "@/components/ahrefs-analytics";
 import { GoogleAnalytics } from "@/components/google-analytics";
 import { getSiteUrl, siteConfig } from "@/lib/site";
 import { Toaster } from "@/components/ui/sonner";
@@ -76,7 +77,12 @@ export default function RootLayout({
       <body className="antialiased">
         {children}
         <Toaster />
-        {process.env.NODE_ENV === 'production' && <GoogleAnalytics />}
+        {process.env.NODE_ENV === 'production' && (
+          <>
+            <GoogleAnalytics />
+            <AhrefsAnalytics />
+          </>
+        )}
       </body>
     </html>
   )
