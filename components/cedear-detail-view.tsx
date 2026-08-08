@@ -4,6 +4,7 @@ import {
   formatArs,
   formatPct,
   formatUsd,
+  formatVolume,
   implicitFxRate,
   pctClassName,
   premiumPct,
@@ -64,6 +65,10 @@ export function CedearDetailView({ cedear }: { cedear: Cedear }) {
           label="Var. %"
           value={formatPct(cedear.pctChange)}
           valueClassName={pctClassName(cedear.pctChange)}
+        />
+        <DetailRow
+          label="Volumen operado"
+          value={formatVolume(cedear.volume)}
         />
       </section>
 

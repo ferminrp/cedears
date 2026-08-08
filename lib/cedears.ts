@@ -88,7 +88,7 @@ export function pctClassName(value: number | null): string {
   return "text-red-600 dark:text-red-400"
 }
 
-function formatVolume(value: number | null): string {
+export function formatVolume(value: number | null): string {
   if (value === null) return "—"
   return volumeFormatter.format(value)
 }
