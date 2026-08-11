@@ -83,7 +83,7 @@ const alycsData = [
     id: "cocos",
     name: "Cocos Capital",
     domain: "cocos.capital",
-    tarifarioUrl: "https://cocos.capital/tarifario",
+    tarifarioUrl: "https://cocos-capital.onelink.me/8LJp/eubb0xb8",
     standardCommission: { kind: "exact", percent: 0.45 },
     tiers: [
       {
