@@ -9,6 +9,7 @@ export async function GET() {
     return new Response(toMarkdownDocument(cedears), {
       headers: {
         'Content-Type': 'text/markdown; charset=utf-8',
+        Vary: 'Accept',
       },
     })
   } catch {
