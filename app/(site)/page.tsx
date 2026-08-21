@@ -1,9 +1,14 @@
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
 import { getCedears } from '@/lib/get-cedears'
 import { CedearsList } from '@/components/cedears-list'
 import { SiteFooter, footerLinkClassName } from '@/components/site-footer'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { getSiteUrl, siteConfig, buildPageOpenGraph } from '@/lib/site'
+import {
+  buildHomeIntro,
+  buildHomeJsonLd,
+} from '@/lib/agent-resources'
 
 export const revalidate = 300
 
@@ -21,73 +26,11 @@ export const metadata: Metadata = {
 }
 
 function HomeJsonLd({ cedearCount }: { cedearCount: number }) {
-  const siteUrl = getSiteUrl()
-
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@graph': [
-      {
-        '@type': 'WebSite',
-        '@id': `${siteUrl}/#website`,
-        url: siteUrl,
-        name: siteConfig.name,
-        description: siteConfig.description,
-        inLanguage: 'es-AR',
-      },
-      {
-        '@type': 'WebPage',
-        '@id': `${siteUrl}/#webpage`,
-        url: siteUrl,
-        name: siteConfig.title,
-        description: siteConfig.description,
-        inLanguage: 'es-AR',
-        isPartOf: { '@id': `${siteUrl}/#website` },
-      },
-      {
-        '@type': 'Dataset',
-        '@id': `${siteUrl}/#dataset`,
-        name: 'Listado de CEDEARs en Argentina',
-        description:
-          'Base de datos gratuita y actualizada de CEDEARs con ticker, empresa, mercado de origen, ratio de conversión, precios ARS/US/MEP/CCL, volumen, prima y tags, lista para exportar y compartir con agentes de IA.',
-        inLanguage: 'es-AR',
-        isAccessibleForFree: true,
-        keywords: siteConfig.keywords.join(', '),
-        spatialCoverage: {
-          '@type': 'Place',
-          name: 'Argentina',
-        },
-        distribution: [
-          {
-            '@type': 'DataDownload',
-            encodingFormat: 'text/markdown',
-            contentUrl: `${siteUrl}/cedears.md`,
-          },
-          {
-            '@type': 'DataDownload',
-            encodingFormat: 'text/csv',
-            contentUrl: `${siteUrl}/cedears.csv`,
-          },
-        ],
-        variableMeasured: [
-          'Ticker CEDEAR',
-          'Empresa',
-          'Mercado de origen',
-          'Ratio de conversión',
-          'Ticker original',
-          'Precio ARS',
-          'Variación porcentual diaria',
-          'Volumen',
-          'Precio US',
-          'Precio MEP',
-          'Precio CCL',
-          'Precio justo USD',
-          'Prima porcentual MEP',
-          'Tags',
-        ],
-        ...(cedearCount > 0 ? { size: `${cedearCount} CEDEARs` } : {}),
-      },
-    ],
-  }
+  const jsonLd = buildHomeJsonLd({
+    siteUrl: getSiteUrl(),
+    cedearCount,
+    organization: siteConfig.organization,
+  })
 
   return (
     <script
@@ -97,18 +40,12 @@ function HomeJsonLd({ cedearCount }: { cedearCount: number }) {
   )
 }
 
-export default async function Page() {
-  let content
-  let cedearCount = 0
-  let dataLoaded = false
-
+async function HomeCedearsPanel() {
   try {
     const cedears = await getCedears()
-    cedearCount = cedears.length
-    dataLoaded = true
-    content = <CedearsList cedears={cedears} />
+    return <CedearsList cedears={cedears} />
   } catch {
-    content = (
+    return (
       <Alert variant="destructive">
         <AlertTitle>Error al cargar los datos</AlertTitle>
         <AlertDescription>
@@ -118,17 +55,37 @@ export default async function Page() {
       </Alert>
     )
   }
+}
+
+export default function Page() {
+  const siteUrl = getSiteUrl()
+  const intro = buildHomeIntro({
+    siteUrl,
+    brandName: siteConfig.name,
+  })
 
   return (
     <>
-      {dataLoaded && <HomeJsonLd cedearCount={cedearCount} />}
+      <HomeJsonLd cedearCount={0} />
       <header className="flex flex-col gap-4">
         <h1 className="text-balance text-3xl font-semibold tracking-tight md:text-4xl">
-          {siteConfig.title}
+          {siteConfig.name}
         </h1>
+        <p className="text-pretty text-sm text-muted-foreground">
+          Listado completo de CEDEARs cotizados en BYMA, publicado en cedears.com.
+        </p>
+        <p className="text-pretty text-sm leading-relaxed text-muted-foreground">
+          {intro}
+        </p>
       </header>
 
-      {content}
+      <Suspense
+        fallback={
+          <p className="text-sm text-muted-foreground">Cargando listado de CEDEARs…</p>
+        }
+      >
+        <HomeCedearsPanel />
+      </Suspense>
 
       <section
         aria-labelledby="sobre-cedears"
@@ -140,7 +97,7 @@ export default async function Page() {
         <p>
           Los CEDEARs (Certificados de Depósito Argentinos) permiten invertir en
           acciones de empresas extranjeras desde la Bolsa de Comercio de Buenos Aires
-          (BYMA), en pesos argentinos. Este listado reúne todos los CEDEARs
+          (BYMA), en pesos argentinos. {siteConfig.name} reúne todos los CEDEARs
           disponibles con su ratio de conversión, ideal para consultar antes de operar
           o alimentar asistentes de inteligencia artificial con datos confiables.
         </p>

@@ -1,19 +1,22 @@
 export const siteConfig = {
   name: 'CEDEARs Argentina',
+  alternateNames: ['cedears.com', 'Cedears.com', 'CEDEARs Argentina (cedears.com)'],
   githubRepo: 'https://github.com/ferminrp/cedears',
-  title: 'Listado completo de CEDEARs en Argentina',
+  title: 'CEDEARs Argentina — listado completo de CEDEARs en BYMA',
   description:
-    'Listado completo y actualizado de CEDEARs (Certificados de Depósito Argentinos) en Argentina. Ticker, empresa, mercado, ratio, precio y variación diaria. Gratis, listo para usar y compartir con agentes de IA.',
+    'CEDEARs Argentina (cedears.com): listado completo y actualizado de Certificados de Depósito Argentinos en BYMA. Ticker, empresa, mercado, ratio, precio y variación diaria. Gratis, listo para usar y compartir con agentes de IA.',
   locale: 'es_AR',
   ogImage: {
     url: '/og-image.webp',
     width: 1200,
     height: 630,
-    alt: 'Cedears.com — Todos los cedears en un solo lugar',
+    alt: 'CEDEARs Argentina (cedears.com) — Todos los CEDEARs en un solo lugar',
   },
   keywords: [
     'cedears',
     'cedears argentina',
+    'cedears.com',
+    'CEDEARs Argentina',
     'listado cedears',
     'certificados de depósito argentinos',
     'byma cedears',
@@ -27,7 +30,25 @@ export const siteConfig = {
     'earnings cedears',
     'calendario earnings',
   ],
+  organization: {
+    email: 'frodriguezpenelas@gmail.com',
+    contactType: 'customer support',
+    contactUrl: 'https://github.com/ferminrp/cedears/issues',
+    address: {
+      addressLocality: 'Buenos Aires',
+      addressRegion: 'CABA',
+      addressCountry: 'AR',
+    },
+    sameAs: [
+      'https://github.com/ferminrp/cedears',
+      'https://github.com/ferminrp',
+      'https://ferminrp.com',
+      'https://x.com/ferminrp',
+    ],
+  },
 } as const
+
+export type SiteOrganization = typeof siteConfig.organization
 
 export function getSiteUrl() {
   if (process.env.NEXT_PUBLIC_SITE_URL) {

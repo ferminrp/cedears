@@ -7,7 +7,7 @@
     "build": "vinext build",
     "start": "wrangler dev --config dist/server/wrangler.json",
     "deploy": "NEXT_PUBLIC_SITE_URL=https://cedears.com vinext-cloudflare deploy --config dist/server/wrangler.json",
-    "lint": "eslint .",
+    "test": "node --experimental-strip-types --test lib/*.test.ts",
     "cf:build": "NEXT_PUBLIC_SITE_URL=https://cedears.com vinext build",
     "cf:deploy": "wrangler deploy --config dist/server/wrangler.json",
     "cf:preview": "wrangler versions upload --config dist/server/wrangler.json"
