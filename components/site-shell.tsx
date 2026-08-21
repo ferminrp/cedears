@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { usePathname } from "next/navigation"
 
 import { SiteNav } from "@/components/site-nav"
@@ -25,6 +25,7 @@ export function SiteShell({
 
     if (!matches) return
 
+    // Path committed; hand off to Suspense for any remaining RSC stream.
     setPendingHref(null)
   }, [pathname, pendingHref])
 
@@ -34,7 +35,11 @@ export function SiteShell({
       setPendingHref={setPendingHref}
     >
       <SiteNav />
-      {pendingHref ? <SiteLoading /> : children}
+      {pendingHref ? (
+        <SiteLoading />
+      ) : (
+        <Suspense fallback={<SiteLoading />}>{children}</Suspense>
+      )}
     </NavPendingProvider>
   )
 }

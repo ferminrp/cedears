@@ -25,6 +25,7 @@ export function middleware(request: NextRequest) {
       status: 404,
       headers: {
         "Content-Type": "text/markdown; charset=utf-8",
+        Vary: "Accept",
       },
     })
   }
