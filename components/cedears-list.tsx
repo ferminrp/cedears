@@ -17,6 +17,7 @@ import {
 import { toast } from "sonner"
 import {
   SEARCH_TICKER_DEBOUNCE_MS,
+  SEARCH_TICKER_MIN_QUERY_LEN,
   trackSearchTicker,
   trackSelectTicker,
 } from "@/lib/analytics"
@@ -192,7 +193,7 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
   const trimmedQuery = query.trim()
 
   useEffect(() => {
-    if (trimmedQuery.length === 0) return
+    if (trimmedQuery.length < SEARCH_TICKER_MIN_QUERY_LEN) return
 
     const timeoutId = window.setTimeout(() => {
       trackSearchTicker({ query_len: trimmedQuery.length })

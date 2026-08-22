@@ -1,4 +1,5 @@
 export const SEARCH_TICKER_DEBOUNCE_MS = 400
+export const SEARCH_TICKER_MIN_QUERY_LEN = 2
 
 type SearchTickerParams = {
   query_len: number
@@ -28,9 +29,12 @@ function pushGtagCommand(...args: unknown[]) {
 }
 
 export function trackSearchTicker(params: SearchTickerParams) {
+  if (params.query_len < SEARCH_TICKER_MIN_QUERY_LEN) return
   pushGtagCommand("event", "search_ticker", params)
 }
 
 export function trackSelectTicker(params: SelectTickerParams) {
-  pushGtagCommand("event", "select_ticker", params)
+  pushGtagCommand("event", "select_ticker", {
+    ticker: params.ticker.toUpperCase(),
+  })
 }
