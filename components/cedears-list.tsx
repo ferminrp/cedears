@@ -15,6 +15,11 @@ import {
   TableIcon,
 } from "lucide-react"
 import { toast } from "sonner"
+import {
+  SEARCH_TICKER_DEBOUNCE_MS,
+  trackSearchTicker,
+  trackSelectTicker,
+} from "@/lib/analytics"
 import { type Cedear, toCsv, toMarkdown } from "@/lib/cedears"
 import { getUniqueTags } from "@/lib/cedear-tags"
 import { logoUrl } from "@/lib/logo"
@@ -184,6 +189,18 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
     localStorage.setItem(PINNED_STORAGE_KEY, JSON.stringify(pinned))
   }, [pinned])
 
+  const trimmedQuery = query.trim()
+
+  useEffect(() => {
+    if (trimmedQuery.length === 0) return
+
+    const timeoutId = window.setTimeout(() => {
+      trackSearchTicker({ query_len: trimmedQuery.length })
+    }, SEARCH_TICKER_DEBOUNCE_MS)
+
+    return () => window.clearTimeout(timeoutId)
+  }, [trimmedQuery])
+
   function togglePin(ticker: string) {
     setPinned((current) => {
       if (current.includes(ticker)) {
@@ -191,6 +208,11 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
       }
       return [ticker, ...current]
     })
+  }
+
+  function selectTicker(ticker: string) {
+    trackSelectTicker({ ticker })
+    setSelectedTicker(ticker)
   }
 
   const markets = useMemo(() => {
@@ -380,11 +402,11 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
                   data-state={isSelected ? "selected" : undefined}
                   aria-label={`Ver detalle de ${c.Cedears}`}
                   className={`cursor-pointer bg-card hover:bg-muted/50 ${isPinned ? "!bg-border/40 hover:!bg-border/60 border-l-2 border-l-foreground/20" : ""}`}
-                  onClick={() => setSelectedTicker(c.Cedears)}
+                  onClick={() => selectTicker(c.Cedears)}
                   onKeyDown={(event) => {
                     if (event.key === "Enter" || event.key === " ") {
                       event.preventDefault()
-                      setSelectedTicker(c.Cedears)
+                      selectTicker(c.Cedears)
                     }
                   }}
                 >
@@ -423,7 +445,10 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
                       />
                       <Link
                         href={`/cedear/${c.Cedears}`}
-                        onClick={(event) => event.stopPropagation()}
+                        onClick={(event) => {
+                          event.stopPropagation()
+                          trackSelectTicker({ ticker: c.Cedears })
+                        }}
                         className="font-mono font-medium underline-offset-4 hover:underline"
                       >
                         {c.Cedears}
