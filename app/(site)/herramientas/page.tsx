@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import Link from "next/link"
+import { SiteLink } from "@/components/site-link"
 import { CalendarClockIcon, ScaleIcon } from "lucide-react"
 
 import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
@@ -50,7 +50,7 @@ export default function HerramientasPage() {
       <ul className="grid gap-4 sm:grid-cols-2">
         {tools.map((tool) => (
           <li key={tool.href}>
-            <Link
+            <SiteLink
               href={tool.href}
               className="flex h-full flex-col gap-3 rounded-lg border bg-card p-5 transition-colors hover:border-foreground/30 hover:bg-muted/50"
             >
@@ -61,15 +61,15 @@ export default function HerramientasPage() {
               <span className="text-sm text-muted-foreground text-pretty">
                 {tool.description}
               </span>
-            </Link>
+            </SiteLink>
           </li>
         ))}
       </ul>
 
       <SiteFooter>
-        <Link href="/" className={footerLinkClassName}>
+        <SiteLink href="/" className={footerLinkClassName}>
           Volver al listado completo
-        </Link>
+        </SiteLink>
         {" · "}
         Datos de{" "}
         <a

@@ -12,7 +12,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet"
 import { logoUrl } from "@/lib/logo"
-import Link from "next/link"
+import { SiteLink } from "@/components/site-link"
 
 export function CedearDetailSheet({
   cedear,
@@ -63,12 +63,12 @@ export function CedearDetailSheet({
                   compact
                 />
               </div>
-              <Link
+              <SiteLink
                 href={`/cedear/${cedear.Cedears}`}
                 className="mt-6 inline-flex text-sm font-medium text-foreground underline underline-offset-4"
               >
                 Ver página completa →
-              </Link>
+              </SiteLink>
             </div>
           </>
         ) : null}

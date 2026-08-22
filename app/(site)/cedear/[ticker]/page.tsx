@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import Link from "next/link"
+import { SiteLink } from "@/components/site-link"
 import { InfoIcon } from "lucide-react"
 import { notFound } from "next/navigation"
 import { CedearCompanyProfile } from "@/components/cedear-company-profile"
@@ -139,9 +139,9 @@ export default async function CedearPage({ params }: PageProps) {
         <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
           <ol className="flex flex-wrap items-center gap-1.5">
             <li>
-              <Link href="/" className="hover:text-foreground">
+              <SiteLink href="/" className="hover:text-foreground">
                 Listado
-              </Link>
+              </SiteLink>
             </li>
             <li aria-hidden>/</li>
             <li className="font-medium text-foreground">{cedear.Cedears}</li>
@@ -211,9 +211,9 @@ export default async function CedearPage({ params }: PageProps) {
       <CedearNews items={news} tickerOriginal={cedear.TickerOriginal} />
 
       <SiteFooter>
-        <Link href="/" className={footerLinkClassName}>
+        <SiteLink href="/" className={footerLinkClassName}>
           Volver al listado completo
-        </Link>
+        </SiteLink>
         {" · "}
         Datos de{" "}
         <a

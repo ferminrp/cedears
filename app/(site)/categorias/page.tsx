@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import Link from "next/link"
+import { SiteLink } from "@/components/site-link"
 import { CategoryCompanyStack } from "@/components/category-company-stack"
 import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -50,7 +50,7 @@ export default async function CategoriasPage() {
       <ul className="divide-y border-t border-border/60">
         {categories.map(({ tag, href, count, previewTickers }) => (
           <li key={href}>
-            <Link
+            <SiteLink
               href={href}
               className="flex items-center justify-between gap-4 py-3 transition-colors hover:text-foreground"
             >
@@ -59,7 +59,7 @@ export default async function CategoriasPage() {
                 previewTickers={previewTickers}
                 totalCount={count}
               />
-            </Link>
+            </SiteLink>
           </li>
         ))}
       </ul>
@@ -93,9 +93,9 @@ export default async function CategoriasPage() {
       {content}
 
       <SiteFooter>
-        <Link href="/" className={footerLinkClassName}>
+        <SiteLink href="/" className={footerLinkClassName}>
           Volver al listado completo
-        </Link>
+        </SiteLink>
         {" · "}
         Datos de{" "}
         <a

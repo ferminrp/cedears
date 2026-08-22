@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation"
 import { SiteNav } from "@/components/site-nav"
 import { SiteLoading } from "@/components/site-loading"
 import { NavPendingProvider } from "@/components/nav-pending"
+import { pendingMatchesPath } from "@/lib/nav-pending-href"
 
 export function SiteShell({
   children,
@@ -17,13 +18,7 @@ export function SiteShell({
 
   useEffect(() => {
     if (!pendingHref) return
-
-    const matches =
-      pendingHref === "/"
-        ? pathname === "/"
-        : pathname === pendingHref || pathname.startsWith(`${pendingHref}/`)
-
-    if (!matches) return
+    if (!pendingMatchesPath({ pendingHref, pathname })) return
 
     // Path committed; hand off to Suspense for any remaining RSC stream.
     setPendingHref(null)

@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import Link from "next/link"
+import { SiteLink } from "@/components/site-link"
 import { InfoIcon } from "lucide-react"
 
 import { AlycsList } from "@/components/alycs-list"
@@ -50,9 +50,9 @@ export default function AlycsPage() {
           oficial del broker antes de operar.
         </p>
         <p className="mt-2">
-          <Link href="/" className={footerLinkClassName}>
+          <SiteLink href="/" className={footerLinkClassName}>
             Volver al listado completo
-          </Link>
+          </SiteLink>
           .
         </p>
       </SiteFooter>

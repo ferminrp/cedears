@@ -1,12 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import Link, { useLinkStatus } from "next/link"
+import { useLinkStatus } from "next/link"
 import { usePathname } from "next/navigation"
 import { MenuIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { useNavPending } from "@/components/nav-pending"
+import { SiteLink } from "@/components/site-link"
 import { Button } from "@/components/ui/button"
 import {
   Sheet,
@@ -64,19 +65,16 @@ function NavLink({
   onNavigate?: () => void
 }) {
   const pathname = usePathname() ?? "/"
-  const { pendingHref, setPendingHref } = useNavPending()
+  const { pendingHref } = useNavPending()
   const isActive = isLinkActive(pathname, href)
   const isPendingTarget = pendingHref === href
 
   return (
-    <Link
+    <SiteLink
       href={href}
       aria-current={isActive ? "page" : undefined}
       aria-busy={isPendingTarget || undefined}
       onNavigate={() => {
-        if (href !== pathname) {
-          setPendingHref(href)
-        }
         onNavigate?.()
       }}
       className={cn(
@@ -89,7 +87,7 @@ function NavLink({
       )}
     >
       <NavLinkLabel label={label} />
-    </Link>
+    </SiteLink>
   )
 }
 

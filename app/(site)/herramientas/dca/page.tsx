@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import Link from "next/link"
+import { SiteLink } from "@/components/site-link"
 
 import { DcaCalculator } from "@/components/dca-calculator"
 import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
@@ -61,9 +61,9 @@ export default async function DcaPage() {
       {content}
 
       <SiteFooter>
-        <Link href="/herramientas" className={footerLinkClassName}>
+        <SiteLink href="/herramientas" className={footerLinkClassName}>
           Ver todas las herramientas
-        </Link>
+        </SiteLink>
         {" · "}
         Precios en vivo de{" "}
         <a

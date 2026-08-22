@@ -1,4 +1,4 @@
-import Link from "next/link"
+import { SiteLink } from "@/components/site-link"
 import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
 import { siteConfig } from "@/lib/site"
 import { notFoundMarkdownBody } from "@/lib/agent-routes"
@@ -31,9 +31,9 @@ export default function NotFoundContent() {
       </section>
 
       <SiteFooter>
-        <Link href="/" className={footerLinkClassName}>
+        <SiteLink href="/" className={footerLinkClassName}>
           Volver al listado de CEDEARs
-        </Link>
+        </SiteLink>
       </SiteFooter>
     </>
   )

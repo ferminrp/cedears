@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
+import { SiteLink } from "@/components/site-link"
 import { ArrowDownIcon, ArrowUpDownIcon, ArrowUpIcon } from "lucide-react"
 import type { ImplicitDollarRow } from "@/lib/implicit-dollar"
 import { logoUrl } from "@/lib/logo"
@@ -150,12 +150,12 @@ export function ImplicitDollarTable({ rows }: { rows: ImplicitDollarRow[] }) {
                     className="size-4 shrink-0 rounded-sm bg-muted object-contain"
                     loading="lazy"
                   />
-                  <Link
+                  <SiteLink
                     href={`/cedear/${row.cedear.Cedears}`}
                     className="font-mono font-medium underline-offset-4 hover:underline"
                   >
                     {row.cedear.Cedears}
-                  </Link>
+                  </SiteLink>
                 </span>
               </TableCell>
               <TableCell className={`hidden sm:table-cell ${empresaCellClassName}`}>
