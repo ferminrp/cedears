@@ -24,7 +24,7 @@ function pushGtagCommand(...args: unknown[]) {
   }
 
   window.dataLayer ??= []
-  window.dataLayer.push(args)
+  window.dataLayer.push(arguments)
 }
 
 export function trackSearchTicker(params: SearchTickerParams) {
