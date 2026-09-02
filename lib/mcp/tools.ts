@@ -31,10 +31,7 @@ export type EarningsTimelinePayload = {
 
 export type McpDeps = {
   getCedears: () => Promise<Cedear[]>
-  getEarningsInRange: (
-    start: string,
-    end: string,
-  ) => Promise<EarningsTimelinePayload>
+  getEarningsTimeline: () => Promise<EarningsTimelinePayload>
 }
 
 export type ToolDefinition = {
@@ -83,7 +80,8 @@ const EARNINGS_SCHEMA = {
   properties: {
     day: {
       type: "string",
-      description: "Single calendar day YYYY-MM-DD (America/New_York). Overrides start/end.",
+      description:
+        "Single calendar day YYYY-MM-DD (America/New_York). Must fall inside the cached earnings window. Overrides start/end.",
     },
     start: {
       type: "string",
@@ -112,7 +110,7 @@ export const TOOL_DEFINITIONS: ToolDefinition[] = [
   {
     name: "earnings",
     description:
-      "CEDEAR underlying earnings for one day or a short date range (max 31 days). Uses the same SavvyTrader calendar as https://cedears.com/earnings, fetched for the requested interval. Default: today in America/New_York.",
+      "CEDEAR underlying earnings for one day or a short date range (max 31 days) inside the cached /earnings window (today ET through about three months). Dates outside that window are rejected. Default: today in America/New_York. Same SavvyTrader calendar as the site; no extra origin fetch per range.",
     inputSchema: EARNINGS_SCHEMA,
   },
 ]
@@ -312,7 +310,7 @@ async function earnings(args: unknown, deps: McpDeps): Promise<ToolResult> {
 
   let timeline: EarningsTimelinePayload
   try {
-    timeline = await deps.getEarningsInRange(start, end)
+    timeline = await deps.getEarningsTimeline()
   } catch (error) {
     return {
       ok: false,
@@ -322,12 +320,25 @@ async function earnings(args: unknown, deps: McpDeps): Promise<ToolResult> {
     }
   }
 
+  const windowStart = timeline.dateRange.start
+  const windowEnd = timeline.dateRange.end
+  if (end < windowStart || start > windowEnd) {
+    return {
+      ok: false,
+      code: INVALID_PARAMS,
+      message: `date is outside the loaded earnings window (${windowStart} to ${windowEnd})`,
+      data: { start: windowStart, end: windowEnd },
+    }
+  }
+
+  const days = timeline.days.filter((d) => d.date >= start && d.date <= end)
   return {
     ok: true,
     payload: {
       start,
       end,
-      days: timeline.days,
+      window: { start: windowStart, end: windowEnd },
+      days,
       ui: "https://cedears.com/earnings",
     },
   }

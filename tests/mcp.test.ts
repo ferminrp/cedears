@@ -43,10 +43,10 @@ function fixtureAaba(): Cedear {
 function deps(overrides: Partial<McpDeps> = {}): McpDeps {
   return {
     getCedears: async () => [fixtureAaba(), fixtureAal()],
-    getEarningsInRange: async (start, end) => ({
+    getEarningsTimeline: async () => ({
       days: [
         {
-          date: start,
+          date: "2026-09-02",
           items: [
             {
               cedear: "AAL",
@@ -60,7 +60,7 @@ function deps(overrides: Partial<McpDeps> = {}): McpDeps {
         },
       ],
       totalCedears: 1,
-      dateRange: { start, end },
+      dateRange: { start: "2026-09-02", end: "2026-12-02" },
     }),
     ...overrides,
   }
@@ -146,41 +146,23 @@ describe("mcp JSON-RPC", () => {
     assert.equal(payload.row["Var. %"], -2.72)
   })
 
-  it("earnings fetches the requested day instead of clipping a default window", async () => {
-    let seen: { start: string; end: string } | undefined
-    const body = await rpc(
-      "tools/call",
-      { name: "earnings", arguments: { day: "2026-08-01" } },
-      {
-        getEarningsInRange: async (start, end) => {
-          seen = { start, end }
-          return {
-            days: [
-              {
-                date: start,
-                items: [
-                  {
-                    cedear: "AAL",
-                    name: "American Airlines Group Inc",
-                    market: "NASDAQ",
-                    tickerOriginal: "AAL",
-                    earningsTime: null,
-                    isDateConfirmed: true,
-                  },
-                ],
-              },
-            ],
-            totalCedears: 1,
-            dateRange: { start, end },
-          }
-        },
-      },
-    )
-    assert.equal(body.error, undefined)
-    assert.deepEqual(seen, { start: "2026-08-01", end: "2026-08-01" })
-    const payload = body.result.structuredContent
-    assert.equal(payload.start, "2026-08-01")
-    assert.equal(payload.days[0].date, "2026-08-01")
+  it("earnings filters the cached window and rejects dates outside it", async () => {
+    const inside = await rpc("tools/call", {
+      name: "earnings",
+      arguments: { day: "2026-09-02" },
+    })
+    assert.equal(inside.error, undefined)
+    const payload = inside.result.structuredContent
+    assert.equal(payload.days[0].date, "2026-09-02")
+    assert.equal(payload.window.start, "2026-09-02")
+
+    const outside = await rpc("tools/call", {
+      name: "earnings",
+      arguments: { day: "2026-08-01" },
+    })
+    assert.equal(outside.result, undefined)
+    assert.equal(outside.error?.code, -32602)
+    assert.match(outside.error?.message ?? "", /outside the loaded earnings window/)
   })
 
   it("returns JSON-RPC error when CEDEAR fetch fails", async () => {
