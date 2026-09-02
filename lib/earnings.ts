@@ -189,16 +189,18 @@ function mergeEarningsWithCedears(
     }))
 }
 
-export async function getEarningsTimeline(): Promise<EarningsTimeline> {
-  const start = formatDateInEastern(new Date())
-  const end = addMonthsToDateString(start, 3)
-
+export async function getEarningsInRange(
+  start: string,
+  end: string,
+): Promise<EarningsTimeline> {
   const [calendar, cedears] = await Promise.all([
     fetchEarningsCalendar(start, end),
     getCedearBases(),
   ])
 
-  const days = mergeEarningsWithCedears(calendar, cedears)
+  const days = mergeEarningsWithCedears(calendar, cedears).filter(
+    (day) => day.date >= start && day.date <= end,
+  )
   const totalCedears = new Set(
     days.flatMap((day) => day.items.map((item) => item.cedear)),
   ).size
@@ -208,4 +210,10 @@ export async function getEarningsTimeline(): Promise<EarningsTimeline> {
     totalCedears,
     dateRange: { start, end },
   }
+}
+
+export async function getEarningsTimeline(): Promise<EarningsTimeline> {
+  const start = formatDateInEastern(new Date())
+  const end = addMonthsToDateString(start, 3)
+  return getEarningsInRange(start, end)
 }

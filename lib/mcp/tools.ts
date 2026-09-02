@@ -31,7 +31,10 @@ export type EarningsTimelinePayload = {
 
 export type McpDeps = {
   getCedears: () => Promise<Cedear[]>
-  getEarningsTimeline: () => Promise<EarningsTimelinePayload>
+  getEarningsInRange: (
+    start: string,
+    end: string,
+  ) => Promise<EarningsTimelinePayload>
 }
 
 export type ToolDefinition = {
@@ -109,7 +112,7 @@ export const TOOL_DEFINITIONS: ToolDefinition[] = [
   {
     name: "earnings",
     description:
-      "CEDEAR underlying earnings for one day or a short date range (max 31 days). Uses the same server-side calendar as https://cedears.com/earnings. Default: today in America/New_York.",
+      "CEDEAR underlying earnings for one day or a short date range (max 31 days). Uses the same SavvyTrader calendar as https://cedears.com/earnings, fetched for the requested interval. Default: today in America/New_York.",
     inputSchema: EARNINGS_SCHEMA,
   },
 ]
@@ -309,7 +312,7 @@ async function earnings(args: unknown, deps: McpDeps): Promise<ToolResult> {
 
   let timeline: EarningsTimelinePayload
   try {
-    timeline = await deps.getEarningsTimeline()
+    timeline = await deps.getEarningsInRange(start, end)
   } catch (error) {
     return {
       ok: false,
@@ -319,13 +322,12 @@ async function earnings(args: unknown, deps: McpDeps): Promise<ToolResult> {
     }
   }
 
-  const days = timeline.days.filter((d) => d.date >= start && d.date <= end)
   return {
     ok: true,
     payload: {
       start,
       end,
-      days,
+      days: timeline.days,
       ui: "https://cedears.com/earnings",
     },
   }

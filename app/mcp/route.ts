@@ -1,5 +1,5 @@
 import { getCedears } from "@/lib/get-cedears"
-import { getEarningsTimeline } from "@/lib/earnings"
+import { getEarningsInRange } from "@/lib/earnings"
 import {
   handleMcpGet,
   handleMcpOptions,
@@ -9,7 +9,7 @@ import { type McpDeps } from "@/lib/mcp/tools"
 
 const deps: McpDeps = {
   getCedears,
-  getEarningsTimeline,
+  getEarningsInRange,
 }
 
 export async function GET(request: Request) {
