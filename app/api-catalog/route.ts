@@ -7,6 +7,7 @@ export async function GET() {
   const catalogUrl = `${siteUrl}/.well-known/api-catalog`
   const jsonUrl = `${siteUrl}/cedears.json`
   const csvUrl = `${siteUrl}/cedears.csv`
+  const mcpUrl = `${siteUrl}/mcp`
 
   const linkset = {
     linkset: [
@@ -15,6 +16,7 @@ export async function GET() {
         item: [
           { href: jsonUrl, type: 'application/json' },
           { href: csvUrl, type: 'text/csv' },
+          { href: mcpUrl, type: 'application/json' },
         ],
       },
       {
@@ -25,6 +27,13 @@ export async function GET() {
           { href: `${siteUrl}/cedears.md`, type: 'text/markdown' },
         ],
       },
+      {
+        anchor: mcpUrl,
+        'service-desc': [
+          { href: `${siteUrl}/.well-known/mcp.json`, type: 'application/json' },
+        ],
+        'service-doc': [{ href: `${siteUrl}/llms.txt`, type: 'text/plain' }],
+      },
     ],
   }
 
@@ -32,7 +41,7 @@ export async function GET() {
     headers: {
       'Content-Type':
         'application/linkset+json; profile="https://www.rfc-editor.org/info/rfc9727"',
-      Link: `</.well-known/api-catalog>; rel="api-catalog", </cedears.json>; rel="item"; type="application/json", </llms.txt>; rel="service-doc"; type="text/plain", </cedears.md>; rel="service-doc"; type="text/markdown"`,
+      Link: `</.well-known/api-catalog>; rel="api-catalog", </cedears.json>; rel="item"; type="application/json", </cedears.csv>; rel="item"; type="text/csv", </mcp>; rel="item"; type="application/json", </llms.txt>; rel="service-doc"; type="text/plain", </cedears.md>; rel="service-doc"; type="text/markdown"`,
     },
   })
 }

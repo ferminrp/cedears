@@ -16,6 +16,7 @@ export async function GET() {
     '',
     `- [Listado completo (Markdown)](${siteUrl}/cedears.md): tabla GFM con ticker, empresa, mercado, ratio, ticker original, precio ARS, variación %, volumen, precio US, precio MEP, precio CCL, precio justo USD, prima % y tags`,
     `- [Listado completo (CSV)](${siteUrl}/cedears.csv): mismas columnas en CSV UTF-8`,
+    `- [MCP](${siteUrl}/mcp): MCP público sin autenticación (streamable-http JSON-RPC: initialize, tools/list, tools/call). Tools: list_cedears, get_cedear, earnings. Discovery: ${siteUrl}/.well-known/mcp.json`,
     '',
     '## Páginas',
     '',

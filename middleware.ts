@@ -12,6 +12,12 @@ export function middleware(request: NextRequest) {
     return NextResponse.rewrite(url)
   }
 
+  if (pathname === '/.well-known/mcp.json') {
+    const url = request.nextUrl.clone()
+    url.pathname = '/mcp-well-known'
+    return NextResponse.rewrite(url)
+  }
+
   if (pathname === '/' && prefersMarkdown(accept)) {
     const url = request.nextUrl.clone()
     url.pathname = '/cedears.md'
@@ -22,11 +28,11 @@ export function middleware(request: NextRequest) {
   response.headers.append('Vary', 'Accept')
   response.headers.append(
     'Link',
-    '</.well-known/api-catalog>; rel="api-catalog", </cedears.json>; rel="item"; type="application/json", </llms.txt>; rel="service-doc"; type="text/plain", </cedears.md>; rel="service-doc"; type="text/markdown"',
+    '</.well-known/api-catalog>; rel="api-catalog", </cedears.json>; rel="item"; type="application/json", </cedears.csv>; rel="item"; type="text/csv", </mcp>; rel="item"; type="application/json", </llms.txt>; rel="service-doc"; type="text/plain", </cedears.md>; rel="service-doc"; type="text/markdown"',
   )
   return response
 }
 
 export const config = {
-  matcher: ['/', '/.well-known/api-catalog'],
+  matcher: ['/', '/.well-known/api-catalog', '/.well-known/mcp.json'],
 }
