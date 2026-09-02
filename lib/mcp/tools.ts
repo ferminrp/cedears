@@ -322,7 +322,7 @@ async function earnings(args: unknown, deps: McpDeps): Promise<ToolResult> {
 
   const windowStart = timeline.dateRange.start
   const windowEnd = timeline.dateRange.end
-  if (end < windowStart || start > windowEnd) {
+  if (start < windowStart || end > windowEnd) {
     return {
       ok: false,
       code: INVALID_PARAMS,
