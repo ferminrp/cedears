@@ -166,10 +166,11 @@ describe("mcp JSON-RPC", () => {
 
     const partial = await rpc("tools/call", {
       name: "earnings",
-      arguments: { start: "2026-09-02", end: "2026-12-10" },
+      arguments: { start: "2026-11-05", end: "2026-12-05" },
     })
     assert.equal(partial.result, undefined)
     assert.equal(partial.error?.code, -32602)
+    assert.match(partial.error?.message ?? "", /outside the loaded earnings window/)
   })
 
   it("returns JSON-RPC error when CEDEAR fetch fails", async () => {
