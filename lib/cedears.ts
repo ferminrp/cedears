@@ -1,4 +1,4 @@
-import { getSiteUrl } from "@/lib/site"
+import { getSiteUrl } from "./site"
 
 export type Cedear = {
   Cedears: string
@@ -98,7 +98,7 @@ type ColumnKey =
   | "fairUsd"
   | "premiumMep"
 
-const COLUMNS: { key: ColumnKey; label: string }[] = [
+export const CSV_COLUMNS: { key: ColumnKey; label: string }[] = [
   { key: "Cedears", label: "Ticker" },
   { key: "Name", label: "Empresa" },
   { key: "Market", label: "Mercado" },
@@ -141,11 +141,11 @@ function cellValue(cedear: Cedear, key: ColumnKey): string {
 }
 
 export function toMarkdown(cedears: Cedear[]): string {
-  const header = `| ${COLUMNS.map((c) => c.label).join(" | ")} |`
-  const divider = `| ${COLUMNS.map(() => "---").join(" | ")} |`
+  const header = `| ${CSV_COLUMNS.map((c) => c.label).join(" | ")} |`
+  const divider = `| ${CSV_COLUMNS.map(() => "---").join(" | ")} |`
   const rows = cedears.map(
     (c) =>
-      `| ${COLUMNS.map((col) => cellValue(c, col.key).replace(/\|/g, "\\|")).join(" | ")} |`,
+      `| ${CSV_COLUMNS.map((col) => cellValue(c, col.key).replace(/\|/g, "\\|")).join(" | ")} |`,
   )
   return [header, divider, ...rows].join("\n")
 }
@@ -176,9 +176,46 @@ function escapeCsv(value: string): string {
 }
 
 export function toCsv(cedears: Cedear[]): string {
-  const header = COLUMNS.map((c) => escapeCsv(c.label)).join(",")
+  const header = CSV_COLUMNS.map((c) => escapeCsv(c.label)).join(",")
   const rows = cedears.map((c) =>
-    COLUMNS.map((col) => escapeCsv(cellValue(c, col.key))).join(","),
+    CSV_COLUMNS.map((col) => escapeCsv(cellValue(c, col.key))).join(","),
   )
   return [header, ...rows].join("\n")
+}
+
+export type CedearMcpRow = {
+  Ticker: string
+  Empresa: string
+  Mercado: string
+  Ratio: string
+  "Ticker original": string
+  "Precio ARS": number | null
+  "Var. %": number | null
+  Volumen: number | null
+  "Precio US": number | null
+  "Precio MEP": number | null
+  "Precio CCL": number | null
+  "Precio justo USD": number | null
+  "Prima %": number | null
+  Tags: string[]
+}
+
+export function toMcpRow(cedear: Cedear): CedearMcpRow {
+  const fairUsd = fairUsdPrice(cedear)
+  return {
+    Ticker: cedear.Cedears,
+    Empresa: cedear.Name,
+    Mercado: cedear.Market,
+    Ratio: cedear.Ratio,
+    "Ticker original": cedear.TickerOriginal,
+    "Precio ARS": cedear.price,
+    "Var. %": cedear.pctChange,
+    Volumen: cedear.volume,
+    "Precio US": cedear.usPrice,
+    "Precio MEP": cedear.priceMep,
+    "Precio CCL": cedear.priceCcl,
+    "Precio justo USD": fairUsd,
+    "Prima %": premiumPct(cedear.priceMep, fairUsd),
+    Tags: cedear.tags,
+  }
 }
