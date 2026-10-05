@@ -4,12 +4,13 @@ import Link from "next/link"
 import { RebalanceCalculator } from "@/components/rebalance-calculator"
 import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { getBonds } from "@/lib/get-bonds"
 import { getCedears } from "@/lib/get-cedears"
 import { buildPageOpenGraph } from "@/lib/site"
 
 const title = "Calculadora de rebalanceo de CEDEARs"
 const description =
-  "Ingresá tus nominales de cada CEDEAR, visualizá la composición actual de tu cartera en un donut chart y calculá las operaciones de compra y venta para llegar a tu distribución objetivo."
+  "Ingresá tus nominales de cada CEDEAR o bono argentino, visualizá la composición actual de tu cartera en un donut chart y calculá las operaciones para llegar a tu distribución objetivo: comprando y vendiendo, o solo comprando con un aporte nuevo."
 
 export const revalidate = 300
 
@@ -30,8 +31,16 @@ export default async function RebalanceoPage() {
   let content
 
   try {
-    const cedears = await getCedears()
-    content = <RebalanceCalculator cedears={cedears} />
+    // Los bonos son opcionales: si data912 falla, la calculadora sigue
+    // funcionando solo con CEDEARs.
+    const [cedears, bonds] = await Promise.all([
+      getCedears(),
+      getBonds().catch((error) => {
+        console.error("No se pudieron cargar los bonos", error)
+        return []
+      }),
+    ])
+    content = <RebalanceCalculator cedears={cedears} bonds={bonds} />
   } catch {
     content = (
       <Alert variant="destructive">
@@ -52,8 +61,9 @@ export default async function RebalanceoPage() {
             Calculadora de rebalanceo
           </h1>
           <p className="text-muted-foreground text-pretty">
-            Cargá cuántos nominales tenés de cada CEDEAR, definí tu composición
-            objetivo y obtené las operaciones de compra y venta para rebalancear.
+            Cargá cuántos nominales tenés de cada CEDEAR o bono argentino, definí tu composición
+            objetivo y obtené las operaciones para rebalancear: con compras y
+            ventas, o solo con compras invirtiendo dinero nuevo.
           </p>
         </div>
       </header>
