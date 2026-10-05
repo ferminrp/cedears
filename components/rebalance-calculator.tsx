@@ -4,7 +4,9 @@ import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react"
 import {
   ArrowDownIcon,
   ArrowUpIcon,
-  DownloadIcon,
+  ChevronDownIcon,
+  EqualIcon,
+  FolderDownIcon,
   FileDownIcon,
   FileUpIcon,
   LandmarkIcon,
@@ -35,6 +37,14 @@ import {
 } from "@/lib/tools"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { CedearPicker } from "@/components/cedear-picker"
 import { PortfolioDonut, type DonutSegment } from "@/components/portfolio-donut"
@@ -358,31 +368,59 @@ export function RebalanceCalculator({
           onAdd={addTicker}
         />
         {rows.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            <Button type="button" variant="outline" size="sm" onClick={importFromPortfolio}>
-              <DownloadIcon className="size-4" />
-              Importar Portfolio
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <FileUpIcon className="size-4" />
-              Importar CSV
-            </Button>
-            <Button type="button" variant="outline" size="sm" onClick={exportCsv}>
-              <FileDownIcon className="size-4" />
-              Exportar CSV
-            </Button>
-            <Button type="button" variant="outline" size="sm" onClick={distributeEqually}>
-              Distribuir 100% en partes iguales
-            </Button>
-            <Button type="button" variant="outline" size="sm" onClick={clearPortfolio}>
-              <Trash2Icon className="size-4" />
-              Vaciar cartera
-            </Button>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={
+                  <Button type="button" variant="outline" size="sm">
+                    <FolderDownIcon data-icon="inline-start" />
+                    Importar / exportar
+                    <ChevronDownIcon data-icon="inline-end" />
+                  </Button>
+                }
+              />
+              <DropdownMenuContent align="end" className="min-w-52">
+                <DropdownMenuGroup>
+                  <DropdownMenuItem onClick={importFromPortfolio}>
+                    <FolderDownIcon data-icon="inline-start" />
+                    Importar Portfolio
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <FileUpIcon data-icon="inline-start" />
+                    Importar CSV
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={exportCsv}>
+                  <FileDownIcon data-icon="inline-start" />
+                  Exportar CSV
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <div className="flex items-center gap-1">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={distributeEqually}
+                aria-label="Distribuir 100% en partes iguales"
+              >
+                <EqualIcon data-icon="inline-start" />
+                Partes iguales
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                onClick={clearPortfolio}
+              >
+                <Trash2Icon data-icon="inline-start" />
+                Vaciar cartera
+              </Button>
+            </div>
           </div>
         )}
       </div>
@@ -402,7 +440,7 @@ export function RebalanceCalculator({
           </EmptyHeader>
           <div className="flex flex-wrap justify-center gap-2">
             <Button type="button" variant="outline" onClick={importFromPortfolio}>
-              <DownloadIcon className="size-4" />
+              <FolderDownIcon className="size-4" />
               Importar desde mi Portfolio
             </Button>
             <Button
