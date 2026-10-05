@@ -6,6 +6,7 @@ import { LandmarkIcon, SearchIcon } from "lucide-react"
 import { type Bond } from "@/lib/bonds"
 import { type Cedear } from "@/lib/cedears"
 import { logoUrl } from "@/lib/logo"
+import { rankPickerResults } from "@/lib/picker-search"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -13,7 +14,6 @@ import { Input } from "@/components/ui/input"
 type PickerOption = {
   ticker: string
   name: string
-  /** Ticker para el logo; los bonos no tienen. */
   logoTicker: string | null
   badge: string | null
 }
@@ -58,29 +58,13 @@ export function CedearPicker({
     [cedears, bonds],
   )
 
-  const results = useMemo(() => {
-    const q = query.trim().toLowerCase()
-    if (q === "") return []
-    // Ticker exacto primero, después los que empiezan igual, después el resto,
-    // para que Enter agregue la coincidencia más probable.
-    const rank = (o: PickerOption) => {
-      const ticker = o.ticker.toLowerCase()
-      if (ticker === q) return 0
-      if (ticker.startsWith(q)) return 1
-      return 2
-    }
-    return options
-      .filter(
-        (o) =>
-          !selected.has(o.ticker) &&
-          (o.ticker.toLowerCase().includes(q) ||
-            o.name.toLowerCase().includes(q)),
-      )
-      .map((o, index) => ({ o, index, rank: rank(o) }))
-      .sort((a, b) => a.rank - b.rank || a.index - b.index)
-      .slice(0, 8)
-      .map(({ o }) => o)
-  }, [options, query, selected])
+  const results = useMemo(
+    () => rankPickerResults(options, query, selected),
+    [options, query, selected],
+  )
+
+  const safeIndex =
+    results.length === 0 ? 0 : Math.min(activeIndex, results.length - 1)
 
   useEffect(() => {
     setActiveIndex(0)
@@ -88,15 +72,14 @@ export function CedearPicker({
 
   useEffect(() => {
     listRef.current
-      ?.querySelector(`[data-index="${activeIndex}"]`)
+      ?.querySelector(`[data-index="${safeIndex}"]`)
       ?.scrollIntoView({ block: "nearest" })
-  }, [activeIndex])
+  }, [safeIndex])
 
   function handleAdd(ticker: string) {
     onAdd(ticker)
     setQuery("")
     setFocused(true)
-    // Dejar el foco en el buscador para seguir agregando CEDEARs.
     requestAnimationFrame(() => inputRef.current?.focus())
   }
 
@@ -105,6 +88,7 @@ export function CedearPicker({
 
   function handleKeyDown(e: KeyboardEvent<HTMLInputElement>) {
     if (e.key === "Escape") {
+      e.preventDefault()
       setFocused(false)
       return
     }
@@ -120,10 +104,15 @@ export function CedearPicker({
       setActiveIndex((i) => (i - 1 + results.length) % results.length)
     } else if (e.key === "Enter" && showResults) {
       e.preventDefault()
-      const option = results[Math.min(activeIndex, results.length - 1)]
+      const option = results[safeIndex]
       if (option) handleAdd(option.ticker)
     }
   }
+
+  const searchLabel =
+    bonds.length > 0
+      ? "Buscar CEDEAR o bono para agregar"
+      : "Buscar CEDEAR para agregar"
 
   return (
     <div className="relative w-full sm:max-w-md">
@@ -135,7 +124,7 @@ export function CedearPicker({
         aria-expanded={showResults}
         aria-controls={listId}
         aria-autocomplete="list"
-        aria-activedescendant={showResults ? optionId(activeIndex) : undefined}
+        aria-activedescendant={showResults ? optionId(safeIndex) : undefined}
         placeholder={placeholder}
         value={query}
         onChange={(e) => {
@@ -146,7 +135,7 @@ export function CedearPicker({
         onFocus={() => setFocused(true)}
         onBlur={() => setTimeout(() => setFocused(false), 150)}
         className="pl-9"
-        aria-label={bonds.length > 0 ? "Buscar CEDEAR o bono para agregar" : "Buscar CEDEAR para agregar"}
+        aria-label={searchLabel}
       />
 
       {showResults && (
@@ -162,14 +151,14 @@ export function CedearPicker({
               key={option.ticker}
               id={optionId(index)}
               role="option"
-              aria-selected={index === activeIndex}
+              aria-selected={index === safeIndex}
               data-index={index}
               onMouseDown={(e) => e.preventDefault()}
               onMouseEnter={() => setActiveIndex(index)}
               onClick={() => handleAdd(option.ticker)}
               className={cn(
                 "flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm transition-colors",
-                index === activeIndex && "bg-muted",
+                index === safeIndex && "bg-muted",
               )}
             >
               {option.logoTicker ? (
@@ -185,9 +174,7 @@ export function CedearPicker({
                 <LandmarkIcon className="size-4 shrink-0 text-muted-foreground" aria-hidden />
               )}
               <span className="font-mono font-medium">{option.ticker}</span>
-              <span className="truncate text-muted-foreground">
-                {option.name}
-              </span>
+              <span className="truncate text-muted-foreground">{option.name}</span>
               {option.badge && (
                 <Badge variant="outline" className="ml-auto">
                   {option.badge}

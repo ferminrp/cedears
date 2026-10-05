@@ -174,6 +174,25 @@ export type PortfolioEntry = {
   targetPct: number
 }
 
+export type PortfolioCsvImport = {
+  known: PortfolioEntry[]
+  unknownTickers: string[]
+}
+
+/** Keep rows whose ticker is in `knownTickers`; collect the rest (order preserved). */
+export function partitionPortfolioEntries(
+  entries: PortfolioEntry[],
+  knownTickers: ReadonlySet<string>,
+): PortfolioCsvImport {
+  const known: PortfolioEntry[] = []
+  const unknownTickers: string[] = []
+  for (const entry of entries) {
+    if (knownTickers.has(entry.ticker)) known.push(entry)
+    else unknownTickers.push(entry.ticker)
+  }
+  return { known, unknownTickers }
+}
+
 /* Persistencia de la calculadora en el navegador -------------------- */
 
 export type RebalanceMode = "rebalance" | "accumulate"
@@ -259,45 +278,100 @@ export function writeRebalanceState(state: SavedRebalanceState): void {
   }
 }
 
-const PORTFOLIO_CSV_HEADER = "ticker,nominales,objetivo_pct"
+export const PORTFOLIO_CSV_HEADER = "ticker,nominales,objetivo_pct"
+
+const HEADER_TICKERS = new Set(["TICKER", "CEDEAR", "SIMBOLO", "SÍMBOLO"])
+
+function csvCell(value: string | number): string {
+  const text = String(value)
+  if (/[",\n\r;]/.test(text)) return `"${text.replaceAll('"', '""')}"`
+  return text
+}
 
 export function portfolioToCsv(entries: PortfolioEntry[]): string {
-  const rows = entries.map((e) => `${e.ticker},${e.quantity},${e.targetPct}`)
+  const rows = entries.map(
+    (e) => `${csvCell(e.ticker)},${csvCell(e.quantity)},${csvCell(e.targetPct)}`,
+  )
   return [PORTFOLIO_CSV_HEADER, ...rows].join("\n") + "\n"
+}
+
+function detectCsvSeparator(line: string): "," | ";" {
+  let commas = 0
+  let semicolons = 0
+  let inQuotes = false
+  for (const char of line) {
+    if (char === '"') {
+      inQuotes = !inQuotes
+      continue
+    }
+    if (inQuotes) continue
+    if (char === ",") commas++
+    else if (char === ";") semicolons++
+  }
+  return semicolons > commas ? ";" : ","
+}
+
+function splitCsvLine(line: string, separator: "," | ";"): string[] {
+  const cells: string[] = []
+  let current = ""
+  let inQuotes = false
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i]
+    if (char === '"') {
+      if (inQuotes && line[i + 1] === '"') {
+        current += '"'
+        i++
+      } else {
+        inQuotes = !inQuotes
+      }
+      continue
+    }
+    if (char === separator && !inQuotes) {
+      cells.push(current)
+      current = ""
+      continue
+    }
+    current += char
+  }
+  cells.push(current)
+  return cells
+}
+
+function parseCsvNumber(raw: string | undefined, separator: "," | ";"): number {
+  if (!raw) return 0
+  let clean = raw.replace(/[\s%]/g, "").trim()
+  if (clean === "") return 0
+  if (separator === ";") {
+    clean = clean.replace(/\./g, "").replace(",", ".")
+  }
+  const n = Number(clean)
+  return Number.isFinite(n) && n > 0 ? n : 0
 }
 
 /**
  * Lee el CSV exportado. También tolera archivos re-guardados en Excel en
- * español (separador `;` y coma decimal) y la ausencia de encabezado.
+ * español (separador `;` y coma decimal), BOM UTF-8 y la ausencia de encabezado.
+ * Filas del mismo ticker: queda la última.
  */
 export function parsePortfolioCsv(text: string): PortfolioEntry[] {
   const lines = text
-    .replace(/^﻿/, "")
+    .replace(/^\uFEFF/, "")
     .split(/\r?\n/)
     .map((l) => l.trim())
     .filter((l) => l !== "")
   if (lines.length === 0) return []
 
-  const separator = lines[0].includes(";") ? ";" : ","
-  const toNumber = (value: string | undefined) => {
-    if (!value) return 0
-    let clean = value.replace(/["\s%]/g, "")
-    if (separator === ";" && clean.includes(",")) {
-      clean = clean.replace(/\./g, "").replace(",", ".")
-    }
-    const n = Number(clean)
-    return Number.isFinite(n) && n > 0 ? n : 0
-  }
-
+  const separator = detectCsvSeparator(lines[0])
   const byTicker = new Map<string, PortfolioEntry>()
+
   for (const line of lines) {
-    const [rawTicker, rawQuantity, rawTarget] = line.split(separator)
-    const ticker = rawTicker?.replace(/"/g, "").trim().toUpperCase()
-    if (!ticker || ticker === "TICKER") continue
+    const [rawTicker, rawQuantity, rawTarget] = splitCsvLine(line, separator)
+    const ticker = rawTicker?.trim().replace(/^"|"$/g, "").toUpperCase()
+    if (!ticker || HEADER_TICKERS.has(ticker)) continue
     byTicker.set(ticker, {
       ticker,
-      quantity: toNumber(rawQuantity),
-      targetPct: toNumber(rawTarget),
+      quantity: parseCsvNumber(rawQuantity, separator),
+      targetPct: parseCsvNumber(rawTarget, separator),
     })
   }
   return [...byTicker.values()]
@@ -311,6 +385,35 @@ export type AccumulationResult = RebalanceResult & {
 }
 
 /**
+ * Aporte mínimo para que ningún holding con peso > 0 quede por encima de su
+ * objetivo, sin vender. `null` si un holding con valor tiene objetivo 0.
+ */
+export function requiredAccumulationContribution(
+  inputs: RebalanceInput[],
+): number | null {
+  const totalValue = inputs.reduce(
+    (acc, i) => acc + (i.cedear.price ?? 0) * Math.max(i.quantity, 0),
+    0,
+  )
+  const targetSum = inputs.reduce((acc, i) => acc + Math.max(i.targetPct, 0), 0)
+  if (targetSum <= 0) return null
+
+  const weights = inputs.map((i) => Math.max(i.targetPct, 0) / targetSum)
+  const values = inputs.map((i) => (i.cedear.price ?? 0) * Math.max(i.quantity, 0))
+  if (values.some((value, index) => value > 0 && weights[index] === 0)) {
+    return null
+  }
+  if (totalValue <= 0) return 0
+
+  const requiredTotal = Math.max(
+    ...weights.map((weight, index) =>
+      weight > 0 ? values[index] / weight : 0,
+    ),
+  )
+  return Math.max(requiredTotal - totalValue, 0)
+}
+
+/**
  * Rebalanceo solo con compras: reparte un aporte nuevo entre los CEDEARs
  * que quedan por debajo de su objetivo (calculado sobre cartera + aporte),
  * en proporción a cuánto les falta. Nunca vende.
@@ -320,6 +423,7 @@ export function computeAccumulation(
   contribution: number,
 ): AccumulationResult {
   const safeContribution = Math.max(contribution, 0)
+  const EPSILON = 1e-6
   const totalValue = inputs.reduce(
     (acc, i) => acc + (i.cedear.price ?? 0) * Math.max(i.quantity, 0),
     0,
@@ -346,14 +450,12 @@ export function computeAccumulation(
   const bought = base.map((b, index) => {
     if (!b.buyable || b.price === null) return 0
     const allocation =
-      deficitSum > 0
+      deficitSum > EPSILON
         ? safeContribution * (deficits[index] / deficitSum)
-        : safeContribution * b.weight
+        : 0
     return Math.floor(allocation / b.price)
   })
 
-  // El redondeo hacia abajo deja vuelto: lo usamos comprando de a un nominal
-  // del CEDEAR que más lejos quede de su objetivo, mientras alcance.
   let leftover =
     safeContribution -
     bought.reduce((acc, n, index) => acc + n * (base[index].price ?? 0), 0)
@@ -361,9 +463,10 @@ export function computeAccumulation(
     let best = -1
     let bestGap = 0
     base.forEach((b, index) => {
-      if (!b.buyable || b.price === null || b.price > leftover) return
-      const gap = b.targetValue - (b.quantity + bought[index]) * b.price
-      if (gap > bestGap) {
+      if (!b.buyable || b.price === null || b.price > leftover + EPSILON) return
+      const heldValue = (b.quantity + bought[index]) * b.price
+      const gap = b.targetValue - heldValue
+      if (gap > EPSILON && gap > bestGap) {
         best = index
         bestGap = gap
       }
@@ -373,6 +476,7 @@ export function computeAccumulation(
     leftover -= base[best].price ?? 0
   }
 
+  leftover = Math.max(leftover, 0)
   const invested = safeContribution - leftover
   const finalTotal = totalValue + invested
 
@@ -396,19 +500,6 @@ export function computeAccumulation(
     }
   })
 
-  // Para no vender, el total final tiene que ser al menos current / weight
-  // para cada CEDEAR. Si uno con tenencia tiene objetivo 0, es imposible.
-  let requiredContribution: number | null = null
-  if (targetSum > 0 && totalValue > 0) {
-    const impossible = base.some((b) => b.currentValue > 0 && b.weight === 0)
-    if (!impossible) {
-      const requiredTotal = Math.max(
-        ...base.filter((b) => b.weight > 0).map((b) => b.currentValue / b.weight),
-      )
-      requiredContribution = Math.max(requiredTotal - totalValue, 0)
-    }
-  }
-
   return {
     rows,
     totalValue,
@@ -417,7 +508,7 @@ export function computeAccumulation(
     hasMissingPrices: inputs.some((i) => i.cedear.price === null),
     contribution: safeContribution,
     invested,
-    requiredContribution,
+    requiredContribution: requiredAccumulationContribution(inputs),
   }
 }
 
