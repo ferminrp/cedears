@@ -2,6 +2,32 @@
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
 
+/* Timeless Sans Grotesk files, exposed as the Untitled family name "Timeless Grotesk".
+   Source: Timeless Type Family 1.094 — see public/fonts/timeless/LICENSE.pdf */
+@font-face {
+  font-family: "Timeless Grotesk";
+  src: url("/fonts/timeless/TimelessSans-GroteskRegular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Timeless Grotesk";
+  src: url("/fonts/timeless/TimelessSans-GroteskMedium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Timeless Grotesk";
+  src: url("/fonts/timeless/TimelessSans-GroteskSemibold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
 @custom-variant dark {
   &:where(.dark, .dark *) {
     @slot;

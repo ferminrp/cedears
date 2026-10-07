@@ -19,7 +19,7 @@ This is a single frontend app named "cedears" on **vinext** (Vite), React 19, an
 
 ## Design system
 
-Visual identity for UI work lives in [`DESIGN.md`](./DESIGN.md) ([design.md](https://github.com/google-labs-code/design.md) format) and the Untitled Graphical theme in [`GUI.md`](./GUI.md) / [`gui/`](./gui/). Tokens in `app/globals.css` and DESIGN.md YAML front matter are normative. Keep new screens aligned with the shell (`max-w-5xl`, Timeless Grotesk reference + sans-serif fallback, shadcn `base-nova` mapped to Untitled). Font files are not bundled — configure Timeless Grotesk locally when available.
+Visual identity for UI work lives in [`DESIGN.md`](./DESIGN.md) ([design.md](https://github.com/google-labs-code/design.md) format) and the Untitled Graphical theme in [`GUI.md`](./GUI.md) / [`gui/`](./gui/). Tokens in `app/globals.css` and DESIGN.md YAML front matter are normative. Keep new screens aligned with the shell (`max-w-5xl`, Timeless Grotesk + sans-serif fallback, shadcn `base-nova` mapped to Untitled). Timeless Grotesk WOFF2 files (400/500/600) live in `public/fonts/timeless/` with `@font-face` in `app/globals.css`; see that folder’s `LICENSE.pdf`.
 
 ## Graphical UI (Untitled)
 
