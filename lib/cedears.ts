@@ -84,8 +84,8 @@ export function formatPct(value: number | null): string {
 
 export function pctClassName(value: number | null): string {
   if (value === null || value === 0) return "text-muted-foreground"
-  if (value > 0) return "text-emerald-600 dark:text-emerald-400"
-  return "text-red-600 dark:text-red-400"
+  if (value > 0) return "text-success"
+  return "text-destructive"
 }
 
 export function formatVolume(value: number | null): string {

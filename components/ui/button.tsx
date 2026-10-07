@@ -4,21 +4,21 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center border border-transparent bg-clip-padding font-[family-name:var(--font-ui)] text-[length:var(--size-s)] leading-[var(--line-s)] font-medium tracking-[var(--letter-spacing-s)] whitespace-nowrap transition-[background,color,box-shadow,transform] duration-[var(--motion-duration)] ease-[var(--motion-easing)] outline-none select-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--gui-color-1)] active:not-aria-[haspopup]:translate-y-[var(--motion-press-distance)] disabled:pointer-events-none disabled:bg-muted disabled:text-neutral-6 aria-invalid:outline aria-invalid:outline-2 aria-invalid:outline-[var(--error)] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 rounded-[var(--radius-s)] gap-[var(--space-xs)] px-[var(--space-l)] py-[var(--space-s)]",
+  "group/button inline-flex shrink-0 items-center justify-center border border-transparent bg-clip-padding font-[family-name:var(--font-ui)] text-[length:var(--size-s)] leading-[var(--line-s)] font-medium tracking-[var(--letter-spacing-s)] whitespace-nowrap transition-[background,color,box-shadow,transform] duration-[var(--motion-duration)] ease-[var(--motion-easing)] outline-none select-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--gui-color-1)] active:not-aria-[haspopup]:translate-y-[var(--motion-press-distance)] disabled:pointer-events-none aria-invalid:outline aria-invalid:outline-2 aria-invalid:outline-[var(--error)] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 rounded-[var(--radius-s)] gap-[var(--space-xs)] px-[var(--space-l)] py-[var(--space-s)]",
   {
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground hover:shadow-[var(--shadow-s)]",
+          "bg-primary text-primary-foreground hover:shadow-[var(--shadow-s)] disabled:bg-muted disabled:text-neutral-6",
         outline:
-          "bg-transparent text-foreground hover:bg-neutral-3/20 aria-expanded:bg-muted",
+          "bg-transparent text-foreground hover:bg-neutral-3/20 aria-expanded:bg-muted disabled:bg-transparent disabled:text-neutral-6",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-neutral-4/20 aria-expanded:bg-secondary",
+          "bg-secondary text-secondary-foreground hover:bg-neutral-4/20 aria-expanded:bg-secondary disabled:bg-muted disabled:text-neutral-6",
         ghost:
-          "bg-transparent text-foreground hover:bg-neutral-3/20 aria-expanded:bg-muted",
+          "bg-transparent text-foreground hover:bg-neutral-3/20 aria-expanded:bg-muted disabled:bg-transparent disabled:text-neutral-6",
         destructive:
-          "bg-destructive text-primary-foreground hover:shadow-[var(--shadow-s)]",
-        link: "bg-transparent px-0 py-0 text-foreground underline-offset-4 hover:underline",
+          "bg-destructive text-primary-foreground hover:shadow-[var(--shadow-s)] disabled:bg-muted disabled:text-neutral-6",
+        link: "bg-transparent px-0 py-0 text-foreground underline-offset-4 hover:underline disabled:bg-transparent disabled:text-neutral-6",
       },
       size: {
         default: "",
