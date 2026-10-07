@@ -57,9 +57,9 @@ export function CedearPriceChart({
   const changePct = ((last.c - first.c) / first.c) * 100
   const changeClass =
     changePct > 0
-      ? "text-emerald-600 dark:text-emerald-400"
+      ? "text-success"
       : changePct < 0
-        ? "text-red-600 dark:text-red-400"
+        ? "text-destructive"
         : "text-muted-foreground"
 
   return (

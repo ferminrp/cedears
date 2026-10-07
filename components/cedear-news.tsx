@@ -39,7 +39,7 @@ export function CedearNews({
     <section aria-labelledby="cedear-news-heading" className="space-y-4">
       <h2
         id="cedear-news-heading"
-        className="text-xl font-semibold tracking-tight"
+        className="text-[length:var(--size-l)] leading-[var(--line-l)] font-semibold tracking-[var(--letter-spacing-l)]"
       >
         Noticias
       </h2>
@@ -58,7 +58,7 @@ export function CedearNews({
         </Empty>
       ) : (
         <>
-          <div className="divide-y rounded-lg border bg-card">
+          <div className="divide-y rounded-[var(--radius-m)] border border-border bg-card">
             {items.map((item) => (
               <article key={getItemKey(item)} className="px-4 py-3">
                 <div className="flex gap-3">

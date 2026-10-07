@@ -156,7 +156,7 @@ export default async function CedearPage({ params }: PageProps) {
             className="size-12 shrink-0 rounded-md bg-muted object-contain"
           />
           <div className="min-w-0">
-            <h1 className="font-mono text-3xl font-semibold tracking-tight md:text-4xl">
+            <h1 className="font-mono text-[length:var(--size-xl)] leading-[var(--line-xl)] font-semibold tracking-[var(--letter-spacing-xl)] md:text-[length:var(--size-xxl)] md:leading-[var(--line-xxl)]">
               CEDEAR {cedear.Cedears}
             </h1>
             <p className="mt-1 text-lg text-muted-foreground">{cedear.Name}</p>
@@ -175,9 +175,9 @@ export default async function CedearPage({ params }: PageProps) {
       {profile ? (
         <section
           aria-labelledby="empresa-heading"
-          className="rounded-lg border bg-card p-6"
+          className="rounded-[var(--radius-m)] border border-border bg-card p-6"
         >
-          <h2 id="empresa-heading" className="text-xl font-semibold tracking-tight">
+          <h2 id="empresa-heading" className="text-[length:var(--size-l)] leading-[var(--line-l)] font-semibold tracking-[var(--letter-spacing-l)]">
             Empresa subyacente
           </h2>
           <div className="mt-4">
@@ -188,9 +188,9 @@ export default async function CedearPage({ params }: PageProps) {
 
       <section
         aria-labelledby="historico-heading"
-        className="rounded-lg border bg-card p-6"
+        className="rounded-[var(--radius-m)] border border-border bg-card p-6"
       >
-        <h2 id="historico-heading" className="mb-4 text-xl font-semibold tracking-tight">
+        <h2 id="historico-heading" className="mb-4 text-[length:var(--size-l)] leading-[var(--line-l)] font-semibold tracking-[var(--letter-spacing-l)]">
           Precio histórico
         </h2>
         <CedearPriceChart ticker={cedear.Cedears} history={history} />
@@ -198,9 +198,9 @@ export default async function CedearPage({ params }: PageProps) {
 
       <section
         aria-labelledby="cotizacion-heading"
-        className="rounded-lg border bg-card p-6"
+        className="rounded-[var(--radius-m)] border border-border bg-card p-6"
       >
-        <h2 id="cotizacion-heading" className="text-xl font-semibold tracking-tight">
+        <h2 id="cotizacion-heading" className="text-[length:var(--size-l)] leading-[var(--line-l)] font-semibold tracking-[var(--letter-spacing-l)]">
           Cotización y datos
         </h2>
         <CedearDetailView cedear={cedear} />

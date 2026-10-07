@@ -19,8 +19,8 @@ This is a single frontend app named "cedears" on **vinext** (Vite), React 19, an
 
 ## Design system
 
-Visual identity for UI work lives in [`DESIGN.md`](./DESIGN.md) ([design.md](https://github.com/google-labs-code/design.md) format). Read it before changing layout, color, typography, or shared components. Tokens in YAML front matter are normative; prose explains how to apply them. Keep new screens aligned with the existing Stone Utility shell (`max-w-5xl`, Geist, shadcn `base-nova` / stone).
+Visual identity for UI work lives in [`DESIGN.md`](./DESIGN.md) ([design.md](https://github.com/google-labs-code/design.md) format) and the Untitled Graphical theme in [`GUI.md`](./GUI.md) / [`gui/`](./gui/). Tokens in `app/globals.css` and DESIGN.md YAML front matter are normative. Keep new screens aligned with the shell (`max-w-5xl`, Timeless Grotesk reference + sans-serif fallback, shadcn `base-nova` mapped to Untitled). Font files are not bundled — configure Timeless Grotesk locally when available.
 
 ## Graphical UI (Untitled)
 
-For UI work, follow [`GUI.md`](./GUI.md) and use the skills `graphical-ui`, `graphical-convert`, or `graphical-audit` under `.agents/skills/` as appropriate. Theme values and component assignments live in [`gui/`](./gui/). Do not apply the theme until conversion scope is agreed; `DESIGN.md` remains the active shipped visual system until then.
+For UI work, follow [`GUI.md`](./GUI.md) and use the skills `graphical-ui`, `graphical-convert`, or `graphical-audit` under `.agents/skills/` as appropriate. Theme values and component assignments live in [`gui/`](./gui/). The app has been converted to Untitled; prefer those tokens and shared `components/ui` treatments for new UI.

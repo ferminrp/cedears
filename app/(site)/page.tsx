@@ -123,7 +123,7 @@ export default async function Page() {
     <>
       {dataLoaded && <HomeJsonLd cedearCount={cedearCount} />}
       <header className="flex flex-col gap-4">
-        <h1 className="text-balance text-3xl font-semibold tracking-tight md:text-4xl">
+        <h1 className="text-balance text-[length:var(--size-xl)] leading-[var(--line-xl)] font-semibold tracking-[var(--letter-spacing-xl)] md:text-[length:var(--size-xxl)] md:leading-[var(--line-xxl)]">
           {siteConfig.title}
         </h1>
       </header>
@@ -132,7 +132,7 @@ export default async function Page() {
 
       <section
         aria-labelledby="sobre-cedears"
-        className="rounded-lg border bg-muted/30 p-6 text-sm leading-relaxed text-muted-foreground"
+        className="rounded-[var(--radius-m)] border border-border bg-muted/30 p-6 text-sm leading-relaxed text-muted-foreground"
       >
         <h2 id="sobre-cedears" className="mb-2 text-base font-medium text-foreground">
           ¿Qué son los CEDEARs?

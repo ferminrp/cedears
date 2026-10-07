@@ -152,7 +152,7 @@ export function DcaCalculator({ cedears }: { cedears: Cedear[] }) {
       </div>
 
       {rows.length === 0 ? (
-        <Empty className="rounded-lg border">
+        <Empty className="rounded-[var(--radius-m)] border border-border">
           <EmptyHeader>
             <EmptyMedia variant="icon">
               <CalendarClockIcon />
@@ -166,7 +166,7 @@ export function DcaCalculator({ cedears }: { cedears: Cedear[] }) {
         </Empty>
       ) : (
         <>
-          <section className="grid gap-6 rounded-lg border bg-card p-4 sm:grid-cols-[auto_1fr] sm:items-center">
+          <section className="grid gap-6 rounded-[var(--radius-m)] border border-border bg-card p-4 sm:grid-cols-[auto_1fr] sm:items-center">
             <figure className="flex flex-col items-center gap-3">
               <figcaption className="text-sm font-medium text-muted-foreground">
                 Distribución real
@@ -182,25 +182,25 @@ export function DcaCalculator({ cedears }: { cedears: Cedear[] }) {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-sm text-muted-foreground">A invertir</p>
-                <p className="font-mono text-lg font-semibold tabular-nums">
+                <p className="font-mono text-[length:var(--size-l)] leading-[var(--line-l)] font-semibold tabular-nums">
                   {formatArs(result.amount)}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Invertido real</p>
-                <p className="font-mono text-lg font-semibold tabular-nums">
+                <p className="font-mono text-[length:var(--size-l)] leading-[var(--line-l)] font-semibold tabular-nums">
                   {formatArs(result.totalInvested)}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Vuelto (sin invertir)</p>
-                <p className="font-mono text-lg font-semibold tabular-nums">
+                <p className="font-mono text-[length:var(--size-l)] leading-[var(--line-l)] font-semibold tabular-nums">
                   {formatArs(result.leftover)}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">% ejecutado</p>
-                <p className="font-mono text-lg font-semibold tabular-nums">
+                <p className="font-mono text-[length:var(--size-l)] leading-[var(--line-l)] font-semibold tabular-nums">
                   {formatPercent(
                     result.amount > 0
                       ? (result.totalInvested / result.amount) * 100
@@ -211,7 +211,7 @@ export function DcaCalculator({ cedears }: { cedears: Cedear[] }) {
             </div>
           </section>
 
-          <div className="overflow-hidden rounded-lg border">
+          <div className="overflow-hidden rounded-[var(--radius-m)] border border-border">
             <Table className="min-w-[52rem]">
               <TableHeader>
                 <TableRow className="bg-muted hover:bg-muted">

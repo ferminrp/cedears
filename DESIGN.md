@@ -1,115 +1,117 @@
 ---
 version: alpha
 name: CEDEARs Argentina
-description: Sistema visual del listado y herramientas de CEDEARs — utilidad financiera neutra, tipografía Geist, neutros stone y controles compactos.
+description: Sistema visual del listado y herramientas de CEDEARs — tema Untitled (Graphical), Timeless Grotesk (referencia; el usuario aporta los archivos), neutros cool y acento #fc032d.
 colors:
-  primary: "#1c1917"
-  on-primary: "#fafaf9"
-  secondary: "#f5f5f4"
-  on-secondary: "#1c1917"
-  tertiary: "#79716b"
-  on-tertiary: "#fafaf9"
-  neutral: "#f5f5f4"
-  background: "#f5f5f4"
-  on-background: "#0c0a09"
-  surface: "#ffffff"
-  on-surface: "#0c0a09"
-  surface-muted: "#f5f5f4"
-  on-surface-muted: "#79716b"
-  callout: "#ebe9e6"
-  on-callout: "#0c0a09"
-  border: "#e7e5e4"
-  input: "#e7e5e4"
-  ring: "#a8a29e"
-  destructive: "#e7000b"
+  primary: "#000000"
+  on-primary: "#fbfbfc"
+  secondary: "#f3f4f6"
+  on-secondary: "#000000"
+  tertiary: "#787e84"
+  on-tertiary: "#fbfbfc"
+  neutral: "#f3f4f6"
+  background: "#ffffff"
+  on-background: "#000000"
+  surface: "#fbfbfc"
+  on-surface: "#000000"
+  surface-muted: "#f3f4f6"
+  on-surface-muted: "#787e84"
+  callout: "#f3f4f6"
+  on-callout: "#000000"
+  border: "#e5e7eb"
+  input: "#e5e7eb"
+  ring: "#fc032d"
+  destructive: "#fc032d"
   on-destructive: "#ffffff"
-  positive: "#059669"
-  negative: "#dc2626"
-  dark-background: "#25201c"
-  dark-on-background: "#fafaf9"
-  dark-surface: "#2e2924"
-  dark-on-surface: "#fafaf9"
-  dark-callout: "#3a3530"
-  dark-on-callout: "#fafaf9"
-  dark-border: "#ffffff1a"
-  dark-positive: "#34d399"
-  dark-negative: "#f87171"
+  positive: "#00906c"
+  negative: "#fc032d"
+  accent: "#fc032d"
+  dark-background: "#000000"
+  dark-on-background: "#ffffff"
+  dark-surface: "#1c2026"
+  dark-on-surface: "#ffffff"
+  dark-callout: "#272b31"
+  dark-on-callout: "#ffffff"
+  dark-border: "#393e43"
+  dark-positive: "#00906c"
+  dark-negative: "#fc032d"
 typography:
   headline-lg:
-    fontFamily: Geist
-    fontSize: 2.25rem
+    fontFamily: "Timeless Grotesk"
+    fontSize: 42px
     fontWeight: 600
-    lineHeight: 1.15
-    letterSpacing: -0.025em
+    lineHeight: 46px
+    letterSpacing: 0
   headline-md:
-    fontFamily: Geist
-    fontSize: 1.875rem
+    fontFamily: "Timeless Grotesk"
+    fontSize: 32px
     fontWeight: 600
-    lineHeight: 1.2
-    letterSpacing: -0.025em
+    lineHeight: 35px
+    letterSpacing: 0
   headline-sm:
-    fontFamily: Geist
-    fontSize: 1.125rem
+    fontFamily: "Timeless Grotesk"
+    fontSize: 21px
     fontWeight: 600
-    lineHeight: 1.3
-    letterSpacing: -0.015em
+    lineHeight: 28px
+    letterSpacing: 0
   title-md:
-    fontFamily: Geist
-    fontSize: 1rem
+    fontFamily: "Timeless Grotesk"
+    fontSize: 14px
     fontWeight: 500
-    lineHeight: 1.35
+    lineHeight: 21px
   body-md:
-    fontFamily: Geist
-    fontSize: 0.875rem
+    fontFamily: "Timeless Grotesk"
+    fontSize: 12px
     fontWeight: 400
-    lineHeight: 1.6
+    lineHeight: 18px
   body-sm:
-    fontFamily: Geist
-    fontSize: 0.875rem
+    fontFamily: "Timeless Grotesk"
+    fontSize: 11px
     fontWeight: 400
-    lineHeight: 1.5
+    lineHeight: 14px
   label-md:
-    fontFamily: Geist
-    fontSize: 0.875rem
+    fontFamily: "Timeless Grotesk"
+    fontSize: 12px
     fontWeight: 500
-    lineHeight: 1.25
+    lineHeight: 18px
   label-sm:
-    fontFamily: Geist
-    fontSize: 0.75rem
+    fontFamily: "Timeless Grotesk"
+    fontSize: 11px
     fontWeight: 500
-    lineHeight: 1.25
+    lineHeight: 14px
   numeric:
     fontFamily: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace
-    fontSize: 0.875rem
+    fontSize: 12px
     fontWeight: 400
-    lineHeight: 1.4
+    lineHeight: 18px
 rounded:
-  sm: 0.375rem
-  md: 0.5rem
-  lg: 0.625rem
-  xl: 0.875rem
+  sm: 5px
+  md: 9px
+  lg: 13px
+  xl: 22px
   full: 9999px
 spacing:
-  xs: 4px
+  xs: 6px
   sm: 8px
-  md: 16px
-  lg: 24px
-  xl: 32px
-  "2xl": 64px
-  gutter: 16px
-  margin: 16px
-  section: 32px
+  md: 11px
+  lg: 17px
+  xl: 22px
+  "2xl": 34px
+  gutter: 17px
+  margin: 17px
+  section: 34px
   content-max: 64rem
 components:
   button-primary:
     backgroundColor: "{colors.primary}"
     textColor: "{colors.on-primary}"
     typography: "{typography.label-md}"
-    rounded: "{rounded.lg}"
-    height: 32px
-    padding: 10px
+    rounded: "{rounded.sm}"
+    height: auto
+    padding: 8px 17px
   button-primary-hover:
-    backgroundColor: "#1c1917cc"
+    backgroundColor: "{colors.primary}"
+    shadow: "0px 2px 4px 0px #00000000"
   button-outline:
     backgroundColor: "{colors.background}"
     textColor: "{colors.on-background}"
