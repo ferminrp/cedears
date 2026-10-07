@@ -1,13 +1,10 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
-import { Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { AhrefsAnalytics } from "@/components/ahrefs-analytics";
 import { GoogleAnalytics } from "@/components/google-analytics";
 import { getSiteUrl, siteConfig } from "@/lib/site";
 import { Toaster } from "@/components/ui/sonner";
-
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
@@ -62,8 +59,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   colorScheme: 'light dark',
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#f5f4f1' },
-    { media: '(prefers-color-scheme: dark)', color: 'black' },
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#000000' },
   ],
 }
 
@@ -73,7 +70,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="es-AR" className={cn("font-sans", geist.variable)}>
+    <html lang="es-AR" className={cn("font-sans")}>
       <body className="antialiased">
         {children}
         <Toaster />

@@ -20,9 +20,9 @@ export function ImplicitDollarView({
 }) {
   return (
     <div className="flex flex-col gap-8">
-      <section className="rounded-lg border bg-white p-6 text-neutral-900">
+      <section className="rounded-[var(--radius-m)] border border-border bg-card p-[var(--space-xl)] text-card-foreground">
         <p className="text-sm text-muted-foreground">{description}</p>
-        <p className="mt-2 font-mono text-4xl font-semibold tracking-tight tabular-nums md:text-5xl">
+        <p className="mt-2 font-mono text-[length:var(--size-xxl)] leading-[var(--line-xxl)] font-semibold tracking-[var(--letter-spacing-xxl)] tabular-nums">
           {arsFormatter.format(summary.average)}
         </p>
         <p className="mt-2 text-sm text-muted-foreground">
@@ -34,7 +34,7 @@ export function ImplicitDollarView({
         </p>
       </section>
 
-      <section aria-labelledby="scatter-heading" className="rounded-lg border bg-white p-4 md:p-6 text-neutral-900">
+      <section aria-labelledby="scatter-heading" className="rounded-[var(--radius-m)] border border-border bg-card p-[var(--space-l)] md:p-[var(--space-xl)] text-card-foreground">
         <h2 id="scatter-heading" className="mb-4 text-base font-medium">
           Dispersión
         </h2>

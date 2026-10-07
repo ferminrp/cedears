@@ -243,15 +243,15 @@ export function PortfolioView({
     <div className="flex flex-col gap-4">
       <section className="flex flex-col gap-2">
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <div className="rounded-lg border bg-card p-4">
+          <div className="rounded-[var(--radius-m)] border border-border bg-card p-4">
             <p className="text-sm text-muted-foreground">Títulos</p>
-            <p className="font-mono text-lg font-semibold tabular-nums">
+            <p className="font-mono text-[length:var(--size-l)] leading-[var(--line-l)] font-semibold tabular-nums">
               {summary.titulos}
             </p>
           </div>
-          <div className="rounded-lg border bg-card p-4">
+          <div className="rounded-[var(--radius-m)] border border-border bg-card p-4">
             <p className="text-sm text-muted-foreground">Valor (ARS)</p>
-            <p className="font-mono text-lg font-semibold tabular-nums">
+            <p className="font-mono text-[length:var(--size-l)] leading-[var(--line-l)] font-semibold tabular-nums">
               {formatArs(summary.valorArs)}
             </p>
             <PortfolioValueChange
@@ -261,9 +261,9 @@ export function PortfolioView({
               showEmpty={summary.titulos > 0}
             />
           </div>
-          <div className="rounded-lg border bg-card p-4">
+          <div className="rounded-[var(--radius-m)] border border-border bg-card p-4">
             <p className="text-sm text-muted-foreground">Valor MEP (USD)</p>
-            <p className="font-mono text-lg font-semibold tabular-nums">
+            <p className="font-mono text-[length:var(--size-l)] leading-[var(--line-l)] font-semibold tabular-nums">
               {formatUsd(summary.valorMep)}
             </p>
             <PortfolioValueChange
@@ -273,9 +273,9 @@ export function PortfolioView({
               showEmpty={summary.titulos > 0}
             />
           </div>
-          <div className="rounded-lg border bg-card p-4">
+          <div className="rounded-[var(--radius-m)] border border-border bg-card p-4">
             <p className="text-sm text-muted-foreground">Valor cable (USD)</p>
-            <p className="font-mono text-lg font-semibold tabular-nums">
+            <p className="font-mono text-[length:var(--size-l)] leading-[var(--line-l)] font-semibold tabular-nums">
               {formatUsd(summary.valorCable)}
             </p>
             <PortfolioValueChange
@@ -317,7 +317,7 @@ export function PortfolioView({
       </div>
 
       {displayed.length === 0 ? (
-        <Empty className="rounded-lg border">
+        <Empty className="rounded-[var(--radius-m)] border border-border">
           <EmptyHeader>
             <EmptyMedia variant="icon">
               {onlyHoldings ? <BriefcaseIcon /> : <SearchIcon />}
@@ -331,7 +331,7 @@ export function PortfolioView({
           </EmptyHeader>
         </Empty>
       ) : (
-        <div className="overflow-hidden rounded-lg border">
+        <div className="overflow-hidden rounded-[var(--radius-m)] border border-border">
           <Table className="min-w-[54rem]">
             <TableHeader>
               <TableRow className="bg-muted hover:bg-muted">

@@ -55,7 +55,7 @@ export default async function PortfolioPage() {
   return (
     <>
       <header className="flex flex-col gap-4">
-        <h1 className="text-balance text-3xl font-semibold tracking-tight md:text-4xl">
+        <h1 className="text-balance text-[length:var(--size-xl)] leading-[var(--line-xl)] font-semibold tracking-[var(--letter-spacing-xl)] md:text-[length:var(--size-xxl)] md:leading-[var(--line-xxl)]">
           {title}
         </h1>
       </header>

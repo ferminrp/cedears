@@ -17,7 +17,7 @@ export function PortfolioDistribution({
   const [expanded, setExpanded] = useState(false)
 
   return (
-    <div className="rounded-lg border bg-card p-4">
+    <div className="rounded-[var(--radius-m)] border border-border bg-card p-4">
       <button
         type="button"
         className="flex w-full items-center justify-between gap-2 text-left"

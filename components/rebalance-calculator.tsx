@@ -427,7 +427,7 @@ export function RebalanceCalculator({
       {fileInput}
 
       {rows.length === 0 ? (
-        <Empty className="rounded-lg border">
+        <Empty className="rounded-[var(--radius-m)] border border-border">
           <EmptyHeader>
             <EmptyMedia variant="icon">
               <ScaleIcon />
@@ -472,7 +472,7 @@ export function RebalanceCalculator({
                     aria-checked={selected}
                     onClick={() => setMode(option.value)}
                     className={cn(
-                      "flex flex-col gap-1 rounded-lg border bg-card p-3 text-left transition-colors outline-none hover:bg-muted/50 focus-visible:ring-3 focus-visible:ring-ring/50",
+                      "flex flex-col gap-1 rounded-[var(--radius-m)] border border-border bg-card p-3 text-left transition-colors outline-none hover:bg-muted/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--gui-color-1)]",
                       selected && "border-foreground ring-1 ring-foreground",
                     )}
                   >
@@ -528,7 +528,7 @@ export function RebalanceCalculator({
             )}
           </section>
 
-          <section className="grid gap-6 rounded-lg border bg-card p-4 sm:grid-cols-2">
+          <section className="grid gap-6 rounded-[var(--radius-m)] border border-border bg-card p-4 sm:grid-cols-2">
             <figure className="flex flex-col items-center gap-3">
               <figcaption className="text-sm font-medium text-muted-foreground">
                 Composición actual
@@ -581,7 +581,7 @@ export function RebalanceCalculator({
             .
           </p>
 
-          <div className="overflow-hidden rounded-lg border">
+          <div className="overflow-hidden rounded-[var(--radius-m)] border border-border">
             <Table className="min-w-[48rem]">
               <TableHeader>
                 <TableRow className="bg-muted hover:bg-muted">
@@ -712,7 +712,7 @@ export function RebalanceCalculator({
           </p>
 
           <section className="flex flex-col gap-3">
-            <h2 className="text-lg font-semibold tracking-tight">
+            <h2 className="text-[length:var(--size-l)] leading-[var(--line-l)] font-semibold tracking-[var(--letter-spacing-l)]">
               Operaciones sugeridas
             </h2>
             {operations.length === 0 ? (
@@ -722,7 +722,7 @@ export function RebalanceCalculator({
                   : "Tu cartera ya está balanceada según el objetivo (o falta definir porcentajes y nominales)."}
               </p>
             ) : (
-              <div className="overflow-hidden rounded-lg border">
+              <div className="overflow-hidden rounded-[var(--radius-m)] border border-border">
                 <Table className="min-w-[40rem]">
                   <TableHeader>
                     <TableRow className="bg-muted hover:bg-muted">
@@ -748,8 +748,8 @@ export function RebalanceCalculator({
                               className={cn(
                                 "inline-flex items-center gap-1 font-medium",
                                 isBuy
-                                  ? "text-emerald-600 dark:text-emerald-400"
-                                  : "text-red-600 dark:text-red-400",
+                                  ? "text-success"
+                                  : "text-destructive",
                               )}
                             >
                               {isBuy ? (

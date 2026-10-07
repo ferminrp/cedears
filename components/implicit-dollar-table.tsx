@@ -98,7 +98,7 @@ export function ImplicitDollarTable({ rows }: { rows: ImplicitDollarRow[] }) {
   })
 
   return (
-    <div className="overflow-hidden rounded-lg border">
+    <div className="overflow-hidden rounded-[var(--radius-m)] border border-border">
       <Table className="min-w-[44rem]">
         <TableHeader>
           <TableRow className="bg-muted hover:bg-muted">

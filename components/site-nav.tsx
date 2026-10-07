@@ -80,9 +80,9 @@ function NavLink({
         onNavigate?.()
       }}
       className={cn(
-        "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+        "rounded-[var(--radius-s)] px-[var(--space-m)] py-[var(--space-xs)] text-[length:var(--size-s)] leading-[var(--line-s)] font-medium transition-colors duration-[var(--motion-duration)] ease-[var(--motion-easing)]",
         isActive || isPendingTarget
-          ? "bg-foreground text-background"
+          ? "bg-navigation-active text-navigation-active-foreground"
           : "text-muted-foreground hover:bg-muted hover:text-foreground",
         isPendingTarget && "animate-pulse",
         className,

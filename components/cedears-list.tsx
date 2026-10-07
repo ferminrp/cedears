@@ -131,8 +131,8 @@ function formatPctChange(value: number | null): string {
 
 function pctChangeClassName(value: number | null): string {
   if (value === null || value === 0) return "text-muted-foreground"
-  if (value > 0) return "text-emerald-600 dark:text-emerald-400"
-  return "text-red-600 dark:text-red-400"
+  if (value > 0) return "text-success"
+  return "text-destructive"
 }
 
 const numericCellClassName = "text-right font-mono tabular-nums"
@@ -363,7 +363,7 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
       </div>
 
       {filtered.length === 0 ? (
-        <Empty className="rounded-lg border">
+        <Empty className="rounded-[var(--radius-m)] border border-border">
           <EmptyHeader>
             <EmptyMedia variant="icon">
               <SearchIcon />
@@ -375,7 +375,7 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
           </EmptyHeader>
         </Empty>
       ) : (
-        <div className="overflow-hidden rounded-lg border">
+        <div className="overflow-hidden rounded-[var(--radius-m)] border border-border">
           <Table className="min-w-[44rem]">
             <TableHeader>
               <TableRow className="bg-muted hover:bg-muted">

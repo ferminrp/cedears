@@ -39,7 +39,7 @@ export default function HerramientasPage() {
   return (
     <>
       <header className="flex flex-col gap-4">
-        <h1 className="text-balance text-3xl font-semibold tracking-tight md:text-4xl">
+        <h1 className="text-balance text-[length:var(--size-xl)] leading-[var(--line-xl)] font-semibold tracking-[var(--letter-spacing-xl)] md:text-[length:var(--size-xxl)] md:leading-[var(--line-xxl)]">
           Herramientas
         </h1>
         <p className="text-muted-foreground text-pretty">
@@ -52,12 +52,12 @@ export default function HerramientasPage() {
           <li key={tool.href}>
             <Link
               href={tool.href}
-              className="flex h-full flex-col gap-3 rounded-lg border bg-card p-5 transition-colors hover:border-foreground/30 hover:bg-muted/50"
+              className="flex h-full flex-col gap-3 rounded-[var(--radius-m)] border border-border bg-card p-5 transition-colors hover:border-foreground/30 hover:bg-muted/50"
             >
               <span className="flex size-10 items-center justify-center rounded-md bg-muted">
                 <tool.icon className="size-5" />
               </span>
-              <span className="text-lg font-semibold tracking-tight">{tool.name}</span>
+              <span className="text-[length:var(--size-l)] leading-[var(--line-l)] font-semibold tracking-[var(--letter-spacing-l)]">{tool.name}</span>
               <span className="text-sm text-muted-foreground text-pretty">
                 {tool.description}
               </span>
