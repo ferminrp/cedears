@@ -117,7 +117,7 @@ export function SiteNav() {
               </Button>
             }
           />
-          <SheetContent side="left" className="w-3/4 max-w-xs">
+          <SheetContent side="left">
             <SheetHeader>
               <SheetTitle>Secciones</SheetTitle>
             </SheetHeader>
