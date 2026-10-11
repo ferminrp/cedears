@@ -10,7 +10,9 @@
     "lint": "eslint .",
     "test": "node --experimental-strip-types --import ./tests/register-ts.mjs --test tests/*.test.ts",
     "cf:build": "NEXT_PUBLIC_SITE_URL=https://cedears.com vinext build",
-    "cf:deploy": "wrangler deploy --config dist/server/wrangler.json",
+    "cf:deploy": "node --experimental-strip-types --import ./tests/register-ts.mjs scripts/indexnow/cf-deploy.ts",
+    "indexnow:submit-all": "node --experimental-strip-types --import ./tests/register-ts.mjs scripts/indexnow/submit-all.ts",
+    "indexnow:ping-changed": "node --experimental-strip-types --import ./tests/register-ts.mjs scripts/indexnow/ping-changed.ts",
     "cf:preview": "wrangler versions upload --config dist/server/wrangler.json"
   },
   "dependencies": {

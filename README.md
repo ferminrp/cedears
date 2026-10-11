@@ -67,6 +67,23 @@ In the Cloudflare dashboard: **Workers → cedears → Settings → Builds**, se
 
 Optional build variable: `NEXT_PUBLIC_SITE_URL=https://cedears.com` (already baked into `cf:build`). After saving, retry the failed build or push a new commit.
 
+### IndexNow
+
+Search engines that support [IndexNow](https://www.indexnow.org/) are notified after each successful `cf:deploy` when sitemap `lastmod` values change. The verification key is served at `https://cedears.com/<key>.txt` (file under `public/`).
+
+| Script | Purpose |
+| --- | --- |
+| `pnpm run indexnow:submit-all` | One-time (or manual) submit of every URL in the live sitemap |
+| `pnpm run cf:deploy` | Deploys via Wrangler, then runs `indexnow:ping-changed` for URLs whose `lastmod` changed vs. the pre-deploy sitemap |
+
+`indexnow:ping-changed` requires a path to the pre-deploy sitemap XML; `cf:deploy` snapshots `https://cedears.com/sitemap.xml` automatically. IndexNow failures are logged but do not fail the deploy.
+
+After the key file is live in production, run:
+
+```bash
+pnpm run indexnow:submit-all
+```
+
 ## v0
 
 This repository is linked to a [v0](https://v0.app) project for UI iteration. [Continue on v0 →](https://v0.app/chat/projects/prj_4Nr5oAlzxqijy9G4Pe2XcnPyeszv)
