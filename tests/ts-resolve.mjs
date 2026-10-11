@@ -2,6 +2,9 @@ import { existsSync } from "node:fs"
 import { dirname, extname, join } from "node:path"
 import { fileURLToPath, pathToFileURL } from "node:url"
 
+/** Repo root (parent of `tests/`), not `process.cwd()`. */
+const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..")
+
 const TS_EXT = [".ts", ".tsx"]
 
 function tryFile(base) {
@@ -15,7 +18,7 @@ function tryFile(base) {
 
 export async function resolve(specifier, context, nextResolve) {
   if (specifier.startsWith("@/")) {
-    const abs = tryFile(join("/workspace", specifier.slice(2)))
+    const abs = tryFile(join(REPO_ROOT, specifier.slice(2)))
     if (abs) {
       return { url: pathToFileURL(abs).href, shortCircuit: true }
     }
