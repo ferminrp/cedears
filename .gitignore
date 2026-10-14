@@ -26,3 +26,4 @@ public/fallback-*.js.map
 /dist/
 .vinext/
 .wrangler/
+.verify-artifacts/
