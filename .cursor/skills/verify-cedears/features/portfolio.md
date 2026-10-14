@@ -20,7 +20,7 @@ Preconditions:
 - No server-side seed data; holdings may be empty on a fresh profile.
 
 - **Load page.** `page.goto(\`${VERIFY_BASE_URL}/portfolio\`)`. Nav shows **Portfolio** as current (`aria-current="page"` on the link).
-- **Search control.** `getByRole('textbox', { name: 'Buscar en cartera' })` is visible when the portfolio UI is shown.
+- **Search control.** `getByRole('searchbox', { name: 'Buscar en cartera' })` is visible when the portfolio UI is shown.
 - **Proof.** Screenshot `portfolio-desktop.png`. If you add holdings manually in the UI, re-open the page and confirm tickers persist (localStorage).
 
 ## Gotchas

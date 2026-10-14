@@ -72,7 +72,7 @@ node scripts/verify-cedears.mjs --mode workers --port 8787 --artifact-dir /opt/c
 
 **Feature recipes:** read [features/README.md](./features/README.md) and the linked feature file before interactive checks. Prefer Playwright (bundled via `playwright` devDependency) with ARIA roles:
 
-- Search: `getByRole('textbox', { name: 'Buscar CEDEARs' })`
+- Search: `getByRole('searchbox', { name: 'Buscar CEDEARs' })`
 - Market filter: `getByRole('combobox', { name: 'Filtrar por mercado' })`
 - Cedear row link: `getByRole('link', { name: /Ver detalle de / })`
 - Main nav: `getByRole('navigation', { name: 'Secciones' })`

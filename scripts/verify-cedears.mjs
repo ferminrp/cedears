@@ -112,7 +112,7 @@ function launchServer(opts) {
   const cmd = opts.mode === "workers" ? "pnpm" : "pnpm"
   const args =
     opts.mode === "workers"
-      ? ["start"]
+      ? ["start", "--", "--port", String(opts.port)]
       : ["dev", "-p", String(opts.port), "-H", "127.0.0.1"]
   const child = spawn(cmd, args, {
     cwd: REPO_ROOT,
@@ -228,7 +228,7 @@ async function captureScreenshots(baseUrl, artifactDir) {
       path: join(artifactDir, "home-desktop.png"),
       fullPage: false,
     })
-    const search = desktop.getByRole("textbox", { name: "Buscar CEDEARs" })
+    const search = desktop.getByRole("searchbox", { name: "Buscar CEDEARs" })
     if (await search.count()) {
       await search.fill("AAPL")
       await desktop.waitForTimeout(500)
@@ -322,10 +322,10 @@ async function main() {
     console.error("verify-cedears: FAIL", meta.error)
     process.exitCode = 1
   } finally {
-    if (child && !child.killed) {
+    if (child && child.exitCode === null) {
       child.kill("SIGTERM")
       await new Promise((r) => setTimeout(r, 2000))
-      if (!child.killed) child.kill("SIGKILL")
+      if (child.exitCode === null) child.kill("SIGKILL")
     }
   }
 }

@@ -25,7 +25,7 @@ Preconditions:
 - `node scripts/verify-cedears.mjs --base-url "$VERIFY_BASE_URL"` doctor passes.
 
 - **Load table.** `page.goto(VERIFY_BASE_URL)`. `expect(page.getByRole('heading', { level: 1 })).toContainText('Listado completo')`. Table body shows at least one `link` matching `/Ver detalle de/`.
-- **Search.** `getByRole('textbox', { name: 'Buscar CEDEARs' }).fill('AAPL')`. Wait briefly; a row link `Ver detalle de AAPL` is visible (or the list is empty with a clear empty state).
+- **Search.** `getByRole('searchbox', { name: 'Buscar CEDEARs' }).fill('AAPL')`. Wait briefly; a row link `Ver detalle de AAPL` is visible (or the list is empty with a clear empty state).
 - **Screenshot proof.** `page.screenshot({ path: 'home-search-desktop.png' })` after search.
 - **Export menu.** Open the export control and trigger CSV download if exposed as a button/menu; confirm download filename `cedears.csv` or network response `text/csv` from `/cedears.csv` for full-dataset export (see [data-exports.md](./data-exports.md)).
 
