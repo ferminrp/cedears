@@ -13,6 +13,7 @@ function cedear(partial: Partial<Cedear> & Pick<Cedear, "Cedears">): Cedear {
     Market: "NYSE",
     Ratio: "1",
     TickerOriginal: partial.Cedears,
+    yahooSymbol: null,
     tags: [],
     price: null,
     pctChange: null,

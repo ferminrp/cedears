@@ -8,6 +8,7 @@ export type CedearBase = {
   Market: string
   Ratio: string
   TickerOriginal: string
+  yahooSymbol: string | null
   tags: string[]
   yfinanceFetchedAt?: string
 }
@@ -39,6 +40,16 @@ function parseTags(value: unknown): string[] {
   return value.filter((tag): tag is string => typeof tag === "string")
 }
 
+function parseYahooSymbol(value: unknown): string | null {
+  if (!isRecord(value)) return null
+  const meta = value["yfinance-metadata"]
+  if (!isRecord(meta)) return null
+  const symbol = meta.yahoo_symbol
+  if (typeof symbol !== "string") return null
+  const trimmed = symbol.trim()
+  return trimmed ? trimmed : null
+}
+
 function parseCedearBase(value: unknown): CedearBase | null {
   if (
     !isRecord(value) ||
@@ -63,6 +74,7 @@ function parseCedearBase(value: unknown): CedearBase | null {
     Market: value.Market,
     Ratio: value.Ratio,
     TickerOriginal: value.TickerOriginal,
+    yahooSymbol: parseYahooSymbol(value),
     tags: parseTags(value.tags),
     yfinanceFetchedAt: fetchedAt,
   }
@@ -281,7 +293,7 @@ async function loadCedears(): Promise<Cedear[]> {
   return fillMissingUsPrices(merged)
 }
 
-const getCedearsUncached = unstable_cache(loadCedears, ["cedears-live"], {
+const getCedearsUncached = unstable_cache(loadCedears, ["cedears-live-v2"], {
   revalidate: 300,
 })
 

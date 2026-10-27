@@ -27,6 +27,7 @@ import {
   getPrimaryCedearTag,
   getSimilarCedears,
 } from "@/lib/similar-cedears"
+import { cedearYahooSymbol } from "@/lib/cedear-yahoo"
 import { getUnderlyingPaysDividends } from "@/lib/underlying-dividends"
 import { getCedearHistorical } from "@/lib/historical"
 import { getUnderlyingProfile } from "@/lib/underlying-profile"
@@ -60,7 +61,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     notFound()
   }
 
-  const paysDividends = await getUnderlyingPaysDividends(cedear.TickerOriginal)
+  const paysDividends = await getUnderlyingPaysDividends(
+    cedearYahooSymbol(cedear),
+  )
   const title = buildCedearDetailTitle(cedear, paysDividends === true)
   const empresa = cedearCompanyLabel(cedear)
   const priceSnippet =
@@ -195,7 +198,7 @@ export default async function CedearPage({ params }: PageProps) {
       Promise.resolve(buildCedearFaqs(cedear)),
       getUnderlyingProfile(cedear.TickerOriginal),
       getCompanyNews(cedear.TickerOriginal),
-      getUnderlyingPaysDividends(cedear.TickerOriginal),
+      getUnderlyingPaysDividends(cedearYahooSymbol(cedear)),
       getCedears(),
     ])
 
