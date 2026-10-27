@@ -9,8 +9,17 @@ const updatedDateFormatter = new Intl.DateTimeFormat("es-AR", {
   year: "numeric",
 })
 
-export function formatRatiosDataDate(date: Date = new Date()): string {
+export function formatRatiosDataDate(date: Date): string {
   return updatedDateFormatter.format(date)
+}
+
+export function cedearsWithArsPrice(cedears: Cedear[]): Cedear[] {
+  return cedears.filter((c) => c.price !== null)
+}
+
+export function ratiosPageTitle(fetchedAt: Date | null): string {
+  if (!fetchedAt) return "Ratios de conversión de CEDEARs"
+  return `Ratios de conversión de CEDEARs (actualizado ${formatRatiosDataDate(fetchedAt)})`
 }
 
 export type RatiosCsvRow = {
@@ -28,13 +37,14 @@ function escapeCsvCell(value: string): string {
 }
 
 export function toRatiosCsv(cedears: Cedear[]): string {
+  const priced = cedearsWithArsPrice(cedears)
   const header = ["Ticker", "Empresa", "Ratio", "Precio ARS"].join(",")
-  const lines = cedears.map((c) => {
+  const lines = priced.map((c) => {
     const row: RatiosCsvRow = {
       ticker: c.Cedears,
       empresa: c.Name,
       ratio: c.Ratio,
-      precioArs: c.price !== null ? String(c.price) : "",
+      precioArs: String(c.price as number),
     }
     return [row.ticker, row.empresa, row.ratio, row.precioArs]
       .map(escapeCsvCell)

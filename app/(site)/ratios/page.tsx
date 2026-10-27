@@ -6,9 +6,9 @@ import { RatiosTable } from "@/components/ratios-table"
 import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
-import { getCedears } from "@/lib/get-cedears"
+import { getCedears, getCedearsYfinanceFetchedAt } from "@/lib/get-cedears"
 import { summarizeImplicitDollar } from "@/lib/implicit-dollar"
-import { formatRatiosDataDate } from "@/lib/ratios"
+import { cedearsWithArsPrice, formatRatiosDataDate, ratiosPageTitle } from "@/lib/ratios"
 import { buildPageOpenGraph, getSiteUrl } from "@/lib/site"
 
 export const revalidate = 300
@@ -17,8 +17,8 @@ const description =
   "Tabla de ratios de conversión de CEDEARs con precios en vivo, calculadora CEDEARs ↔ acciones y precio teórico al CCL implícito. Exportá CSV."
 
 export async function generateMetadata(): Promise<Metadata> {
-  const updated = formatRatiosDataDate()
-  const title = `Ratios de conversión de CEDEARs (actualizado ${updated})`
+  const fetchedAt = await getCedearsYfinanceFetchedAt()
+  const title = ratiosPageTitle(fetchedAt)
   return {
     title,
     description,
@@ -50,13 +50,18 @@ function RatiosJsonLd({ count, updated }: { count: number; updated: string }) {
 }
 
 export default async function RatiosPage() {
-  const updated = formatRatiosDataDate()
-  const heading = `Ratios de conversión de CEDEARs (actualizado ${updated})`
-
   let content
+  let heading = "Ratios de conversión de CEDEARs"
+  let updatedLabel: string | null = null
 
   try {
-    const cedears = await getCedears()
+    const [cedears, fetchedAt] = await Promise.all([
+      getCedears(),
+      getCedearsYfinanceFetchedAt(),
+    ])
+    heading = ratiosPageTitle(fetchedAt)
+    updatedLabel = fetchedAt ? formatRatiosDataDate(fetchedAt) : null
+    const pricedCedears = cedearsWithArsPrice(cedears)
     const cable = summarizeImplicitDollar(cedears, "cable")
 
     content = (
@@ -93,14 +98,17 @@ export default async function RatiosPage() {
               }
             />
           </div>
-          <RatiosTable cedears={cedears} />
+          <RatiosTable cedears={pricedCedears} />
         </section>
       </div>
     )
 
     return (
       <>
-        <RatiosJsonLd count={cedears.length} updated={updated} />
+        <RatiosJsonLd
+          count={pricedCedears.length}
+          updated={updatedLabel ?? heading}
+        />
         <header className="flex flex-col gap-4">
           <h1 className="text-balance text-[length:var(--size-xl)] leading-[var(--line-xl)] font-semibold tracking-[var(--letter-spacing-xl)] md:text-[length:var(--size-xxl)] md:leading-[var(--line-xxl)]">
             {heading}

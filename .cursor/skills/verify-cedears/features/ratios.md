@@ -21,4 +21,5 @@ Tabla de ratios, calculadora CEDEARs ↔ acciones y export CSV en `/ratios`.
 ## Gotchas
 
 - CCL teórico depende de `summarizeImplicitDollar(..., "cable")`; sin datos cable, la calculadora ARS teórica muestra “—”.
-- Fecha en H1 usa zona horaria Argentina del render del servidor.
+- Fecha en H1 usa el máximo `yfinance-metadata.fetched_at` del JSON de google-sheets-argento, formateado en zona horaria Argentina.
+- La tabla y el CSV excluyen CEDEARs sin precio ARS.

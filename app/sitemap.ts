@@ -65,13 +65,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.9,
     },
     {
-      url: `${siteUrl}/ratios.csv`,
-      lastModified: feedLastMod,
-      changeFrequency: "hourly",
-      priority: 0.85,
-    },
-
-    {
       url: `${siteUrl}/earnings`,
       lastModified: staticRouteLastModified("/earnings"),
       changeFrequency: "daily",

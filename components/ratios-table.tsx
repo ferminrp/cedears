@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import Link from "next/link"
 import { ArrowDownIcon, ArrowUpDownIcon, ArrowUpIcon } from "lucide-react"
 import { type Cedear, formatArs, parseRatio } from "@/lib/cedears"
+import { cedearsWithArsPrice } from "@/lib/ratios"
 import { logoUrl } from "@/lib/logo"
 import {
   Table,
@@ -57,6 +58,7 @@ function compareNullableNumber(a: number | null, b: number | null): number {
 }
 
 export function RatiosTable({ cedears }: { cedears: Cedear[] }) {
+  const pricedCedears = useMemo(() => cedearsWithArsPrice(cedears), [cedears])
   const [sortKey, setSortKey] = useState<SortKey>("ticker")
   const [sortDir, setSortDir] = useState<SortDir>("asc")
 
@@ -69,7 +71,7 @@ export function RatiosTable({ cedears }: { cedears: Cedear[] }) {
     setSortDir(key === "price" || key === "ratio" ? "desc" : "asc")
   }
 
-  const sorted = [...cedears].sort((a, b) => {
+  const sorted = [...pricedCedears].sort((a, b) => {
     let cmp = 0
     if (sortKey === "ticker") {
       cmp = a.Cedears.localeCompare(b.Cedears)

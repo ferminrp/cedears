@@ -1,5 +1,6 @@
 import { cache } from "react"
 import { unstable_cache } from "next/cache"
+import { latestYfinanceFetchedAtFromRecords } from "@/lib/cedear-source"
 import { type Cedear } from "@/lib/cedears"
 
 export type CedearBase = {
@@ -226,7 +227,12 @@ async function fillMissingUsPrices(cedears: Cedear[]): Promise<Cedear[]> {
   })
 }
 
-export async function getCedearBases(): Promise<CedearBase[]> {
+type CedearBasesPayload = {
+  bases: CedearBase[]
+  yfinanceFetchedAt: Date | null
+}
+
+async function loadCedearBasesPayload(): Promise<CedearBasesPayload> {
   const res = await fetch(DATA_URL, {
     next: { revalidate: 86400 },
   })
@@ -245,7 +251,24 @@ export async function getCedearBases(): Promise<CedearBase[]> {
     throw new Error("Lista de CEDEARs inválida")
   }
 
-  return bases
+  return {
+    bases,
+    yfinanceFetchedAt: latestYfinanceFetchedAtFromRecords(data),
+  }
+}
+
+const getCedearBasesPayloadCached = unstable_cache(
+  loadCedearBasesPayload,
+  ["cedear-bases-payload"],
+  { revalidate: 86400 },
+)
+
+export async function getCedearBases(): Promise<CedearBase[]> {
+  return (await getCedearBasesPayloadCached()).bases
+}
+
+export async function getCedearsYfinanceFetchedAt(): Promise<Date | null> {
+  return (await getCedearBasesPayloadCached()).yfinanceFetchedAt
 }
 
 function normalizeTicker(ticker: string): string {
