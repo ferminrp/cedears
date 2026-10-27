@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { prefersMarkdown } from '@/lib/accept-markdown'
 import { CATEGORY_SLUG_REDIRECTS } from '@/lib/category-redirects'
+import { isKnownCedearTicker } from '@/lib/cedear-ticker-guard'
 
 function requestHost(request: NextRequest): string {
   return (
@@ -60,7 +61,22 @@ function redirectCategorySlug(request: NextRequest): NextResponse | null {
   return absoluteRedirect(request, `/categoria/${target}`)
 }
 
-export function middleware(request: NextRequest) {
+const CEDEARS_NOT_FOUND_REWRITE = '/__cedear-ticker-not-found__'
+
+async function rewriteUnknownCedearTicker(
+  request: NextRequest,
+): Promise<NextResponse | null> {
+  const match = /^\/cedear\/([^/]+)\/?$/.exec(request.nextUrl.pathname)
+  if (!match) return null
+  const ticker = match[1]
+  if (ticker !== ticker.toUpperCase()) return null
+  if (await isKnownCedearTicker(ticker)) return null
+  const url = request.nextUrl.clone()
+  url.pathname = CEDEARS_NOT_FOUND_REWRITE
+  return NextResponse.rewrite(url)
+}
+
+export async function middleware(request: NextRequest) {
   const accept = request.headers.get('accept')
   const pathname = request.nextUrl.pathname
 
@@ -73,6 +89,9 @@ export function middleware(request: NextRequest) {
     const res = redirect()
     if (res) return res
   }
+
+  const unknownCedear = await rewriteUnknownCedearTicker(request)
+  if (unknownCedear) return unknownCedear
 
   if (pathname === '/.well-known/api-catalog') {
     const url = request.nextUrl.clone()

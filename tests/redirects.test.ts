@@ -4,11 +4,29 @@ import {
   CATEGORY_SLUG_REDIRECTS,
   canonicalCategorySlug,
 } from "../lib/category-redirects.ts"
+import { buildCedearTickerSet } from "../lib/cedear-ticker-set.ts"
 import {
   cedearLastModified,
   maxLastModified,
   staticRouteLastModified,
 } from "../lib/sitemap-lastmod.ts"
+
+describe("cedear ticker set", () => {
+  it("normalizes tickers to uppercase", () => {
+    const set = buildCedearTickerSet([
+      {
+        Cedears: "aapl",
+        Name: "Apple",
+        Market: "NASDAQ",
+        Ratio: "10",
+        TickerOriginal: "AAPL",
+        tags: [],
+      },
+    ])
+    assert.equal(set.has("AAPL"), true)
+    assert.equal(set.has("ZZZZ"), false)
+  })
+})
 
 describe("category redirects", () => {
   it("maps legacy slugs to canonical Spanish URLs", () => {
