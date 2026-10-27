@@ -325,8 +325,9 @@ async function captureScreenshots(baseUrl, artifactDir) {
     })
     const search = desktop.getByRole("searchbox", { name: "Buscar CEDEARs" })
     if (await search.count()) {
-      await search.fill("AAPL")
-      await desktop.waitForTimeout(500)
+      await search.first().focus()
+      await search.first().fill("AAPL")
+      await desktop.waitForTimeout(2000)
       await desktop.screenshot({
         path: join(artifactDir, "home-search-desktop.png"),
         fullPage: false,

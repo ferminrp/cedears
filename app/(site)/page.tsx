@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getCedears } from '@/lib/get-cedears'
-import { CedearsList } from '@/components/cedears-list'
+import { CedearsHomeInteractive } from '@/components/cedears-home-interactive'
+import { CedearsHomeStaticTable } from '@/components/cedears-home-static-table'
 import { CedearsTickerAzIndex } from '@/components/cedears-ticker-az-index'
 import { SiteFooter, footerLinkClassName } from '@/components/site-footer'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
@@ -67,34 +68,6 @@ function HomeJsonLd({ cedearCount }: { cedearCount: number }) {
           '@type': 'Place',
           name: 'Argentina',
         },
-        distribution: [
-          {
-            '@type': 'DataDownload',
-            encodingFormat: 'text/markdown',
-            contentUrl: `${siteUrl}/cedears.md`,
-          },
-          {
-            '@type': 'DataDownload',
-            encodingFormat: 'text/csv',
-            contentUrl: `${siteUrl}/cedears.csv`,
-          },
-        ],
-        variableMeasured: [
-          'Ticker CEDEAR',
-          'Empresa',
-          'Mercado de origen',
-          'Ratio de conversión',
-          'Ticker original',
-          'Precio ARS',
-          'Variación porcentual diaria',
-          'Volumen',
-          'Precio US',
-          'Precio MEP',
-          'Precio CCL',
-          'Precio justo USD',
-          'Prima porcentual MEP',
-          'Tags',
-        ],
         ...(cedearCount > 0 ? { size: `${cedearCount} CEDEARs` } : {}),
       },
     ],
@@ -105,6 +78,22 @@ function HomeJsonLd({ cedearCount }: { cedearCount: number }) {
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
     />
+  )
+}
+
+function homeTableCaption() {
+  return (
+    <>
+      Mostrando los {HOME_TABLE_LIMIT} CEDEARs con mayor volumen en la tabla. El
+      resto del listado está en{' '}
+      <Link
+        href="/categorias"
+        className="font-medium text-foreground underline-offset-4 hover:underline"
+      >
+        categorías por temática
+      </Link>
+      .
+    </>
   )
 }
 
@@ -119,26 +108,16 @@ export default async function Page() {
     dataLoaded = true
     const homeTable = selectHomeTableCedears(cedears)
     const azGroups = buildTickerAzGroups(cedears)
+    const caption = homeTableCaption()
 
     content = (
       <>
-        <CedearsList
-          cedears={homeTable}
-          hydrateFullListFromJson
-          tableCaption={
-            <>
-              Mostrando los {HOME_TABLE_LIMIT} CEDEARs con mayor volumen en la
-              tabla. El resto del listado está en{' '}
-              <Link
-                href="/categorias"
-                className="font-medium text-foreground underline-offset-4 hover:underline"
-              >
-                categorías por temática
-              </Link>
-              .
-            </>
-          }
-        />
+        <div className="flex flex-col gap-4">
+          <CedearsHomeInteractive tableCaption={caption} />
+          <div id="cedears-home-static-block">
+            <CedearsHomeStaticTable rows={homeTable} caption={caption} />
+          </div>
+        </div>
         <CedearsTickerAzIndex groups={azGroups} />
       </>
     )

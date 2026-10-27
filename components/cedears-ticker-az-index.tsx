@@ -1,5 +1,21 @@
-import Link from 'next/link'
 import type { TickerAzGroup } from '@/lib/home-page'
+
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+}
+
+function renderTickerLinks(tickers: string[]): string {
+  return tickers
+    .map(
+      (ticker) =>
+        `<a href="/cedear/${escapeHtml(ticker)}">${escapeHtml(ticker)}</a>`,
+    )
+    .join(' ')
+}
 
 export function CedearsTickerAzIndex({ groups }: { groups: TickerAzGroup[] }) {
   if (groups.length === 0) return null
@@ -24,18 +40,12 @@ export function CedearsTickerAzIndex({ groups }: { groups: TickerAzGroup[] }) {
             <h3 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               {letter}
             </h3>
-            <ul className="flex min-w-0 flex-wrap gap-x-2 gap-y-1 text-sm leading-snug">
-              {tickers.map((ticker) => (
-                <li key={ticker} className="min-w-0">
-                  <Link
-                    href={`/cedear/${ticker}`}
-                    className="font-mono text-foreground underline-offset-4 hover:underline"
-                  >
-                    {ticker}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <p
+              className="ch-az-line"
+              dangerouslySetInnerHTML={{
+                __html: renderTickerLinks(tickers),
+              }}
+            />
           </div>
         ))}
       </div>

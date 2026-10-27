@@ -22,6 +22,7 @@ import {
   trackSelectTicker,
 } from "@/lib/analytics"
 import { type Cedear, toCsv, toMarkdown } from "@/lib/cedears"
+import { selectHomeTableCedears } from "@/lib/home-page"
 import { getUniqueTags } from "@/lib/cedear-tags"
 import { logoUrl } from "@/lib/logo"
 import { Input } from "@/components/ui/input"
@@ -140,15 +141,21 @@ const empresaCellClassName = "max-w-52 text-muted-foreground"
 
 type CedearsListProps = {
   cedears: Cedear[]
-  /** After mount, replace the SSR subset with the full public JSON feed (home only). */
-  hydrateFullListFromJson?: boolean
   tableCaption?: ReactNode
+  /** Fetch full list when the user focuses search or opens a filter (home). */
+  loadJsonOnInteraction?: () => void
+  /** Hide the table until `cedears` is populated (home toolbar shell). */
+  toolbarOnlyUntilData?: boolean
+  /** When no filters/search, show only the top N by volume (home). */
+  previewRowLimit?: number
 }
 
 export function CedearsList({
   cedears: initialCedears,
-  hydrateFullListFromJson = false,
   tableCaption,
+  loadJsonOnInteraction,
+  toolbarOnlyUntilData = false,
+  previewRowLimit,
 }: CedearsListProps) {
   const [cedears, setCedears] = useState(initialCedears)
   const [query, setQuery] = useState("")
@@ -160,27 +167,8 @@ export function CedearsList({
   const pinsHydratedRef = useRef(false)
 
   useEffect(() => {
-    if (!hydrateFullListFromJson) return
-
-    let cancelled = false
-    void fetch("/cedears.json")
-      .then((res) => {
-        if (!res.ok) throw new Error(`cedears.json ${res.status}`)
-        return res.json() as Promise<Cedear[]>
-      })
-      .then((data) => {
-        if (!cancelled && Array.isArray(data) && data.length > 0) {
-          setCedears(data)
-        }
-      })
-      .catch(() => {
-        // Keep the SSR subset when the feed is unavailable.
-      })
-
-    return () => {
-      cancelled = true
-    }
-  }, [hydrateFullListFromJson])
+    setCedears(initialCedears)
+  }, [initialCedears])
 
   const selected = useMemo(() => {
     if (!selectedTicker) return null
@@ -258,6 +246,19 @@ export function CedearsList({
 
   const tags = useMemo(() => getUniqueTags(cedears), [cedears])
 
+  const hasActiveFilters = useMemo(() => {
+    return (
+      query.trim() !== "" ||
+      market !== ALL_MARKETS ||
+      tag !== ALL_TAGS ||
+      pctSort !== DEFAULT_SORT
+    )
+  }, [query, market, tag, pctSort])
+
+  function requestDataLoad() {
+    loadJsonOnInteraction?.()
+  }
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
     return cedears.filter((c) => {
@@ -275,6 +276,14 @@ export function CedearsList({
   const displayed = useMemo(() => {
     let items = filtered
 
+    if (
+      previewRowLimit &&
+      !hasActiveFilters &&
+      items.length > previewRowLimit
+    ) {
+      items = selectHomeTableCedears(items)
+    }
+
     if (pctSort !== DEFAULT_SORT) {
       const direction = pctSort === PCT_SORT_ASC ? "asc" : "desc"
       items = [...filtered].sort((a, b) =>
@@ -283,7 +292,7 @@ export function CedearsList({
     }
 
     return orderWithPins(items, visiblePins)
-  }, [filtered, pctSort, visiblePins])
+  }, [filtered, pctSort, visiblePins, previewRowLimit, hasActiveFilters])
 
   async function copyToClipboard(content: string, label: string) {
     try {
@@ -320,14 +329,24 @@ export function CedearsList({
             type="search"
             placeholder="Buscar por ticker o nombre..."
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onFocus={requestDataLoad}
+            onChange={(e) => {
+              requestDataLoad()
+              setQuery(e.target.value)
+            }}
             className="pl-9"
             aria-label="Buscar CEDEARs"
           />
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <Select value={market} onValueChange={setMarket}>
+          <Select
+            value={market}
+            onValueChange={setMarket}
+            onOpenChange={(open) => {
+              if (open) requestDataLoad()
+            }}
+          >
             <SelectTrigger className="w-full bg-card dark:bg-card sm:w-52" aria-label="Filtrar por mercado">
               <SelectValue placeholder="Mercado">
                 {(value: string) =>
@@ -347,7 +366,13 @@ export function CedearsList({
             </SelectContent>
           </Select>
 
-          <Select value={tag} onValueChange={setTag}>
+          <Select
+            value={tag}
+            onValueChange={setTag}
+            onOpenChange={(open) => {
+              if (open) requestDataLoad()
+            }}
+          >
             <SelectTrigger className="w-full bg-card dark:bg-card sm:w-52" aria-label="Filtrar por categoría">
               <SelectValue placeholder="Categoría">
                 {(value: string) =>
@@ -367,7 +392,13 @@ export function CedearsList({
             </SelectContent>
           </Select>
 
-          <Select value={pctSort} onValueChange={(value) => setPctSort(value as PctSort)}>
+          <Select
+            value={pctSort}
+            onValueChange={(value) => setPctSort(value as PctSort)}
+            onOpenChange={(open) => {
+              if (open) requestDataLoad()
+            }}
+          >
             <SelectTrigger className="w-full bg-card dark:bg-card sm:w-56" aria-label="Ordenar por variación">
               <SelectValue placeholder="Ordenar">
                 {(value: string) => {
@@ -397,7 +428,7 @@ export function CedearsList({
         </div>
       </div>
 
-      {filtered.length === 0 ? (
+      {toolbarOnlyUntilData && cedears.length === 0 ? null : filtered.length === 0 ? (
         <Empty className="rounded-[var(--radius-m)] border border-border">
           <EmptyHeader>
             <EmptyMedia variant="icon">
@@ -526,7 +557,7 @@ export function CedearsList({
         </div>
       )}
 
-      {filtered.length > 0 && (
+      {filtered.length > 0 && !(toolbarOnlyUntilData && cedears.length === 0) && (
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
           <DropdownMenu>
             <DropdownMenuTrigger

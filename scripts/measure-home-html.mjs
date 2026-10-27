@@ -32,6 +32,60 @@ function parseArgs(argv) {
   return baseUrl.replace(/\/$/, "")
 }
 
+function analyzeHtml(html) {
+  const scripts = []
+  const staticHtml = html.replace(
+    /<script[^>]*>[\s\S]*?<\/script>/gi,
+    (match) => {
+      const inner = match.replace(/^<script[^>]*>/i, "").replace(/<\/script>$/i, "")
+      scripts.push(inner)
+      return ""
+    },
+  )
+
+  const scriptBytes = Buffer.byteLength(scripts.join(""), "utf8")
+  const staticBytes = Buffer.byteLength(staticHtml, "utf8")
+
+  const azStart = staticHtml.indexOf("indice-az-titulo")
+  const azEnd = staticHtml.indexOf("sobre-cedears")
+  const azSection =
+    azStart >= 0 && azEnd > azStart ? staticHtml.slice(azStart, azEnd) : ""
+
+  const tableStart = staticHtml.indexOf("cedears-home-static-table")
+  const tableEnd = azStart > 0 ? azStart : staticHtml.length
+  const tableSection =
+    tableStart >= 0 ? staticHtml.slice(tableStart, tableEnd) : ""
+
+  const jsonLdMatch = html.match(
+    /<script type="application\/ld\+json">([\s\S]*?)<\/script>/i,
+  )
+
+  const rscPayloadBytes = scripts
+    .filter((s) => s.includes("usPrice") || s.includes("priceMep") || s.includes('"tags"'))
+    .reduce((sum, s) => sum + Buffer.byteLength(s, "utf8"), 0)
+
+  return {
+    htmlBytes: Buffer.byteLength(html, "utf8"),
+    breakdown: {
+      staticHtmlBytes: staticBytes,
+      inlineScriptBytes: scriptBytes,
+      jsonLdBytes: jsonLdMatch
+        ? Buffer.byteLength(jsonLdMatch[1], "utf8")
+        : 0,
+      homeTableSectionBytes: Buffer.byteLength(tableSection, "utf8"),
+      azIndexSectionBytes: Buffer.byteLength(azSection, "utf8"),
+      rscCedearPayloadBytes: rscPayloadBytes,
+    },
+    tableRowAriaLabels: (staticHtml.match(/aria-label="Ver detalle de /g) ?? [])
+      .length,
+    cedearHrefCount: (html.match(/href="\/cedear\//g) ?? []).length,
+    serializedFieldHits: {
+      usPriceInScripts: scripts.join("").split("usPrice").length - 1,
+      tagsInScripts: scripts.join("").split('"tags"').length - 1,
+    },
+  }
+}
+
 async function main() {
   const baseUrl = parseArgs(process.argv)
   const res = await fetchUrl(`${baseUrl}/`)
@@ -39,20 +93,16 @@ async function main() {
     console.error(`GET / failed: ${res.status}`)
     process.exit(1)
   }
-  const bytes = res.body.length
   const html = res.body.toString("utf8")
-  const rowCount = (html.match(/aria-label="Ver detalle de /g) ?? []).length
-  const azLinks = (html.match(/href="\/cedear\//g) ?? []).length
+  const analyzed = analyzeHtml(html)
 
   console.log(
     JSON.stringify(
       {
         baseUrl,
-        htmlBytes: bytes,
-        htmlKiB: Math.round((bytes / 1024) * 10) / 10,
-        htmlMiB: Math.round((bytes / (1024 * 1024)) * 1000) / 1000,
-        tableRowAriaLabels: rowCount,
-        cedearHrefCount: azLinks,
+        htmlKiB: Math.round((analyzed.htmlBytes / 1024) * 10) / 10,
+        htmlMiB: Math.round((analyzed.htmlBytes / (1024 * 1024)) * 1000) / 1000,
+        ...analyzed,
       },
       null,
       2,
