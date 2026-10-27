@@ -16,7 +16,7 @@ pnpm install
 pnpm dev -p "${VERIFY_PORT:-3010}" -H 127.0.0.1
 ```
 
-Ready when `curl -sf "http://127.0.0.1:${VERIFY_PORT:-3010}/"` returns HTTP 200 and HTML containing `Listado completo de CEDEARs`.
+Ready when `curl -sf "http://127.0.0.1:${VERIFY_PORT:-3010}/"` returns HTTP 200 and HTML containing `Listado de CEDEARs en Argentina`.
 
 **Production-like (Workers / wrangler):**
 

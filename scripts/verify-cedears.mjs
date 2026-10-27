@@ -138,8 +138,8 @@ async function doctor(baseUrl, artifactDir) {
   push(home.status === 200, `GET / → ${home.status}`)
   const html = home.body.toString("utf8")
   push(
-    html.includes("Listado completo de CEDEARs") ||
-      html.includes("CEDEARs en Argentina"),
+    html.includes("Listado de CEDEARs en Argentina") ||
+      html.includes("Listado completo de CEDEARs"),
     "home HTML contains site title",
   )
 
@@ -299,6 +299,18 @@ async function smoke(baseUrl, sampleTicker, artifactDir) {
   await smokeCanonicals(baseUrl, sampleTicker, artifactDir)
 }
 
+async function assertNoHorizontalOverflow(page, label) {
+  const overflow = await page.evaluate(() => {
+    const doc = document.documentElement
+    return doc.scrollWidth > doc.clientWidth + 1
+  })
+  assert.equal(
+    overflow,
+    false,
+    `${label}: horizontal overflow (scrollWidth > clientWidth)`,
+  )
+}
+
 async function captureScreenshots(baseUrl, artifactDir) {
   const { chromium, devices } = await import("playwright")
   const browser = await chromium.launch({ headless: true })
@@ -321,9 +333,30 @@ async function captureScreenshots(baseUrl, artifactDir) {
       })
     }
 
+    const wide = await browser.newPage({
+      viewport: { width: 1440, height: 900 },
+    })
+    await wide.goto(baseUrl, { waitUntil: "networkidle", timeout: 120_000 })
+    await assertNoHorizontalOverflow(wide, "home 1440px")
+    await wide.screenshot({
+      path: join(artifactDir, "home-1440.png"),
+      fullPage: false,
+    })
+
+    const narrow = await browser.newPage({
+      viewport: { width: 390, height: 844 },
+    })
+    await narrow.goto(baseUrl, { waitUntil: "networkidle", timeout: 120_000 })
+    await assertNoHorizontalOverflow(narrow, "home 390px")
+    await narrow.screenshot({
+      path: join(artifactDir, "home-390.png"),
+      fullPage: false,
+    })
+
     const iphone = devices["iPhone 13"]
     const mobile = await browser.newPage({ ...iphone })
     await mobile.goto(baseUrl, { waitUntil: "networkidle", timeout: 120_000 })
+    await assertNoHorizontalOverflow(mobile, "home iPhone 13")
     await mobile.screenshot({
       path: join(artifactDir, "home-mobile.png"),
       fullPage: false,

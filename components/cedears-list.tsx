@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react"
 import Link from "next/link"
 import {
   ArrowDownIcon,
@@ -138,7 +138,19 @@ function pctChangeClassName(value: number | null): string {
 const numericCellClassName = "text-right font-mono tabular-nums"
 const empresaCellClassName = "max-w-52 text-muted-foreground"
 
-export function CedearsList({ cedears }: { cedears: Cedear[] }) {
+type CedearsListProps = {
+  cedears: Cedear[]
+  /** After mount, replace the SSR subset with the full public JSON feed (home only). */
+  hydrateFullListFromJson?: boolean
+  tableCaption?: ReactNode
+}
+
+export function CedearsList({
+  cedears: initialCedears,
+  hydrateFullListFromJson = false,
+  tableCaption,
+}: CedearsListProps) {
+  const [cedears, setCedears] = useState(initialCedears)
   const [query, setQuery] = useState("")
   const [market, setMarket] = useState(ALL_MARKETS)
   const [tag, setTag] = useState(ALL_TAGS)
@@ -146,6 +158,29 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
   const [pinned, setPinned] = useState<string[]>([])
   const [selectedTicker, setSelectedTicker] = useState<string | null>(null)
   const pinsHydratedRef = useRef(false)
+
+  useEffect(() => {
+    if (!hydrateFullListFromJson) return
+
+    let cancelled = false
+    void fetch("/cedears.json")
+      .then((res) => {
+        if (!res.ok) throw new Error(`cedears.json ${res.status}`)
+        return res.json() as Promise<Cedear[]>
+      })
+      .then((data) => {
+        if (!cancelled && Array.isArray(data) && data.length > 0) {
+          setCedears(data)
+        }
+      })
+      .catch(() => {
+        // Keep the SSR subset when the feed is unavailable.
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [hydrateFullListFromJson])
 
   const selected = useMemo(() => {
     if (!selectedTicker) return null
@@ -375,7 +410,12 @@ export function CedearsList({ cedears }: { cedears: Cedear[] }) {
           </EmptyHeader>
         </Empty>
       ) : (
-        <div className="overflow-hidden rounded-[var(--radius-m)] border border-border">
+        <div className="max-w-full overflow-x-auto rounded-[var(--radius-m)] border border-border">
+          {tableCaption ? (
+            <p className="border-b border-border bg-muted/40 px-4 py-2 text-sm text-muted-foreground">
+              {tableCaption}
+            </p>
+          ) : null}
           <Table className="min-w-[44rem]">
             <TableHeader>
               <TableRow className="bg-muted hover:bg-muted">
