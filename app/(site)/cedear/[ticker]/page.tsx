@@ -19,6 +19,7 @@ import { logoUrl } from "@/lib/logo"
 import { getSiteUrl, buildPageOpenGraph } from "@/lib/site"
 
 export const revalidate = 3600
+export const dynamicParams = false
 
 type PageProps = {
   params: Promise<{ ticker: string }>

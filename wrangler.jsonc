@@ -32,6 +32,10 @@
     {
       "pattern": "cedears.com",
       "custom_domain": true
+    },
+    {
+      "pattern": "www.cedears.com",
+      "custom_domain": true
     }
   ],
   "kv_namespaces": [
