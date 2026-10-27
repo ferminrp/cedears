@@ -2,9 +2,10 @@ import assert from "node:assert/strict"
 import { describe, it } from "node:test"
 import {
   cedearsToShares,
-  cedearsWithArsPrice,
+  filterRatiosCedears,
   formatRatiosDataDate,
-  ratiosPageTitle,
+  formatRatiosTitleMonthYear,
+  ratiosMetadataTitle,
   sharesToCedears,
   theoreticalArsAtCcl,
   toRatiosCsv,
@@ -37,28 +38,28 @@ describe("ratios helpers", () => {
     assert.equal(ars, 30000)
   })
 
-  it("exports ratios csv", () => {
-    const csv = toRatiosCsv([sample])
-    assert.match(csv, /^Ticker,Empresa,Ratio,Precio ARS/)
-    assert.match(csv, /AAPL,Apple Inc\.,10,15000/)
-  })
-
-  it("omits tickers without ARS price from csv", () => {
+  it("exports ratios csv including rows without price", () => {
     const csv = toRatiosCsv([
       sample,
       { ...sample, Cedears: "AABA", price: null },
     ])
-    assert.doesNotMatch(csv, /AABA/)
-    assert.equal(csv.trim().split("\n").length, 2)
+    assert.match(csv, /^Ticker,Empresa,Ratio,Precio ARS/)
+    assert.match(csv, /AAPL,Apple Inc\.,10,15000/)
+    assert.match(csv, /AABA,Apple Inc\.,10,/)
+    assert.equal(csv.trim().split("\n").length, 3)
   })
 
-  it("filters cedears with ARS price", () => {
-    const filtered = cedearsWithArsPrice([
-      sample,
-      { ...sample, Cedears: "AABA", price: null },
-    ])
+  it("filters by ticker, empresa and subyacente", () => {
+    const filtered = filterRatiosCedears(
+      [
+        sample,
+        { ...sample, Cedears: "GGAL", Name: "Grupo Financiero Galicia", TickerOriginal: "GGAL" },
+        { ...sample, Cedears: "BABA", TickerOriginal: "BABA" },
+      ],
+      "galicia",
+    )
     assert.equal(filtered.length, 1)
-    assert.equal(filtered[0]?.Cedears, "AAPL")
+    assert.equal(filtered[0]?.Cedears, "GGAL")
   })
 
   it("formats data date in Argentina", () => {
@@ -66,11 +67,15 @@ describe("ratios helpers", () => {
     assert.equal(label, "16/09/2026")
   })
 
-  it("builds page title from live prices fetch time", () => {
-    const title = ratiosPageTitle(new Date("2026-10-27T15:30:00Z"))
-    assert.equal(
-      title,
-      "Ratios de conversión de CEDEARs (actualizado 27/10/2026)",
-    )
+  it("builds metadata title with month and year", () => {
+    const title = ratiosMetadataTitle(new Date("2026-10-27T15:30:00Z"))
+    assert.match(title, /actualizado octubre 2026/i)
+    assert.match(title, /tabla de conversión completa/)
+  })
+
+  it("formats title month year in Spanish", () => {
+    const label = formatRatiosTitleMonthYear(new Date("2026-10-27T15:30:00Z"))
+    assert.match(label.toLowerCase(), /octubre/)
+    assert.match(label, /2026/)
   })
 })

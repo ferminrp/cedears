@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { useMemo, useState } from "react"
 import {
   type Cedear,
@@ -74,26 +75,21 @@ export function RatioConversionCalculator({
   )
 
   return (
-    <div className="flex flex-col gap-6 rounded-[var(--radius-m)] border border-border bg-card p-[var(--space-l)] md:p-[var(--space-xl)]">
-      <div>
-        <h2 className="text-base font-medium">Calculadora de conversión</h2>
-        <p className="mt-1 text-sm text-muted-foreground text-pretty">
-          Convertí entre CEDEARs y acciones según el ratio del emisor.
-          {cclAvailable ? (
-            <>
-              {" "}
-              El precio teórico en pesos usa el CCL implícito promedio del listado (
-              {cclFormatter.format(cclAverage)}), el mismo criterio que{" "}
-              <a href="/dolar-cable" className="underline underline-offset-4">
-                Dólar cable
-              </a>
-              .
-            </>
-          ) : (
-            " El precio teórico en pesos no está disponible sin cotización CCL."
-          )}
+    <div className="flex flex-col gap-5">
+      {cclAvailable ? (
+        <p className="text-sm text-muted-foreground text-pretty">
+          El precio teórico en pesos usa el CCL implícito promedio (
+          {cclFormatter.format(cclAverage)}), como en{" "}
+          <Link href="/dolar-cable" className="underline underline-offset-4">
+            dólar cable
+          </Link>
+          .
         </p>
-      </div>
+      ) : (
+        <p className="text-sm text-muted-foreground">
+          El precio teórico en pesos no está disponible sin cotización CCL.
+        </p>
+      )}
 
       <div className="flex flex-col gap-2">
         <span className="text-sm font-medium">CEDEAR</span>
@@ -102,7 +98,7 @@ export function RatioConversionCalculator({
             Seleccionado: <strong>{ticker}</strong>
             <button
               type="button"
-              className="ml-2 text-muted-foreground underline underline-offset-4 hover:text-foreground"
+              className="ml-2 min-h-11 text-muted-foreground underline underline-offset-4 hover:text-foreground"
               onClick={() => setTicker("")}
             >
               Cambiar
@@ -116,14 +112,6 @@ export function RatioConversionCalculator({
           placeholder="Buscar por ticker o empresa"
         />
       </div>
-
-      {cedear && ratio !== null ? (
-        <p className="text-sm text-muted-foreground">
-          Ratio {cedear.Ratio}:1 · 1 acción de {cedear.TickerOriginal} equivale a{" "}
-          {cedear.Ratio} CEDEAR{Number(cedear.Ratio) === 1 ? "" : "s"} de{" "}
-          {cedear.Cedears}
-        </p>
-      ) : null}
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-2">
