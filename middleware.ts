@@ -3,13 +3,20 @@ import type { NextRequest } from 'next/server'
 import { prefersMarkdown } from '@/lib/accept-markdown'
 import { CATEGORY_SLUG_REDIRECTS } from '@/lib/category-redirects'
 
+function requestHost(request: NextRequest): string {
+  return (
+    request.headers.get('x-forwarded-host') ??
+    request.headers.get('host') ??
+    request.nextUrl.host
+  )
+    .split(',')[0]
+    .trim()
+}
+
 function siteOrigin(request: NextRequest): string {
   const configured = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '')
   if (configured) return configured
-  const host = (request.headers.get('host') ?? request.nextUrl.host).replace(
-    /^www\./,
-    '',
-  )
+  const host = requestHost(request).replace(/^www\./, '')
   return `https://${host}`
 }
 
@@ -30,7 +37,7 @@ function redirectToHttps(request: NextRequest): NextResponse | null {
 }
 
 function redirectWwwToApex(request: NextRequest): NextResponse | null {
-  const host = request.headers.get('host') ?? request.nextUrl.host
+  const host = requestHost(request)
   if (!host.startsWith('www.')) return null
   return absoluteRedirect(request, request.nextUrl.pathname)
 }
