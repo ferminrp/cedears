@@ -229,7 +229,7 @@ async function fillMissingUsPrices(cedears: Cedear[]): Promise<Cedear[]> {
 
 type CedearBasesPayload = {
   bases: CedearBase[]
-  yfinanceFetchedAt: Date | null
+  yfinanceFetchedAtIso: string | null
 }
 
 async function loadCedearBasesPayload(): Promise<CedearBasesPayload> {
@@ -251,15 +251,17 @@ async function loadCedearBasesPayload(): Promise<CedearBasesPayload> {
     throw new Error("Lista de CEDEARs inválida")
   }
 
+  const yfinanceFetchedAt = latestYfinanceFetchedAtFromRecords(data)
+
   return {
     bases,
-    yfinanceFetchedAt: latestYfinanceFetchedAtFromRecords(data),
+    yfinanceFetchedAtIso: yfinanceFetchedAt?.toISOString() ?? null,
   }
 }
 
 const getCedearBasesPayloadCached = unstable_cache(
   loadCedearBasesPayload,
-  ["cedear-bases-payload"],
+  ["cedear-bases-payload-v2"],
   { revalidate: 86400 },
 )
 
@@ -268,7 +270,10 @@ export async function getCedearBases(): Promise<CedearBase[]> {
 }
 
 export async function getCedearsYfinanceFetchedAt(): Promise<Date | null> {
-  return (await getCedearBasesPayloadCached()).yfinanceFetchedAt
+  const iso = (await getCedearBasesPayloadCached()).yfinanceFetchedAtIso
+  if (!iso) return null
+  const parsed = new Date(iso)
+  return Number.isFinite(parsed.getTime()) ? parsed : null
 }
 
 function normalizeTicker(ticker: string): string {
