@@ -20,6 +20,7 @@ const links = [
   { href: "/", label: "Listado" },
   { href: "/portfolio", label: "Portfolio" },
   { href: "/categorias", label: "Categorías" },
+  { href: "/ratios", label: "Ratios" },
   { href: "/herramientas", label: "Herramientas" },
   { href: "/alycs", label: "ALyCs" },
   { href: "/dolar-mep", label: "Dólar MEP" },

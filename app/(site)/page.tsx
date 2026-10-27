@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { getCedears } from '@/lib/get-cedears'
 import { CedearsList } from '@/components/cedears-list'
 import { SiteFooter, footerLinkClassName } from '@/components/site-footer'
@@ -143,7 +144,11 @@ export default async function Page() {
           acciones de empresas extranjeras desde la Bolsa de Comercio de Buenos Aires
           (BYMA), en pesos argentinos. Este listado reúne todos los CEDEARs
           disponibles con su ratio de conversión, ideal para consultar antes de operar
-          o alimentar asistentes de inteligencia artificial con datos confiables.
+          o alimentar asistentes de inteligencia artificial con datos confiables.{" "}
+          <Link href="/ratios" className="text-foreground underline underline-offset-4">
+            Ver tabla de ratios y calculadora
+          </Link>
+          .
         </p>
       </section>
 

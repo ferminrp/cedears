@@ -35,3 +35,4 @@ Each feature file uses H1, one intro paragraph, then these H2 sections in order:
 - [Data exports and feeds](./data-exports.md) — CSV, Markdown, JSON, sitemap.
 - [Portfolio](./portfolio.md) — local portfolio tracking view.
 - [Tools (DCA and rebalance)](./herramientas.md) — calculators under Herramientas.
+- [Ratios](./ratios.md) — conversion table, calculator, and CSV at `/ratios`.

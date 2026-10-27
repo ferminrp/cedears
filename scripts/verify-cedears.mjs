@@ -254,6 +254,8 @@ const SMOKE_ROUTES = [
   { path: "/alycs", expectStatus: 200 },
   { path: "/dolar-mep", expectStatus: 200 },
   { path: "/dolar-cable", expectStatus: 200 },
+  { path: "/ratios", expectStatus: 200 },
+  { path: "/ratios.csv", expectStatus: 200, contentTypeIncludes: "text/csv" },
   { path: "/earnings", expectStatus: 200 },
   { path: "/cedears.csv", expectStatus: 200, contentTypeIncludes: "text/csv" },
   { path: "/cedears.md", expectStatus: 200 },
@@ -324,6 +326,30 @@ async function captureScreenshots(baseUrl, artifactDir) {
     await mobile.goto(baseUrl, { waitUntil: "networkidle", timeout: 120_000 })
     await mobile.screenshot({
       path: join(artifactDir, "home-mobile.png"),
+      fullPage: false,
+    })
+
+    const ratiosDesktop = await browser.newPage({
+      viewport: { width: 1440, height: 900 },
+    })
+    await ratiosDesktop.goto(`${baseUrl}/ratios`, {
+      waitUntil: "networkidle",
+      timeout: 120_000,
+    })
+    await ratiosDesktop.screenshot({
+      path: join(artifactDir, "ratios-desktop-1440.png"),
+      fullPage: false,
+    })
+
+    const ratiosMobile = await browser.newPage({
+      viewport: { width: 390, height: 844 },
+    })
+    await ratiosMobile.goto(`${baseUrl}/ratios`, {
+      waitUntil: "networkidle",
+      timeout: 120_000,
+    })
+    await ratiosMobile.screenshot({
+      path: join(artifactDir, "ratios-mobile-390.png"),
       fullPage: false,
     })
   } finally {
