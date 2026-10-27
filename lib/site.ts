@@ -1,3 +1,5 @@
+import { absoluteCanonical } from "@/lib/canonical"
+
 export const siteConfig = {
   name: 'CEDEARs Argentina',
   githubRepo: 'https://github.com/ferminrp/cedears',
@@ -44,12 +46,14 @@ export function buildPageOpenGraph({
 }: {
   title: string
   description: string
+  /** Site path (e.g. `/cedear/AAPL`) or absolute URL. */
   url: string
 }) {
+  const absoluteUrl = url.startsWith("http") ? url : absoluteCanonical(url)
   return {
     title,
     description,
-    url,
+    url: absoluteUrl,
     images: [siteConfig.ogImage],
   }
 }

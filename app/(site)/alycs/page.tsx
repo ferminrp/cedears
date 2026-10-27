@@ -6,6 +6,7 @@ import { AlycsList } from "@/components/alycs-list"
 import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { getAlycs } from "@/lib/alycs"
+import { absoluteCanonical } from "@/lib/canonical"
 import { buildPageOpenGraph } from "@/lib/site"
 
 const title = "ALyCs y comisiones para operar CEDEARs"
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
   title,
   description,
   alternates: {
-    canonical: "/alycs",
+    canonical: absoluteCanonical("/alycs"),
   },
   openGraph: buildPageOpenGraph({ title, description, url: "/alycs" }),
 }

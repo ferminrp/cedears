@@ -10,6 +10,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty"
 import { getEarningsTimeline } from "@/lib/earnings"
+import { absoluteCanonical } from "@/lib/canonical"
 import { buildPageOpenGraph } from "@/lib/site"
 import { CalendarIcon } from "lucide-react"
 
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
   title,
   description,
   alternates: {
-    canonical: "/earnings",
+    canonical: absoluteCanonical("/earnings"),
   },
   openGraph: buildPageOpenGraph({ title, description, url: "/earnings" }),
 }

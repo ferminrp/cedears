@@ -3,6 +3,7 @@ import Link from "next/link"
 import { CalendarClockIcon, ScaleIcon } from "lucide-react"
 
 import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
+import { absoluteCanonical } from "@/lib/canonical"
 import { buildPageOpenGraph } from "@/lib/site"
 
 const title = "Herramientas para invertir en CEDEARs"
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
   title,
   description,
   alternates: {
-    canonical: "/herramientas",
+    canonical: absoluteCanonical("/herramientas"),
   },
   openGraph: buildPageOpenGraph({ title, description, url: "/herramientas" }),
 }

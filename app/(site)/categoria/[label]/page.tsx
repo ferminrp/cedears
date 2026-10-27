@@ -4,6 +4,8 @@ import { notFound } from "next/navigation"
 import { CedearsList } from "@/components/cedears-list"
 import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { canonicalCategorySlug } from "@/lib/category-redirects"
+import { absoluteCanonical } from "@/lib/canonical"
 import {
   categoryDescription,
   categoryPath,
@@ -52,7 +54,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const count = countMatchingBases(bases, matchingTags)
   const title = categoryTitle(tag)
   const description = categoryDescription(tag, count)
-  const canonical = categoryPath(tag)
+  const canonical = absoluteCanonical(
+    `/categoria/${canonicalCategorySlug(label)}`,
+  )
 
   return {
     title,

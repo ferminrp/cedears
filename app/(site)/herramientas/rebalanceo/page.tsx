@@ -6,6 +6,7 @@ import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { getBonds } from "@/lib/get-bonds"
 import { getCedears } from "@/lib/get-cedears"
+import { absoluteCanonical } from "@/lib/canonical"
 import { buildPageOpenGraph } from "@/lib/site"
 
 const title = "Calculadora de rebalanceo de CEDEARs"
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
   title,
   description,
   alternates: {
-    canonical: "/herramientas/rebalanceo",
+    canonical: absoluteCanonical("/herramientas/rebalanceo"),
   },
   openGraph: buildPageOpenGraph({
     title,

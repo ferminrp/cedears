@@ -16,6 +16,7 @@ import { getCedearBases, getCedearByTicker } from "@/lib/get-cedears"
 import { getCedearHistorical } from "@/lib/historical"
 import { getUnderlyingProfile } from "@/lib/underlying-profile"
 import { logoUrl } from "@/lib/logo"
+import { absoluteCanonical } from "@/lib/canonical"
 import { getSiteUrl, buildPageOpenGraph } from "@/lib/site"
 
 export const revalidate = 3600
@@ -48,7 +49,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const priceSnippet =
     cedear.price !== null ? ` Cotiza a ${formatArs(cedear.price)}.` : ""
   const description = `¿Existe CEDEAR de ${cedear.TickerOriginal}? Sí: ${cedear.Cedears} (${cedear.Name}). Ratio ${cedear.Ratio}:1, precio, MEP, cable y gráfico histórico.${priceSnippet}`
-  const canonical = `/cedear/${cedear.Cedears}`
+  const canonical = absoluteCanonical(`/cedear/${cedear.Cedears}`)
 
   return {
     title,

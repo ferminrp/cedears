@@ -165,6 +165,85 @@ async function doctor(baseUrl, artifactDir) {
   return { sampleTicker, dataLoadWarning: dataFailed }
 }
 
+function extractCanonicalHref(html) {
+  const m1 = html.match(
+    /<link[^>]*rel=["']canonical["'][^>]*href=["']([^"']+)["'][^>]*>/i,
+  )
+  if (m1) return m1[1]
+  const m2 = html.match(
+    /<link[^>]*href=["']([^"']+)["'][^>]*rel=["']canonical["'][^>]*>/i,
+  )
+  return m2?.[1] ?? null
+}
+
+function isCanonicalInHead(html) {
+  const idx = html.search(/<link[^>]+rel=["']canonical["']/i)
+  if (idx === -1) return false
+  const headEnd = html.indexOf("</head>")
+  return headEnd !== -1 && idx < headEnd
+}
+
+function normalizeCanonicalUrl(url) {
+  try {
+    const parsed = new URL(url)
+    parsed.hash = ""
+    if (parsed.pathname === "/") {
+      return `${parsed.origin}/`
+    }
+    parsed.pathname = parsed.pathname.replace(/\/$/, "") || "/"
+    return parsed.toString()
+  } catch {
+    return url
+  }
+}
+
+async function smokeCanonicals(baseUrl, sampleTicker, artifactDir) {
+  const canonicalOrigin = (
+    process.env.NEXT_PUBLIC_SITE_URL ?? baseUrl
+  ).replace(/\/$/, "")
+  const checks = [
+    { path: "/", expected: `${canonicalOrigin}/` },
+    { path: "/categorias", expected: `${canonicalOrigin}/categorias` },
+    {
+      path: "/categoria/tecnologia",
+      expected: `${canonicalOrigin}/categoria/tecnologia`,
+    },
+    {
+      path: `/cedear/${encodeURIComponent(sampleTicker)}`,
+      expected: `${canonicalOrigin}/cedear/${encodeURIComponent(sampleTicker)}`,
+    },
+  ]
+  const results = []
+  for (const check of checks) {
+    const res = await fetchUrl(`${baseUrl}${check.path}`)
+    const html = res.body.toString("utf8")
+    const href = extractCanonicalHref(html)
+    const inHead = isCanonicalInHead(html)
+    const ok =
+      res.status === 200 &&
+      inHead &&
+      href !== null &&
+      normalizeCanonicalUrl(href) === normalizeCanonicalUrl(check.expected)
+    results.push({
+      path: check.path,
+      expected: check.expected,
+      href,
+      inHead,
+      ok,
+    })
+    if (!ok) {
+      throw new Error(
+        `Canonical smoke failed ${check.path}: inHead=${inHead} href=${href} expected=${check.expected}`,
+      )
+    }
+  }
+  await writeFile(
+    join(artifactDir, "canonical-smoke.json"),
+    JSON.stringify({ baseUrl, results }, null, 2),
+    "utf8",
+  )
+}
+
 const SMOKE_ROUTES = [
   { path: "/", expectStatus: 200 },
   { path: "/portfolio", expectStatus: 200 },
@@ -214,6 +293,8 @@ async function smoke(baseUrl, sampleTicker, artifactDir) {
     JSON.stringify({ baseUrl, sampleTicker, results }, null, 2),
     "utf8",
   )
+
+  await smokeCanonicals(baseUrl, sampleTicker, artifactDir)
 }
 
 async function captureScreenshots(baseUrl, artifactDir) {
