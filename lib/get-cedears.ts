@@ -1,6 +1,5 @@
 import { cache } from "react"
 import { unstable_cache } from "next/cache"
-import { latestYfinanceFetchedAtFromRecords } from "@/lib/cedear-source"
 import { type Cedear } from "@/lib/cedears"
 
 export type CedearBase = {
@@ -227,12 +226,7 @@ async function fillMissingUsPrices(cedears: Cedear[]): Promise<Cedear[]> {
   })
 }
 
-type CedearBasesPayload = {
-  bases: CedearBase[]
-  yfinanceFetchedAtIso: string | null
-}
-
-async function loadCedearBasesPayload(): Promise<CedearBasesPayload> {
+async function loadCedearBasesPayload(): Promise<CedearBase[]> {
   const res = await fetch(DATA_URL, {
     next: { revalidate: 86400 },
   })
@@ -251,29 +245,17 @@ async function loadCedearBasesPayload(): Promise<CedearBasesPayload> {
     throw new Error("Lista de CEDEARs inválida")
   }
 
-  const yfinanceFetchedAt = latestYfinanceFetchedAtFromRecords(data)
-
-  return {
-    bases,
-    yfinanceFetchedAtIso: yfinanceFetchedAt?.toISOString() ?? null,
-  }
+  return bases
 }
 
-const getCedearBasesPayloadCached = unstable_cache(
+const getCedearBasesCached = unstable_cache(
   loadCedearBasesPayload,
-  ["cedear-bases-payload-v2"],
+  ["cedear-bases"],
   { revalidate: 86400 },
 )
 
 export async function getCedearBases(): Promise<CedearBase[]> {
-  return (await getCedearBasesPayloadCached()).bases
-}
-
-export async function getCedearsYfinanceFetchedAt(): Promise<Date | null> {
-  const iso = (await getCedearBasesPayloadCached()).yfinanceFetchedAtIso
-  if (!iso) return null
-  const parsed = new Date(iso)
-  return Number.isFinite(parsed.getTime()) ? parsed : null
+  return getCedearBasesCached()
 }
 
 function normalizeTicker(ticker: string): string {
@@ -286,7 +268,14 @@ export async function getCedearByTicker(ticker: string): Promise<Cedear | null> 
   return cedears.find((c) => normalizeTicker(c.Cedears) === normalized) ?? null
 }
 
-async function loadCedears(): Promise<Cedear[]> {
+type CedearsPayload = {
+  cedears: Cedear[]
+  livePricesFetchedAtIso: string
+}
+
+async function loadCedearsPayload(): Promise<CedearsPayload> {
+  const livePricesFetchedAtIso = new Date().toISOString()
+
   const [data, liveResults] = await Promise.all([
     getCedearBases(),
     Promise.allSettled([
@@ -318,13 +307,22 @@ async function loadCedears(): Promise<Cedear[]> {
       ? withEmptyQuotes(data)
       : mergeQuotes(data, argQuotes, usaQuotes)
 
-  return fillMissingUsPrices(merged)
+  const cedears = await fillMissingUsPrices(merged)
+  return { cedears, livePricesFetchedAtIso }
 }
 
-const getCedearsUncached = unstable_cache(loadCedears, ["cedears-live-v2"], {
-  revalidate: 300,
-})
+const getCedearsPayloadCached = unstable_cache(
+  loadCedearsPayload,
+  ["cedears-live-v3"],
+  { revalidate: 300 },
+)
+
+export async function getCedearsLivePricesFetchedAt(): Promise<Date | null> {
+  const iso = (await getCedearsPayloadCached()).livePricesFetchedAtIso
+  const parsed = new Date(iso)
+  return Number.isFinite(parsed.getTime()) ? parsed : null
+}
 
 export const getCedears = cache(async (): Promise<Cedear[]> => {
-  return getCedearsUncached()
+  return (await getCedearsPayloadCached()).cedears
 })

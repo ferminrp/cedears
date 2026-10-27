@@ -6,7 +6,7 @@ import { RatiosTable } from "@/components/ratios-table"
 import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
-import { getCedears, getCedearsYfinanceFetchedAt } from "@/lib/get-cedears"
+import { getCedears, getCedearsLivePricesFetchedAt } from "@/lib/get-cedears"
 import { summarizeImplicitDollar } from "@/lib/implicit-dollar"
 import { cedearsWithArsPrice, formatRatiosDataDate, ratiosPageTitle } from "@/lib/ratios"
 import { buildPageOpenGraph, getSiteUrl } from "@/lib/site"
@@ -17,7 +17,7 @@ const description =
   "Tabla de ratios de conversión de CEDEARs con precios en vivo, calculadora CEDEARs ↔ acciones y precio teórico al CCL implícito. Exportá CSV."
 
 export async function generateMetadata(): Promise<Metadata> {
-  const fetchedAt = await getCedearsYfinanceFetchedAt()
+  const fetchedAt = await getCedearsLivePricesFetchedAt()
   const title = ratiosPageTitle(fetchedAt)
   return {
     title,
@@ -57,7 +57,7 @@ export default async function RatiosPage() {
   try {
     const [cedears, fetchedAt] = await Promise.all([
       getCedears(),
-      getCedearsYfinanceFetchedAt(),
+      getCedearsLivePricesFetchedAt(),
     ])
     heading = ratiosPageTitle(fetchedAt)
     updatedLabel = fetchedAt ? formatRatiosDataDate(fetchedAt) : null

@@ -1,6 +1,5 @@
 import assert from "node:assert/strict"
 import { describe, it } from "node:test"
-import { latestYfinanceFetchedAtFromRecords } from "../lib/cedear-source"
 import {
   cedearsToShares,
   cedearsWithArsPrice,
@@ -67,25 +66,11 @@ describe("ratios helpers", () => {
     assert.equal(label, "16/09/2026")
   })
 
-  it("builds page title from yfinance fetched_at", () => {
-    const title = ratiosPageTitle(new Date("2026-09-16T15:03:44Z"))
+  it("builds page title from live prices fetch time", () => {
+    const title = ratiosPageTitle(new Date("2026-10-27T15:30:00Z"))
     assert.equal(
       title,
-      "Ratios de conversión de CEDEARs (actualizado 16/09/2026)",
+      "Ratios de conversión de CEDEARs (actualizado 27/10/2026)",
     )
-  })
-
-  it("reads latest yfinance fetched_at from records", () => {
-    const at = latestYfinanceFetchedAtFromRecords([
-      {
-        Cedears: "A",
-        "yfinance-metadata": { fetched_at: "2026-07-21T10:55:44Z" },
-      },
-      {
-        Cedears: "B",
-        "yfinance-metadata": { fetched_at: "2026-09-16T15:03:44Z" },
-      },
-    ])
-    assert.equal(at?.toISOString(), "2026-09-16T15:03:44.000Z")
   })
 })
