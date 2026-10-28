@@ -1,6 +1,13 @@
 import type { MetadataRoute } from "next"
 import { categoryPath, getUniqueTagSlugs } from "@/lib/cedear-tags"
+import { NON_CANONICAL_CATEGORY_SLUGS } from "@/lib/category-redirects"
 import { getCedearBases } from "@/lib/get-cedears"
+import {
+  categoryLastModified,
+  cedearLastModified,
+  dataFeedLastModified,
+  staticRouteLastModified,
+} from "@/lib/sitemap-lastmod"
 import { getSiteUrl } from "@/lib/site"
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -11,100 +18,99 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   } catch {
     // Keep static routes when the remote list is unavailable.
   }
-  const now = new Date()
 
-  return [
+  const feedLastMod = bases.length > 0 ? dataFeedLastModified(bases) : staticRouteLastModified("/")
+
+  const staticRoutes: MetadataRoute.Sitemap = [
     {
       url: siteUrl,
-      lastModified: now,
+      lastModified: feedLastMod,
       changeFrequency: "daily",
       priority: 1,
     },
     {
       url: `${siteUrl}/cedears.md`,
-      lastModified: now,
+      lastModified: feedLastMod,
       changeFrequency: "hourly",
       priority: 0.95,
     },
     {
       url: `${siteUrl}/cedears.csv`,
-      lastModified: now,
+      lastModified: feedLastMod,
       changeFrequency: "hourly",
       priority: 0.95,
     },
     {
       url: `${siteUrl}/llms.txt`,
-      lastModified: now,
+      lastModified: staticRouteLastModified("/llms.txt"),
       changeFrequency: "daily",
       priority: 0.9,
     },
     {
       url: `${siteUrl}/dolar-mep`,
-      lastModified: new Date(),
+      lastModified: staticRouteLastModified("/dolar-mep"),
       changeFrequency: 'hourly',
       priority: 0.9,
     },
     {
       url: `${siteUrl}/dolar-cable`,
-      lastModified: new Date(),
+      lastModified: staticRouteLastModified("/dolar-cable"),
       changeFrequency: 'hourly',
       priority: 0.9,
     },
-
     {
       url: `${siteUrl}/earnings`,
-      lastModified: now,
-      changeFrequency: "daily",
-      priority: 0.8,
-    },
-    {
-      url: `${siteUrl}/portfolio`,
-      lastModified: now,
+      lastModified: staticRouteLastModified("/earnings"),
       changeFrequency: "daily",
       priority: 0.8,
     },
     {
       url: `${siteUrl}/categorias`,
-      lastModified: now,
+      lastModified: staticRouteLastModified("/categorias"),
       changeFrequency: "daily",
       priority: 0.85,
     },
     {
       url: `${siteUrl}/herramientas`,
-      lastModified: now,
+      lastModified: staticRouteLastModified("/herramientas"),
       changeFrequency: "weekly",
       priority: 0.8,
     },
     {
       url: `${siteUrl}/alycs`,
-      lastModified: now,
+      lastModified: staticRouteLastModified("/alycs"),
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
       url: `${siteUrl}/herramientas/rebalanceo`,
-      lastModified: now,
+      lastModified: staticRouteLastModified("/herramientas/rebalanceo"),
       changeFrequency: "weekly",
       priority: 0.75,
     },
     {
       url: `${siteUrl}/herramientas/dca`,
-      lastModified: now,
+      lastModified: staticRouteLastModified("/herramientas/dca"),
       changeFrequency: "weekly",
       priority: 0.75,
     },
+  ]
 
-    ...getUniqueTagSlugs(bases).map(({ tag }) => ({
+  const categoryEntries = getUniqueTagSlugs(bases)
+    .filter(({ slug }) => !NON_CANONICAL_CATEGORY_SLUGS.has(slug))
+    .map(({ tag }) => ({
       url: `${siteUrl}${categoryPath(tag)}`,
-      lastModified: now,
+      lastModified: categoryLastModified(bases, tag),
       changeFrequency: "daily" as const,
       priority: 0.8,
-    })),
-    ...bases.map((cedear) => ({
-      url: `${siteUrl}/cedear/${cedear.Cedears}`,
-      lastModified: now,
-      changeFrequency: "daily" as const,
-      priority: 0.7,
-    })),
-  ]
+    }))
+
+  const cedearEntries = bases.map((cedear) => ({
+    url: `${siteUrl}/cedear/${cedear.Cedears}`,
+    lastModified: cedearLastModified(cedear),
+    changeFrequency: "daily" as const,
+    priority: 0.7,
+  }))
+
+  return [...staticRoutes, ...categoryEntries, ...cedearEntries]
 }

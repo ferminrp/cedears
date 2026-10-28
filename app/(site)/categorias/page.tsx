@@ -9,6 +9,7 @@ import {
   getCategoryIndex,
 } from "@/lib/cedear-tags"
 import { getCedearBases } from "@/lib/get-cedears"
+import { absoluteCanonical } from "@/lib/canonical"
 import { buildPageOpenGraph } from "@/lib/site"
 
 export const revalidate = 86400
@@ -30,7 +31,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title,
     description,
     alternates: {
-      canonical: "/categorias",
+      canonical: absoluteCanonical("/categorias"),
     },
     openGraph: buildPageOpenGraph({ title, description, url: "/categorias" }),
   }

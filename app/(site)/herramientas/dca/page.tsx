@@ -5,6 +5,7 @@ import { DcaCalculator } from "@/components/dca-calculator"
 import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { getCedears } from "@/lib/get-cedears"
+import { absoluteCanonical } from "@/lib/canonical"
 import { buildPageOpenGraph } from "@/lib/site"
 
 const title = "Calculadora de DCA para CEDEARs"
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
   title,
   description,
   alternates: {
-    canonical: "/herramientas/dca",
+    canonical: absoluteCanonical("/herramientas/dca"),
   },
   openGraph: buildPageOpenGraph({
     title,

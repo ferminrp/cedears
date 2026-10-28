@@ -3,6 +3,7 @@ import { getCedears } from '@/lib/get-cedears'
 import { CedearsList } from '@/components/cedears-list'
 import { SiteFooter, footerLinkClassName } from '@/components/site-footer'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { absoluteCanonical } from '@/lib/canonical'
 import { getSiteUrl, siteConfig, buildPageOpenGraph } from '@/lib/site'
 
 export const revalidate = 300
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
   title: siteConfig.title,
   description: siteConfig.description,
   alternates: {
-    canonical: '/',
+    canonical: absoluteCanonical('/'),
   },
   openGraph: buildPageOpenGraph({
     title: siteConfig.title,

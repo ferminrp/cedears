@@ -16,9 +16,11 @@ import { getCedearBases, getCedearByTicker } from "@/lib/get-cedears"
 import { getCedearHistorical } from "@/lib/historical"
 import { getUnderlyingProfile } from "@/lib/underlying-profile"
 import { logoUrl } from "@/lib/logo"
+import { absoluteCanonical } from "@/lib/canonical"
 import { getSiteUrl, buildPageOpenGraph } from "@/lib/site"
 
 export const revalidate = 3600
+export const dynamicParams = true
 
 type PageProps = {
   params: Promise<{ ticker: string }>
@@ -26,7 +28,13 @@ type PageProps = {
 
 export async function generateStaticParams() {
   const bases = await getCedearBases()
-  return bases.map((cedear) => ({ ticker: cedear.Cedears }))
+  const omitTicker = process.env.CEDEARS_OMIT_STATIC_TICKER?.trim().toUpperCase()
+  return bases
+    .filter(
+      (cedear) =>
+        !omitTicker || cedear.Cedears.trim().toUpperCase() !== omitTicker,
+    )
+    .map((cedear) => ({ ticker: cedear.Cedears }))
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -34,17 +42,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const cedear = await getCedearByTicker(ticker)
 
   if (!cedear) {
-    return {
-      title: "CEDEAR no encontrado",
-      robots: { index: false, follow: false },
-    }
+    notFound()
   }
 
   const title = `CEDEAR ${cedear.Cedears} — ${cedear.Name}`
   const priceSnippet =
     cedear.price !== null ? ` Cotiza a ${formatArs(cedear.price)}.` : ""
   const description = `¿Existe CEDEAR de ${cedear.TickerOriginal}? Sí: ${cedear.Cedears} (${cedear.Name}). Ratio ${cedear.Ratio}:1, precio, MEP, cable y gráfico histórico.${priceSnippet}`
-  const canonical = `/cedear/${cedear.Cedears}`
+  const canonical = absoluteCanonical(`/cedear/${cedear.Cedears}`)
 
   return {
     title,

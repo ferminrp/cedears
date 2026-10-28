@@ -99,6 +99,7 @@ Default artifact directory: `.verify-artifacts/<run-id>/` or pass `--artifact-di
 | --- | --- |
 | `doctor.txt` | Instance healthy, JSON feed reachable |
 | `smoke.json` | Key routes return expected status |
+| `canonical-smoke.json` | Absolute `rel=canonical` in initial `<head>` for home, categorías, sample CEDEAR, tecnología |
 | `home-desktop.png` | Home renders on desktop |
 | `home-mobile.png` | Home renders on mobile (iPhone 13 profile) |
 | `home-search-desktop.png` | Search interaction filters the list (when data loaded) |

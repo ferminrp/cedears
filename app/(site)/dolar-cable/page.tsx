@@ -4,6 +4,7 @@ import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { getCedears } from "@/lib/get-cedears"
 import { summarizeImplicitDollar } from "@/lib/implicit-dollar"
+import { absoluteCanonical } from "@/lib/canonical"
 import { buildPageOpenGraph } from "@/lib/site"
 
 const title = "Dólar cable implícito en CEDEARs"
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
   title,
   description,
   alternates: {
-    canonical: "/dolar-cable",
+    canonical: absoluteCanonical("/dolar-cable"),
   },
   openGraph: buildPageOpenGraph({ title, description, url: "/dolar-cable" }),
 }

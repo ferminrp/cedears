@@ -43,9 +43,6 @@ export const metadata: Metadata = {
     description: siteConfig.description,
     images: [siteConfig.ogImage.url],
   },
-  alternates: {
-    canonical: '/',
-  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',

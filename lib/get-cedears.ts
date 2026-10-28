@@ -9,6 +9,7 @@ export type CedearBase = {
   Ratio: string
   TickerOriginal: string
   tags: string[]
+  yfinanceFetchedAt?: string
 }
 
 type LiveQuote = {
@@ -50,6 +51,12 @@ function parseCedearBase(value: unknown): CedearBase | null {
     return null
   }
 
+  const yfinanceMeta = value["yfinance-metadata"]
+  const fetchedAt =
+    isRecord(yfinanceMeta) && typeof yfinanceMeta.fetched_at === "string"
+      ? yfinanceMeta.fetched_at
+      : undefined
+
   return {
     Cedears: value.Cedears,
     Name: value.Name,
@@ -57,6 +64,7 @@ function parseCedearBase(value: unknown): CedearBase | null {
     Ratio: value.Ratio,
     TickerOriginal: value.TickerOriginal,
     tags: parseTags(value.tags),
+    yfinanceFetchedAt: fetchedAt,
   }
 }
 
