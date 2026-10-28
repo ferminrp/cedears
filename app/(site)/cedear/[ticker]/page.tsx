@@ -265,6 +265,14 @@ export default async function CedearPage({ params }: PageProps) {
             <Link href="/ratios" className="underline underline-offset-4">
               Ratios y calculadora
             </Link>
+            {paysDividends === true ? (
+              <>
+                {" "}
+                <Link href="/dividendos" className="underline underline-offset-4">
+                  Ver próximos dividendos
+                </Link>
+              </>
+            ) : null}
             .
           </AlertDescription>
         </Alert>

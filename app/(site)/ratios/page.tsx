@@ -181,6 +181,10 @@ export default async function RatiosPage() {
           >
             data912
           </a>
+          .{" "}
+          <Link href="/dividendos" className={footerLinkClassName}>
+            Dividendos de CEDEARs
+          </Link>
           .
         </SiteFooter>
       </>

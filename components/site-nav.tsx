@@ -26,6 +26,7 @@ const links = [
   { href: "/dolar-mep", label: "Dólar MEP" },
   { href: "/dolar-cable", label: "Dólar cable" },
   { href: "/earnings", label: "Earnings" },
+  { href: "/dividendos", label: "Dividendos" },
 ] as const
 
 const isLinkActive = (currentPath: string, href: string) =>

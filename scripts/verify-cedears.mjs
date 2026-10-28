@@ -306,6 +306,8 @@ const SMOKE_ROUTES = [
   { path: "/ratios", expectStatus: 200 },
   { path: "/ratios.csv", expectStatus: 200, contentTypeIncludes: "text/csv" },
   { path: "/earnings", expectStatus: 200 },
+  { path: "/dividendos", expectStatus: 200, timeoutMs: 600_000 },
+  { path: "/dividendos.csv", expectStatus: 200, contentTypeIncludes: "text/csv", timeoutMs: 120_000 },
   { path: "/cedears.csv", expectStatus: 200, contentTypeIncludes: "text/csv" },
   { path: "/cedears.md", expectStatus: 200 },
   { path: "/sitemap.xml", expectStatus: 200 },
@@ -315,7 +317,7 @@ async function smoke(baseUrl, sampleTicker, artifactDir) {
   const results = []
   for (const route of SMOKE_ROUTES) {
     const url = `${baseUrl}${route.path}`
-    const res = await fetchUrl(url)
+    const res = await fetchUrl(url, { timeoutMs: route.timeoutMs ?? 60_000 })
     const okStatus = res.status === route.expectStatus
     const ct = res.headers["content-type"] ?? ""
     const okCt =
@@ -555,6 +557,45 @@ async function captureScreenshots(baseUrl, artifactDir, setBrowser) {
     })
     await assertNoHorizontalOverflow(ratios375, "ratios 375px")
     await assertRatiosPageGeometry(baseUrl, ratios375, "375")
+
+    const dividendosDesktop = await browser.newPage({
+      viewport: { width: 1440, height: 900 },
+    })
+    await dividendosDesktop.goto(`${baseUrl}/dividendos`, {
+      waitUntil: "networkidle",
+      timeout: 600_000,
+    })
+    await assertNoHorizontalOverflow(dividendosDesktop, "dividendos 1440px")
+    await dividendosDesktop.screenshot({
+      path: join(artifactDir, "dividendos-desktop-1440.png"),
+      fullPage: false,
+    })
+
+    const dividendos375 = await browser.newPage({
+      viewport: { width: 375, height: 812 },
+    })
+    await dividendos375.goto(`${baseUrl}/dividendos`, {
+      waitUntil: "networkidle",
+      timeout: 600_000,
+    })
+    await assertNoHorizontalOverflow(dividendos375, "dividendos 375px")
+    await dividendos375.screenshot({
+      path: join(artifactDir, "dividendos-mobile-375.png"),
+      fullPage: false,
+    })
+
+    const dividendos390 = await browser.newPage({
+      viewport: { width: 390, height: 844 },
+    })
+    await dividendos390.goto(`${baseUrl}/dividendos`, {
+      waitUntil: "networkidle",
+      timeout: 600_000,
+    })
+    await assertNoHorizontalOverflow(dividendos390, "dividendos 390px")
+    await dividendos390.screenshot({
+      path: join(artifactDir, "dividendos-mobile-390.png"),
+      fullPage: false,
+    })
   } finally {
     await browser.close()
     setBrowser?.(null)
