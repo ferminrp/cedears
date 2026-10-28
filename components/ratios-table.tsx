@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useLayoutEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
 import {
   ArrowDownIcon,
@@ -30,6 +30,10 @@ import {
 } from "@/components/ui/table"
 
 const numericCellClassName = "text-right font-mono tabular-nums text-sm"
+
+/** Sticky `<th>`; offset comes from `--ratios-sticky-search-height` on the table root. */
+const stickyHeadClassName =
+  "bg-background max-md:sticky max-md:top-[var(--ratios-sticky-search-height,0px)] max-md:z-[5] md:sticky md:top-0 md:z-[5]"
 
 type SortKey = "ticker" | "name" | "underlying" | "ratio" | "price"
 type SortDir = "asc" | "desc"
@@ -83,6 +87,30 @@ export function RatiosTable({ cedears }: { cedears: Cedear[] }) {
   const [query, setQuery] = useState("")
   const [sortKey, setSortKey] = useState<SortKey>("ticker")
   const [sortDir, setSortDir] = useState<SortDir>("asc")
+  const rootRef = useRef<HTMLDivElement>(null)
+  const searchStickyRef = useRef<HTMLDivElement>(null)
+
+  useLayoutEffect(() => {
+    const searchEl = searchStickyRef.current
+    const root = rootRef.current
+    if (!searchEl || !root) return
+
+    const syncStickyOffset = () => {
+      root.style.setProperty(
+        "--ratios-sticky-search-height",
+        `${searchEl.getBoundingClientRect().height}px`,
+      )
+    }
+
+    syncStickyOffset()
+    const observer = new ResizeObserver(syncStickyOffset)
+    observer.observe(searchEl)
+    window.addEventListener("resize", syncStickyOffset)
+    return () => {
+      observer.disconnect()
+      window.removeEventListener("resize", syncStickyOffset)
+    }
+  }, [query, cedears.length])
 
   function toggleSort(key: SortKey) {
     if (sortKey === key) {
@@ -120,8 +148,16 @@ export function RatiosTable({ cedears }: { cedears: Cedear[] }) {
     filtered.length === 1 ? "1 resultado" : `${filtered.length} resultados`
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="sticky top-0 z-10 -mx-[var(--space-l)] border-b border-border bg-background px-[var(--space-l)] py-3 md:static md:mx-0 md:border-0 md:px-0 md:py-0">
+    <div
+      ref={rootRef}
+      data-ratios-table-root
+      className="flex min-w-0 flex-col gap-3"
+    >
+      <div
+        ref={searchStickyRef}
+        id="ratios-search-sticky"
+        className="sticky top-0 z-10 -mx-[var(--space-l)] border-b border-border bg-background px-[var(--space-l)] py-3 md:static md:mx-0 md:border-0 md:px-0 md:py-0"
+      >
         <label htmlFor="ratios-search" className="sr-only">
           Buscar CEDEAR
         </label>
@@ -172,15 +208,19 @@ export function RatiosTable({ cedears }: { cedears: Cedear[] }) {
           ) : null}
         </Empty>
       ) : (
-        <div className="rounded-[var(--radius-m)] border border-border md:overflow-x-auto">
+        <div
+          data-ratios-table-wrap
+          className="box-border w-full max-w-full min-w-0 rounded-[var(--radius-m)] border border-border md:overflow-x-auto"
+        >
           <Table
             scrollContainer={false}
-            className="w-full table-fixed md:min-w-[36rem] md:table-auto"
+            data-ratios-table
+            className="w-full max-w-full table-fixed md:min-w-[36rem] md:table-auto"
           >
-            <TableHeader className="sticky top-0 z-[5] bg-background max-md:top-[7rem]">
-              <TableRow className="bg-background hover:bg-transparent md:static">
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
                 <TableHead
-                  className="w-[46%] md:w-auto md:min-w-[5.5rem]"
+                  className={`w-[46%] md:w-auto md:min-w-[5.5rem] ${stickyHeadClassName}`}
                   aria-sort={ariaSortValue(sortKey, "ticker", sortDir)}
                 >
                   <SortButton
@@ -191,7 +231,7 @@ export function RatiosTable({ cedears }: { cedears: Cedear[] }) {
                   />
                 </TableHead>
                 <TableHead
-                  className="hidden min-w-[5rem] md:table-cell"
+                  className={`hidden min-w-[5rem] md:table-cell ${stickyHeadClassName}`}
                   aria-sort={ariaSortValue(sortKey, "name", sortDir)}
                 >
                   <SortButton
@@ -202,7 +242,7 @@ export function RatiosTable({ cedears }: { cedears: Cedear[] }) {
                   />
                 </TableHead>
                 <TableHead
-                  className="hidden min-w-[4rem] md:table-cell"
+                  className={`hidden min-w-[4rem] md:table-cell ${stickyHeadClassName}`}
                   aria-sort={ariaSortValue(sortKey, "underlying", sortDir)}
                 >
                   <SortButton
@@ -213,7 +253,7 @@ export function RatiosTable({ cedears }: { cedears: Cedear[] }) {
                   />
                 </TableHead>
                 <TableHead
-                  className="w-[27%] text-right md:w-auto md:min-w-[3.5rem]"
+                  className={`w-[27%] text-right md:w-auto md:min-w-[3.5rem] ${stickyHeadClassName}`}
                   aria-sort={ariaSortValue(sortKey, "ratio", sortDir)}
                 >
                   <span className="flex justify-end">
@@ -226,7 +266,7 @@ export function RatiosTable({ cedears }: { cedears: Cedear[] }) {
                   </span>
                 </TableHead>
                 <TableHead
-                  className="w-[27%] text-right md:w-auto md:min-w-[4.5rem]"
+                  className={`w-[27%] text-right md:w-auto md:min-w-[4.5rem] ${stickyHeadClassName}`}
                   aria-sort={ariaSortValue(sortKey, "price", sortDir)}
                 >
                   <span className="flex justify-end">
