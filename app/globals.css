@@ -557,3 +557,61 @@
     outline-offset: 2px;
   }
 }
+
+/* Compact SSR markup for home CEDEAR table (same visuals, shorter HTML). */
+@layer components {
+  .ch-wrap {
+    @apply max-w-full overflow-x-auto rounded-[var(--radius-m)] border border-border;
+  }
+  .ch-cap {
+    @apply border-b border-border bg-muted/40 px-4 py-2 text-sm text-muted-foreground;
+  }
+  .ch-table {
+    @apply min-w-[44rem] w-full caption-bottom font-[family-name:var(--font-ui)] text-[length:var(--size-s)] leading-[var(--line-s)];
+  }
+  .ch-thead tr {
+    @apply border-b border-border bg-muted;
+  }
+  .ch-th {
+    @apply h-auto px-[var(--space-s)] py-[var(--space-s)] text-left align-middle font-medium whitespace-nowrap text-foreground;
+  }
+  .ch-th-r {
+    @apply text-right;
+  }
+  .ch-th-pin {
+    @apply w-10 px-1;
+  }
+  .ch-tbody tr {
+    @apply border-b border-border bg-card;
+  }
+  .ch-td {
+    @apply px-[var(--space-s)] py-[var(--space-s)] align-middle whitespace-nowrap;
+  }
+  .ch-td .ch-logo {
+    @apply mr-1.5 inline-block align-middle;
+  }
+  .ch-td-pin {
+    @apply px-1;
+  }
+  .ch-td-r {
+    @apply text-right font-mono tabular-nums;
+  }
+  .ch-td-emp {
+    @apply max-w-52 text-muted-foreground;
+  }
+  .ch-ticker {
+    @apply font-mono font-medium underline-offset-4 hover:underline;
+  }
+  .ch-badge {
+    @apply inline-flex items-center rounded-[var(--radius-s)] border border-transparent bg-secondary px-[var(--space-xs)] py-0.5 text-[length:var(--size-xs)] font-medium text-secondary-foreground;
+  }
+  .ch-logo {
+    @apply size-4 shrink-0 rounded-sm bg-muted object-contain;
+  }
+  .ch-az-line {
+    @apply min-w-0 text-sm leading-snug;
+  }
+  .ch-az-line a {
+    @apply font-mono text-foreground underline-offset-4 hover:underline;
+  }
+}
