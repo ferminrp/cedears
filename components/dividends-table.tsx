@@ -268,7 +268,7 @@ export function DividendsTable({
             </TableHeader>
             <TableBody>
               {sorted.map((row) => {
-                const mobileSubline = `${row.name} · ${formatFrequencyShort(row.frequency)}`
+                const mobileSubline = `${formatFrequencyShort(row.frequency)} · ${row.name}`
                 return (
                   <TableRow key={row.cedear} className="hover:bg-muted/50">
                     <TableCell className="max-w-[40vw] p-0 lg:max-w-none">
