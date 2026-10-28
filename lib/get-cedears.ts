@@ -226,7 +226,7 @@ async function fillMissingUsPrices(cedears: Cedear[]): Promise<Cedear[]> {
   })
 }
 
-export async function getCedearBases(): Promise<CedearBase[]> {
+async function loadCedearBasesPayload(): Promise<CedearBase[]> {
   const res = await fetch(DATA_URL, {
     next: { revalidate: 86400 },
   })
@@ -248,6 +248,16 @@ export async function getCedearBases(): Promise<CedearBase[]> {
   return bases
 }
 
+const getCedearBasesCached = unstable_cache(
+  loadCedearBasesPayload,
+  ["cedear-bases"],
+  { revalidate: 86400 },
+)
+
+export async function getCedearBases(): Promise<CedearBase[]> {
+  return getCedearBasesCached()
+}
+
 function normalizeTicker(ticker: string): string {
   return ticker.trim().toUpperCase()
 }
@@ -258,7 +268,14 @@ export async function getCedearByTicker(ticker: string): Promise<Cedear | null> 
   return cedears.find((c) => normalizeTicker(c.Cedears) === normalized) ?? null
 }
 
-async function loadCedears(): Promise<Cedear[]> {
+type CedearsPayload = {
+  cedears: Cedear[]
+  livePricesFetchedAtIso: string
+}
+
+async function loadCedearsPayload(): Promise<CedearsPayload> {
+  const livePricesFetchedAtIso = new Date().toISOString()
+
   const [data, liveResults] = await Promise.all([
     getCedearBases(),
     Promise.allSettled([
@@ -290,13 +307,22 @@ async function loadCedears(): Promise<Cedear[]> {
       ? withEmptyQuotes(data)
       : mergeQuotes(data, argQuotes, usaQuotes)
 
-  return fillMissingUsPrices(merged)
+  const cedears = await fillMissingUsPrices(merged)
+  return { cedears, livePricesFetchedAtIso }
 }
 
-const getCedearsUncached = unstable_cache(loadCedears, ["cedears-live-v2"], {
-  revalidate: 300,
-})
+const getCedearsPayloadCached = unstable_cache(
+  loadCedearsPayload,
+  ["cedears-live-v3"],
+  { revalidate: 300 },
+)
+
+export async function getCedearsLivePricesFetchedAt(): Promise<Date | null> {
+  const iso = (await getCedearsPayloadCached()).livePricesFetchedAtIso
+  const parsed = new Date(iso)
+  return Number.isFinite(parsed.getTime()) ? parsed : null
+}
 
 export const getCedears = cache(async (): Promise<Cedear[]> => {
-  return getCedearsUncached()
+  return (await getCedearsPayloadCached()).cedears
 })
