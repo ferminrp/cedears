@@ -4,6 +4,7 @@ import { InfoIcon } from "lucide-react"
 import { notFound } from "next/navigation"
 import { CedearCompanyProfile } from "@/components/cedear-company-profile"
 import { CedearDetailView } from "@/components/cedear-detail-view"
+import { CedearDividendSummary } from "@/components/cedear-dividend-summary"
 import { CedearFaqs } from "@/components/cedear-faqs"
 import { CedearNews } from "@/components/cedear-news"
 import { CedearPriceChart } from "@/components/cedear-price-chart"
@@ -28,7 +29,8 @@ import {
   getSimilarCedears,
 } from "@/lib/similar-cedears"
 import { cedearYahooSymbol } from "@/lib/cedear-yahoo"
-import { getUnderlyingPaysDividends } from "@/lib/underlying-dividends"
+import { formatDateInEastern } from "@/lib/dividend-display"
+import { getUnderlyingDividends } from "@/lib/underlying-dividends"
 import { getCedearHistorical } from "@/lib/historical"
 import { getUnderlyingProfile } from "@/lib/underlying-profile"
 import { logoUrl } from "@/lib/logo"
@@ -61,10 +63,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     notFound()
   }
 
-  const paysDividends = await getUnderlyingPaysDividends(
-    cedearYahooSymbol(cedear),
-  )
-  const title = buildCedearDetailTitle(cedear, paysDividends === true)
+  const dividends = await getUnderlyingDividends(cedearYahooSymbol(cedear))
+  const paysDividends =
+    dividends !== null &&
+    dividends.yield !== null &&
+    dividends.yield > 0
+  const title = buildCedearDetailTitle(cedear, paysDividends)
   const empresa = cedearCompanyLabel(cedear)
   const priceSnippet =
     cedear.price !== null ? ` Cotiza a ${formatArs(cedear.price)}.` : ""
@@ -192,17 +196,22 @@ export default async function CedearPage({ params }: PageProps) {
 
   const primaryTag = getPrimaryCedearTag(cedear)
 
-  const [history, faqs, profile, news, paysDividends, allCedears] =
+  const [history, faqs, profile, news, underlyingDividends, allCedears] =
     await Promise.all([
       getCedearHistorical(cedear.Cedears),
       Promise.resolve(buildCedearFaqs(cedear)),
       getUnderlyingProfile(cedear.TickerOriginal),
       getCompanyNews(cedear.TickerOriginal),
-      getUnderlyingPaysDividends(cedearYahooSymbol(cedear)),
+      getUnderlyingDividends(cedearYahooSymbol(cedear)),
       getCedears(),
     ])
 
-  const pageTitle = buildCedearDetailTitle(cedear, paysDividends === true)
+  const paysDividends =
+    underlyingDividends !== null &&
+    underlyingDividends.yield !== null &&
+    underlyingDividends.yield > 0
+  const referenceDateIso = formatDateInEastern(new Date())
+  const pageTitle = buildCedearDetailTitle(cedear, paysDividends)
   const empresaHeading = cedearCompanyLabel(cedear)
   const similarCedears = getSimilarCedears(cedear, allCedears)
 
@@ -265,7 +274,7 @@ export default async function CedearPage({ params }: PageProps) {
             <Link href="/ratios" className="underline underline-offset-4">
               Ratios y calculadora
             </Link>
-            {paysDividends === true ? (
+            {paysDividends ? (
               <>
                 {" "}
                 <Link href="/dividendos" className="underline underline-offset-4">
@@ -311,6 +320,27 @@ export default async function CedearPage({ params }: PageProps) {
         </h2>
         <CedearDetailView cedear={cedear} />
       </section>
+
+      {paysDividends && underlyingDividends ? (
+        <section
+          aria-labelledby="dividendos-cedear-heading"
+          className="rounded-[var(--radius-m)] border border-border bg-card p-6"
+        >
+          <h2
+            id="dividendos-cedear-heading"
+            className="text-[length:var(--size-l)] leading-[var(--line-l)] font-semibold tracking-[var(--letter-spacing-l)]"
+          >
+            Dividendos
+          </h2>
+          <div className="mt-4">
+            <CedearDividendSummary
+              dividends={underlyingDividends}
+              ratio={cedear.Ratio}
+              referenceDateIso={referenceDateIso}
+            />
+          </div>
+        </section>
+      ) : null}
 
       <CedearFaqs faqs={faqs} />
 

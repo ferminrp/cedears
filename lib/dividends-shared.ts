@@ -1,4 +1,15 @@
 import type { DividendFrequencyLabel } from "@/lib/dividend-display"
+import { parseRatio } from "@/lib/cedears"
+
+export function estimatedAnnualUsdPerCedear(
+  rate: number | null,
+  ratio: string,
+): number | null {
+  if (rate === null) return null
+  const ratioValue = parseRatio(ratio)
+  if (ratioValue === null) return null
+  return rate / ratioValue
+}
 
 export type CedearDividendRow = {
   cedear: string

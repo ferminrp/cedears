@@ -17,7 +17,6 @@ import {
 } from "@/lib/dividends-shared"
 import {
   formatEstimatedCedearUsd,
-  formatEstimatedCedearUsdCompact,
   formatFrequencyShort,
   formatShortDividendDate,
   formatUnderlyingYieldPercent,
@@ -200,11 +199,11 @@ export function DividendsTable({
         </Empty>
       ) : (
         <div className="overflow-x-auto rounded-[var(--radius-m)] border border-border">
-          <Table className="w-full min-w-[20rem]">
+          <Table className="w-full table-fixed max-lg:table-fixed lg:table-auto lg:min-w-[20rem]">
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead
-                  className="min-w-[6.5rem] max-w-[40vw] md:max-w-none"
+                  className="min-w-[6.5rem] max-w-[40vw] lg:max-w-none"
                   aria-sort={ariaSortValue(sortKey, "ticker", sortDir)}
                 >
                   <SortButton
@@ -214,10 +213,10 @@ export function DividendsTable({
                     onClick={() => toggleSort("ticker")}
                   />
                 </TableHead>
-                <TableHead className="hidden min-w-[8rem] md:table-cell">
+                <TableHead className="hidden min-w-[8rem] lg:table-cell">
                   Empresa
                 </TableHead>
-                <TableHead className="hidden min-w-[5rem] md:table-cell">
+                <TableHead className="hidden min-w-[5rem] lg:table-cell">
                   Subyacente
                 </TableHead>
                 <TableHead
@@ -269,10 +268,10 @@ export function DividendsTable({
             </TableHeader>
             <TableBody>
               {sorted.map((row) => {
-                const mobileSubline = `${row.name} · ${formatFrequencyShort(row.frequency)} · Cobro estimado ${formatEstimatedCedearUsdCompact(row.estimatedCedearUsd)}`
+                const mobileSubline = `${row.name} · ${formatFrequencyShort(row.frequency)}`
                 return (
                   <TableRow key={row.cedear} className="hover:bg-muted/50">
-                    <TableCell className="max-w-[40vw] p-0 md:max-w-none">
+                    <TableCell className="max-w-[40vw] p-0 lg:max-w-none">
                       <Link
                         href={`/cedear/${row.cedear}`}
                         className="flex min-h-11 items-center gap-1.5 px-[var(--space-m)] py-2 font-mono text-sm font-medium underline-offset-4 hover:underline"
@@ -287,16 +286,16 @@ export function DividendsTable({
                         />
                         <span className="min-w-0 flex-1">
                           <span className="block truncate">{row.cedear}</span>
-                          <span className="block truncate font-sans text-xs font-normal text-muted-foreground md:hidden">
+                          <span className="block truncate font-sans text-xs font-normal text-muted-foreground lg:hidden">
                             {mobileSubline}
                           </span>
                         </span>
                       </Link>
                     </TableCell>
-                    <TableCell className="hidden max-w-52 truncate text-sm text-muted-foreground md:table-cell">
+                    <TableCell className="hidden max-w-52 truncate text-sm text-muted-foreground lg:table-cell">
                       {row.name}
                     </TableCell>
-                    <TableCell className="hidden font-mono text-sm text-muted-foreground md:table-cell">
+                    <TableCell className="hidden font-mono text-sm text-muted-foreground lg:table-cell">
                       {row.tickerOriginal}
                     </TableCell>
                     <TableCell className={numericCellClassName}>

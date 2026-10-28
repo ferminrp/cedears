@@ -1,10 +1,10 @@
-import { parseRatio } from "@/lib/cedears"
 import { cedearYahooSymbol } from "@/lib/cedear-yahoo"
 import { formatDateInEastern } from "@/lib/dividend-display"
 import {
   type CedearDividendRow,
   type DividendsTableData,
   compareByExDateAsc,
+  estimatedAnnualUsdPerCedear,
 } from "@/lib/dividends-shared"
 import { getCedears } from "@/lib/get-cedears"
 import { getUnderlyingDividends } from "@/lib/underlying-dividends"
@@ -20,6 +20,7 @@ export {
   DIVIDENDOS_PAGE_TITLE,
   filterDividendRows,
   filterDividendRowsByFrequency,
+  estimatedAnnualUsdPerCedear,
   toDividendsCsv,
 } from "@/lib/dividends-shared"
 
@@ -64,16 +65,6 @@ function uniqueYahooSymbols(
     symbols.push(symbol)
   }
   return symbols
-}
-
-function estimatedAnnualUsdPerCedear(
-  rate: number | null,
-  ratio: string,
-): number | null {
-  if (rate === null) return null
-  const ratioValue = parseRatio(ratio)
-  if (ratioValue === null) return null
-  return rate / ratioValue
 }
 
 export async function getDividendsTableDataUncached(): Promise<DividendsTableData> {

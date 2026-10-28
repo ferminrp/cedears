@@ -6,7 +6,7 @@
 
 import assert from "node:assert/strict"
 import { spawn } from "node:child_process"
-import { mkdir, writeFile } from "node:fs/promises"
+import { mkdir, writeFile, copyFile } from "node:fs/promises"
 import { createWriteStream } from "node:fs"
 import http from "node:http"
 import https from "node:https"
@@ -458,6 +458,31 @@ async function assertRatiosPageGeometry(baseUrl, page, viewportLabel) {
     scrolled.stuckBelowSearch,
     true,
     `${viewportLabel}: sticky th must align below search (th.top=${scrolled.thTop}, search.bottom=${scrolled.searchBottom})`,
+  )
+}
+
+async function assertDividendosTableFitsContainer(page, label) {
+  const result = await page.evaluate(() => {
+    const heading = document.getElementById("dividendos-table-heading")
+    const section = heading?.closest("section")
+    const table = section?.querySelector(".overflow-x-auto table")
+    const wrapper = table?.closest(".overflow-x-auto")
+    if (!wrapper || !table) {
+      return { ok: false, reason: "missing table or wrapper" }
+    }
+    return {
+      ok: table.scrollWidth <= wrapper.clientWidth + 1,
+      tableWidth: table.scrollWidth,
+      containerWidth: wrapper.clientWidth,
+    }
+  })
+  assert.equal(
+    result.ok,
+    true,
+    `${label}: dividendos table wider than container (${result.tableWidth ?? "?"}px > ${result.containerWidth ?? "?"}px)${result.reason ? ` — ${result.reason}` : ""}`,
+  )
+}
+
 async function assertNoHydrationErrors(page, label) {
   await page.waitForTimeout(300)
   const errors = await page.evaluate(() => {
@@ -498,10 +523,23 @@ function attachHydrationListeners(page) {
 }
 
 async function captureDividendosScreenshots(baseUrl, artifactDir, browser) {
-  const capture = async (page, url, filename, label) => {
+  const capture = async (page, url, filename, label, options = {}) => {
+    const { checkTableWidth = false } = options
     attachHydrationListeners(page)
     await page.goto(url, { waitUntil: "networkidle", timeout: 600_000 })
+    await page.waitForSelector("input#dividendos-search", {
+      timeout: 600_000,
+    })
+    if (checkTableWidth) {
+      await page.waitForSelector(
+        "section:has(#dividendos-table-heading) .overflow-x-auto table",
+        { timeout: 600_000 },
+      )
+    }
     await assertNoHorizontalOverflow(page, label)
+    if (checkTableWidth) {
+      await assertDividendosTableFitsContainer(page, label)
+    }
     await assertNoHydrationErrors(page, label)
     await page.screenshot({ path: join(artifactDir, filename), fullPage: false })
   }
@@ -514,6 +552,28 @@ async function captureDividendosScreenshots(baseUrl, artifactDir, browser) {
     `${baseUrl}/dividendos`,
     "dividendos-desktop-1440.png",
     "dividendos 1440px",
+  )
+
+  const tabletLg = await browser.newPage({
+    viewport: { width: 1024, height: 768 },
+  })
+  await capture(
+    tabletLg,
+    `${baseUrl}/dividendos`,
+    "dividendos-tablet-1024.png",
+    "dividendos 1024px",
+    { checkTableWidth: true },
+  )
+
+  const tabletMd = await browser.newPage({
+    viewport: { width: 768, height: 1024 },
+  })
+  await capture(
+    tabletMd,
+    `${baseUrl}/dividendos`,
+    "dividendos-tablet-768.png",
+    "dividendos 768px",
+    { checkTableWidth: true },
   )
 
   const mobile = await browser.newPage({
@@ -564,6 +624,18 @@ async function captureDividendosScreenshots(baseUrl, artifactDir, browser) {
     "dividendos-mobile-375.png",
     "dividendos 375px",
   )
+
+  const agentStoreDir = join("/cursor/stores/self", "pr72")
+  await mkdir(agentStoreDir, { recursive: true })
+  const pr72Captures = [
+    "dividendos-mobile-390.png",
+    "dividendos-tablet-768.png",
+    "dividendos-tablet-1024.png",
+    "dividendos-desktop-1440.png",
+  ]
+  for (const name of pr72Captures) {
+    await copyFile(join(artifactDir, name), join(agentStoreDir, name))
+  }
 }
 
 async function captureScreenshots(baseUrl, artifactDir, setBrowser) {
