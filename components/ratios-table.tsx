@@ -2,17 +2,17 @@
 
 import { useLayoutEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
+import { type Cedear, formatArs, parseRatio } from "@/lib/cedears"
+import { filterRatiosCedears } from "@/lib/ratios"
+import { logoUrl } from "@/lib/logo"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import {
   ArrowDownIcon,
   ArrowUpDownIcon,
   ArrowUpIcon,
   SearchIcon,
 } from "lucide-react"
-import { type Cedear, formatArs, parseRatio } from "@/lib/cedears"
-import { filterRatiosCedears } from "@/lib/ratios"
-import { logoUrl } from "@/lib/logo"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import {
   Empty,
   EmptyDescription,

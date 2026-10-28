@@ -458,6 +458,110 @@ async function assertRatiosPageGeometry(baseUrl, page, viewportLabel) {
     scrolled.stuckBelowSearch,
     true,
     `${viewportLabel}: sticky th must align below search (th.top=${scrolled.thTop}, search.bottom=${scrolled.searchBottom})`,
+async function assertNoHydrationErrors(page, label) {
+  await page.waitForTimeout(300)
+  const errors = await page.evaluate(() => {
+    return window.__cedearsHydrationErrors ?? []
+  })
+  assert.equal(
+    errors.length,
+    0,
+    `${label}: hydration errors in console: ${errors.join(" | ")}`,
+  )
+}
+
+function attachHydrationListeners(page) {
+  page.addInitScript(() => {
+    window.__cedearsHydrationErrors = []
+  })
+  page.on("console", (msg) => {
+    if (msg.type() !== "error") return
+    const text = msg.text()
+    if (/hydrat/i.test(text) || /did not match/i.test(text)) {
+      page
+        .evaluate((entry) => {
+          window.__cedearsHydrationErrors?.push(entry)
+        }, text)
+        .catch(() => {})
+    }
+  })
+  page.on("pageerror", (err) => {
+    const text = String(err)
+    if (/hydrat/i.test(text)) {
+      page
+        .evaluate((entry) => {
+          window.__cedearsHydrationErrors?.push(entry)
+        }, text)
+        .catch(() => {})
+    }
+  })
+}
+
+async function captureDividendosScreenshots(baseUrl, artifactDir, browser) {
+  const capture = async (page, url, filename, label) => {
+    attachHydrationListeners(page)
+    await page.goto(url, { waitUntil: "networkidle", timeout: 600_000 })
+    await assertNoHorizontalOverflow(page, label)
+    await assertNoHydrationErrors(page, label)
+    await page.screenshot({ path: join(artifactDir, filename), fullPage: false })
+  }
+
+  const desktop = await browser.newPage({
+    viewport: { width: 1440, height: 900 },
+  })
+  await capture(
+    desktop,
+    `${baseUrl}/dividendos`,
+    "dividendos-desktop-1440.png",
+    "dividendos 1440px",
+  )
+
+  const mobile = await browser.newPage({
+    viewport: { width: 390, height: 844 },
+  })
+  await capture(
+    mobile,
+    `${baseUrl}/dividendos`,
+    "dividendos-mobile-390.png",
+    "dividendos 390px",
+  )
+
+  const mobileFilter = await browser.newPage({
+    viewport: { width: 390, height: 844 },
+  })
+  await capture(
+    mobileFilter,
+    `${baseUrl}/dividendos?frecuencia=mensual`,
+    "dividendos-mobile-390-frecuencia.png",
+    "dividendos 390px frecuencia",
+  )
+
+  const mobileEmpty = await browser.newPage({
+    viewport: { width: 390, height: 844 },
+  })
+  attachHydrationListeners(mobileEmpty)
+  await mobileEmpty.goto(`${baseUrl}/dividendos`, {
+    waitUntil: "networkidle",
+    timeout: 600_000,
+  })
+  const search = mobileEmpty.getByRole("searchbox", { name: "Buscar CEDEAR" })
+  await search.fill("zzz")
+  await mobileEmpty.waitForTimeout(800)
+  await assertNoHorizontalOverflow(mobileEmpty, "dividendos 390px sin resultados")
+  await assertNoHydrationErrors(mobileEmpty, "dividendos 390px sin resultados")
+  await mobileEmpty.screenshot({
+    path: join(artifactDir, "dividendos-mobile-390-sin-resultados.png"),
+    fullPage: false,
+  })
+
+  const mobile375 = await browser.newPage({
+    viewport: { width: 375, height: 812 },
+  })
+  await capture(
+    mobile375,
+    `${baseUrl}/dividendos`,
+    "dividendos-mobile-375.png",
+    "dividendos 375px",
   )
 }
 
@@ -558,44 +662,7 @@ async function captureScreenshots(baseUrl, artifactDir, setBrowser) {
     await assertNoHorizontalOverflow(ratios375, "ratios 375px")
     await assertRatiosPageGeometry(baseUrl, ratios375, "375")
 
-    const dividendosDesktop = await browser.newPage({
-      viewport: { width: 1440, height: 900 },
-    })
-    await dividendosDesktop.goto(`${baseUrl}/dividendos`, {
-      waitUntil: "networkidle",
-      timeout: 600_000,
-    })
-    await assertNoHorizontalOverflow(dividendosDesktop, "dividendos 1440px")
-    await dividendosDesktop.screenshot({
-      path: join(artifactDir, "dividendos-desktop-1440.png"),
-      fullPage: false,
-    })
-
-    const dividendos375 = await browser.newPage({
-      viewport: { width: 375, height: 812 },
-    })
-    await dividendos375.goto(`${baseUrl}/dividendos`, {
-      waitUntil: "networkidle",
-      timeout: 600_000,
-    })
-    await assertNoHorizontalOverflow(dividendos375, "dividendos 375px")
-    await dividendos375.screenshot({
-      path: join(artifactDir, "dividendos-mobile-375.png"),
-      fullPage: false,
-    })
-
-    const dividendos390 = await browser.newPage({
-      viewport: { width: 390, height: 844 },
-    })
-    await dividendos390.goto(`${baseUrl}/dividendos`, {
-      waitUntil: "networkidle",
-      timeout: 600_000,
-    })
-    await assertNoHorizontalOverflow(dividendos390, "dividendos 390px")
-    await dividendos390.screenshot({
-      path: join(artifactDir, "dividendos-mobile-390.png"),
-      fullPage: false,
-    })
+    await captureDividendosScreenshots(baseUrl, artifactDir, browser)
   } finally {
     await browser.close()
     setBrowser?.(null)

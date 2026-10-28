@@ -64,11 +64,15 @@ export function formatUnderlyingYieldPercent(yieldDecimal: number | null): strin
   return `${yieldPercentFormatter.format(yieldDecimal * 100)} %`
 }
 
-export function formatShortDividendDate(iso: string | null, today = new Date()): string {
+export function formatShortDividendDate(
+  iso: string | null,
+  referenceDateIso: string,
+): string {
   if (!iso) return "sin fecha"
   const [year, month, day] = iso.split("-").map(Number)
+  const refYear = Number(referenceDateIso.split("-")[0])
   const pad = (n: number) => String(n).padStart(2, "0")
-  if (year === today.getFullYear()) {
+  if (year === refYear) {
     return `${pad(day)}/${pad(month)}`
   }
   return `${pad(day)}/${pad(month)}/${year}`
@@ -92,6 +96,11 @@ const usdFormatter = new Intl.NumberFormat("es-AR", {
 export function formatEstimatedCedearUsd(value: number | null): string {
   if (value === null || !Number.isFinite(value)) return "—"
   return `USD ${usdFormatter.format(value)}`
+}
+
+export function formatEstimatedCedearUsdCompact(value: number | null): string {
+  if (value === null || !Number.isFinite(value)) return "—"
+  return `US$ ${usdFormatter.format(value)}`
 }
 
 export function formatDividendosUpdatedDate(isoDate: string): string {

@@ -117,7 +117,9 @@ function DividendosJsonLd({
   )
 }
 
-export default async function DividendosPage() {
+export default async function DividendosPage({ searchParams }: PageProps) {
+  const params = await searchParams
+  const initialFrequency = params.frecuencia?.trim() || "todas"
   const data = await getDividendsTableData()
   const updatedLabel = formatDividendosUpdatedDate(data.asOfDate)
 
@@ -150,8 +152,16 @@ export default async function DividendosPage() {
     )
   } else {
     tableSection = (
-      <Suspense fallback={null}>
-        <DividendsTable rows={data.rows} />
+      <Suspense
+        fallback={
+          <p className="text-sm text-muted-foreground">Cargando tabla…</p>
+        }
+      >
+        <DividendsTable
+          rows={data.rows}
+          referenceDateIso={data.asOfDate}
+          initialFrequency={initialFrequency}
+        />
       </Suspense>
     )
   }

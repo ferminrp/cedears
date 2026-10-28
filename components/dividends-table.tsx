@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import {
@@ -9,6 +9,7 @@ import {
   ArrowUpIcon,
   SearchIcon,
 } from "lucide-react"
+import { CedearTableSearch } from "@/components/cedear-table-search"
 import {
   type CedearDividendRow,
   filterDividendRows,
@@ -16,13 +17,18 @@ import {
 } from "@/lib/dividends"
 import {
   formatEstimatedCedearUsd,
+  formatEstimatedCedearUsdCompact,
   formatFrequencyShort,
   formatShortDividendDate,
   formatUnderlyingYieldPercent,
 } from "@/lib/dividend-display"
+import {
+  sortDividendRows,
+  type DividendSortDir,
+  type DividendSortKey,
+} from "@/lib/dividend-sort"
 import { logoUrl } from "@/lib/logo"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import {
   Empty,
   EmptyDescription,
@@ -30,6 +36,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import {
   Table,
   TableBody,
@@ -42,9 +49,6 @@ import {
 const numericCellClassName =
   "text-right font-mono tabular-nums text-sm whitespace-nowrap"
 
-type SortKey = "ticker" | "yield" | "exDate" | "payDate"
-type SortDir = "asc" | "desc"
-
 const FREQUENCY_OPTIONS = [
   { value: "todas", label: "Todas" },
   { value: "mensual", label: "Mensual" },
@@ -53,9 +57,9 @@ const FREQUENCY_OPTIONS = [
 ] as const
 
 function ariaSortValue(
-  activeKey: SortKey,
-  key: SortKey,
-  direction: SortDir,
+  activeKey: DividendSortKey,
+  key: DividendSortKey,
+  direction: DividendSortDir,
 ): "ascending" | "descending" | "none" {
   if (activeKey !== key) return "none"
   return direction === "asc" ? "ascending" : "descending"
@@ -69,7 +73,7 @@ function SortButton({
 }: {
   label: string
   active: boolean
-  direction: SortDir
+  direction: DividendSortDir
   onClick: () => void
 }) {
   const Icon = !active
@@ -90,35 +94,33 @@ function SortButton({
   )
 }
 
-function compareExDate(a: CedearDividendRow, b: CedearDividendRow): number {
-  const aMissing = a.exDividendDate === null
-  const bMissing = b.exDividendDate === null
-  if (aMissing && !bMissing) return 1
-  if (!aMissing && bMissing) return -1
-  const exA = a.exDividendDate ?? ""
-  const exB = b.exDividendDate ?? ""
-  return exA.localeCompare(exB)
+type DividendsTableProps = {
+  rows: CedearDividendRow[]
+  referenceDateIso: string
+  initialFrequency: string
 }
 
-function compareNullableNumber(a: number | null, b: number | null): number {
-  if (a === null && b === null) return 0
-  if (a === null) return 1
-  if (b === null) return -1
-  return a - b
-}
-
-export function DividendsTable({ rows }: { rows: CedearDividendRow[] }) {
+export function DividendsTable({
+  rows,
+  referenceDateIso,
+  initialFrequency,
+}: DividendsTableProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const frequencyParam = searchParams.get("frecuencia") ?? "todas"
 
   const [query, setQuery] = useState("")
-  const [sortKey, setSortKey] = useState<SortKey>("exDate")
-  const [sortDir, setSortDir] = useState<SortDir>("asc")
+  const [frequencyParam, setFrequencyParam] = useState(initialFrequency)
+  const [sortKey, setSortKey] = useState<DividendSortKey>("exDate")
+  const [sortDir, setSortDir] = useState<DividendSortDir>("asc")
+
+  useEffect(() => {
+    setFrequencyParam(searchParams.get("frecuencia") ?? "todas")
+  }, [searchParams])
 
   const setFrequency = useCallback(
     (value: string) => {
+      setFrequencyParam(value)
       const params = new URLSearchParams(searchParams.toString())
       if (value === "todas") {
         params.delete("frecuencia")
@@ -131,7 +133,7 @@ export function DividendsTable({ rows }: { rows: CedearDividendRow[] }) {
     [pathname, router, searchParams],
   )
 
-  function toggleSort(key: SortKey) {
+  function toggleSort(key: DividendSortKey) {
     if (sortKey === key) {
       setSortDir((dir) => (dir === "asc" ? "desc" : "asc"))
       return
@@ -145,24 +147,10 @@ export function DividendsTable({ rows }: { rows: CedearDividendRow[] }) {
     return filterDividendRowsByFrequency(bySearch, frequencyParam)
   }, [frequencyParam, query, rows])
 
-  const sorted = useMemo(() => {
-    return [...filtered].sort((a, b) => {
-      let cmp = 0
-      if (sortKey === "ticker") {
-        cmp = a.cedear.localeCompare(b.cedear)
-      } else if (sortKey === "yield") {
-        cmp = compareNullableNumber(a.dividendYield, b.dividendYield)
-      } else if (sortKey === "exDate") {
-        cmp = compareExDate(a, b)
-      } else if (sortKey === "payDate") {
-        cmp = compareExDate(
-          { ...a, exDividendDate: a.dividendPaymentDate },
-          { ...b, exDividendDate: b.dividendPaymentDate },
-        )
-      }
-      return sortDir === "asc" ? cmp : -cmp
-    })
-  }, [filtered, sortKey, sortDir])
+  const sorted = useMemo(
+    () => sortDividendRows(filtered, sortKey, sortDir),
+    [filtered, sortKey, sortDir],
+  )
 
   const resultsLabel =
     filtered.length === 1 ? "1 resultado" : `${filtered.length} resultados`
@@ -175,59 +163,39 @@ export function DividendsTable({ rows }: { rows: CedearDividendRow[] }) {
     setFrequency("todas")
   }
 
+  const frequencyFilters = (
+    <ToggleGroup
+      value={[frequencyParam]}
+      onValueChange={(values) => {
+        const next = values[0] ?? "todas"
+        setFrequency(next)
+      }}
+      aria-label="Filtrar por frecuencia"
+      variant="outline"
+      size="sm"
+      className="flex w-max max-w-full flex-nowrap gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+    >
+      {FREQUENCY_OPTIONS.map((option) => (
+        <ToggleGroupItem
+          key={option.value}
+          value={option.value}
+          className="min-h-11 shrink-0"
+        >
+          {option.label}
+        </ToggleGroupItem>
+      ))}
+    </ToggleGroup>
+  )
+
   return (
     <div className="flex flex-col gap-3">
-      <div className="sticky top-0 z-10 -mx-[var(--space-l)] border-b border-border bg-background px-[var(--space-l)] py-3 md:static md:mx-0 md:border-0 md:px-0 md:py-0">
-        <label htmlFor="dividendos-search" className="sr-only">
-          Buscar CEDEAR
-        </label>
-        <div className="relative">
-          <SearchIcon
-            className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
-            aria-hidden
-          />
-          <Input
-            id="dividendos-search"
-            type="search"
-            role="searchbox"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Ticker, empresa o subyacente"
-            className="pl-9"
-            autoComplete="off"
-          />
-        </div>
-
-        <div
-          className="mt-3 flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-          role="group"
-          aria-label="Filtrar por frecuencia"
-        >
-          {FREQUENCY_OPTIONS.map((option) => {
-            const active =
-              option.value === "todas"
-                ? !frequencyParam || frequencyParam === "todas"
-                : frequencyParam === option.value
-            return (
-              <Button
-                key={option.value}
-                type="button"
-                variant={active ? "default" : "outline"}
-                size="sm"
-                className="min-h-11 shrink-0"
-                aria-pressed={active}
-                onClick={() => setFrequency(option.value)}
-              >
-                {option.label}
-              </Button>
-            )
-          })}
-        </div>
-
-        <p className="mt-2 text-sm text-muted-foreground" aria-live="polite">
-          {resultsLabel}
-        </p>
-      </div>
+      <CedearTableSearch
+        id="dividendos-search"
+        query={query}
+        onQueryChange={setQuery}
+        resultsLabel={resultsLabel}
+        filters={frequencyFilters}
+      />
 
       {sorted.length === 0 ? (
         <Empty className="rounded-[var(--radius-m)] border border-border">
@@ -284,7 +252,7 @@ export function DividendsTable({ rows }: { rows: CedearDividendRow[] }) {
                 >
                   <span className="flex justify-end">
                     <SortButton
-                      label="Yield"
+                      label="Yield (USD)"
                       active={sortKey === "yield"}
                       direction={sortDir}
                       onClick={() => toggleSort("yield")}
@@ -320,64 +288,72 @@ export function DividendsTable({ rows }: { rows: CedearDividendRow[] }) {
                     />
                   </span>
                 </TableHead>
-                <TableHead className="hidden min-w-[5.5rem] text-right lg:table-cell">
+                <TableHead className="hidden min-w-[5.5rem] text-right md:table-cell">
                   Cobro est.
                 </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {sorted.map((row) => (
-                <TableRow key={row.cedear} className="hover:bg-muted/50">
-                  <TableCell className="max-w-[40vw] p-0 md:max-w-none">
-                    <Link
-                      href={`/cedear/${row.cedear}`}
-                      className="flex min-h-11 items-center gap-1.5 px-[var(--space-m)] py-2 font-mono text-sm font-medium underline-offset-4 hover:underline"
-                    >
-                      <img
-                        src={logoUrl(row.tickerOriginal)}
-                        alt=""
-                        width={16}
-                        height={16}
-                        className="size-4 shrink-0 rounded-sm bg-muted object-contain"
-                        loading="lazy"
-                      />
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate">{row.cedear}</span>
-                        <span className="block truncate font-sans text-xs font-normal text-muted-foreground md:hidden">
-                          {row.name} · {formatFrequencyShort(row.frequency)}
+              {sorted.map((row) => {
+                const mobileSubline = `${row.name} · ${formatFrequencyShort(row.frequency)} · Cobro estimado ${formatEstimatedCedearUsdCompact(row.estimatedCedearUsd)}`
+                return (
+                  <TableRow key={row.cedear} className="hover:bg-muted/50">
+                    <TableCell className="max-w-[40vw] p-0 md:max-w-none">
+                      <Link
+                        href={`/cedear/${row.cedear}`}
+                        className="flex min-h-11 items-center gap-1.5 px-[var(--space-m)] py-2 font-mono text-sm font-medium underline-offset-4 hover:underline"
+                      >
+                        <img
+                          src={logoUrl(row.tickerOriginal)}
+                          alt=""
+                          width={16}
+                          height={16}
+                          className="size-4 shrink-0 rounded-sm bg-muted object-contain"
+                          loading="lazy"
+                        />
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate">{row.cedear}</span>
+                          <span className="block truncate font-sans text-xs font-normal text-muted-foreground md:hidden">
+                            {mobileSubline}
+                          </span>
                         </span>
-                        <span className="block truncate font-sans text-xs font-normal text-muted-foreground md:hidden">
-                          Cobro est. {formatEstimatedCedearUsd(row.estimatedCedearUsd)} (estimado)
-                        </span>
+                      </Link>
+                    </TableCell>
+                    <TableCell className="hidden max-w-52 truncate text-sm text-muted-foreground md:table-cell">
+                      {row.name}
+                    </TableCell>
+                    <TableCell className="hidden font-mono text-sm text-muted-foreground md:table-cell">
+                      {row.tickerOriginal}
+                    </TableCell>
+                    <TableCell className={numericCellClassName}>
+                      {formatUnderlyingYieldPercent(row.dividendYield)}
+                    </TableCell>
+                    <TableCell className="hidden text-sm text-muted-foreground md:table-cell">
+                      {formatFrequencyShort(row.frequency)}
+                    </TableCell>
+                    <TableCell className={numericCellClassName}>
+                      {formatShortDividendDate(
+                        row.exDividendDate,
+                        referenceDateIso,
+                      )}
+                    </TableCell>
+                    <TableCell className={`hidden md:table-cell ${numericCellClassName}`}>
+                      {formatShortDividendDate(
+                        row.dividendPaymentDate,
+                        referenceDateIso,
+                      )}
+                    </TableCell>
+                    <TableCell className={`hidden md:table-cell ${numericCellClassName}`}>
+                      <span className="block">
+                        {formatEstimatedCedearUsd(row.estimatedCedearUsd)}
                       </span>
-                    </Link>
-                  </TableCell>
-                  <TableCell className="hidden max-w-52 truncate text-sm text-muted-foreground md:table-cell">
-                    {row.name}
-                  </TableCell>
-                  <TableCell className="hidden font-mono text-sm text-muted-foreground md:table-cell">
-                    {row.tickerOriginal}
-                  </TableCell>
-                  <TableCell className={numericCellClassName}>
-                    {formatUnderlyingYieldPercent(row.dividendYield)}
-                  </TableCell>
-                  <TableCell className="hidden text-sm text-muted-foreground md:table-cell">
-                    {formatFrequencyShort(row.frequency)}
-                  </TableCell>
-                  <TableCell className={numericCellClassName}>
-                    {formatShortDividendDate(row.exDividendDate)}
-                  </TableCell>
-                  <TableCell className={`hidden md:table-cell ${numericCellClassName}`}>
-                    {formatShortDividendDate(row.dividendPaymentDate)}
-                  </TableCell>
-                  <TableCell className={`hidden lg:table-cell ${numericCellClassName}`}>
-                    <span className="block">{formatEstimatedCedearUsd(row.estimatedCedearUsd)}</span>
-                    <span className="block text-xs font-sans text-muted-foreground">
-                      estimado
-                    </span>
-                  </TableCell>
-                </TableRow>
-              ))}
+                      <span className="block text-xs font-sans text-muted-foreground">
+                        estimado
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
             </TableBody>
           </Table>
         </div>
