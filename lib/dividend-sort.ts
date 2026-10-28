@@ -1,4 +1,4 @@
-import type { CedearDividendRow } from "@/lib/dividends"
+import type { CedearDividendRow } from "@/lib/dividends-shared"
 
 export type DividendSortKey = "ticker" | "yield" | "exDate" | "payDate"
 export type DividendSortDir = "asc" | "desc"

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict"
 import { describe, it } from "node:test"
-import type { CedearDividendRow } from "../lib/dividends.ts"
+import type { CedearDividendRow } from "../lib/dividends-shared.ts"
 import { sortDividendRows } from "../lib/dividend-sort.ts"
 
 function row(

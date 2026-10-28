@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { Suspense } from "react"
 import { DividendsTable } from "@/components/dividends-table"
 import { CedearFaqs } from "@/components/cedear-faqs"
 import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
@@ -152,17 +151,11 @@ export default async function DividendosPage({ searchParams }: PageProps) {
     )
   } else {
     tableSection = (
-      <Suspense
-        fallback={
-          <p className="text-sm text-muted-foreground">Cargando tabla…</p>
-        }
-      >
-        <DividendsTable
-          rows={data.rows}
-          referenceDateIso={data.asOfDate}
-          initialFrequency={initialFrequency}
-        />
-      </Suspense>
+      <DividendsTable
+        rows={data.rows}
+        referenceDateIso={data.asOfDate}
+        initialFrequency={initialFrequency}
+      />
     )
   }
 

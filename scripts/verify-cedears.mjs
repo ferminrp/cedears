@@ -545,6 +545,7 @@ async function captureDividendosScreenshots(baseUrl, artifactDir, browser) {
     timeout: 600_000,
   })
   const search = mobileEmpty.getByRole("searchbox", { name: "Buscar CEDEAR" })
+  await search.waitFor({ state: "visible", timeout: 600_000 })
   await search.fill("zzz")
   await mobileEmpty.waitForTimeout(800)
   await assertNoHorizontalOverflow(mobileEmpty, "dividendos 390px sin resultados")

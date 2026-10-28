@@ -1,8 +1,8 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import Link from "next/link"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import {
   ArrowDownIcon,
   ArrowUpDownIcon,
@@ -14,7 +14,7 @@ import {
   type CedearDividendRow,
   filterDividendRows,
   filterDividendRowsByFrequency,
-} from "@/lib/dividends"
+} from "@/lib/dividends-shared"
 import {
   formatEstimatedCedearUsd,
   formatEstimatedCedearUsdCompact,
@@ -36,7 +36,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import { DividendFrequencyToggleGroup } from "@/components/dividend-frequency-toggle-group"
 import {
   Table,
   TableBody,
@@ -48,13 +48,6 @@ import {
 
 const numericCellClassName =
   "text-right font-mono tabular-nums text-sm whitespace-nowrap"
-
-const FREQUENCY_OPTIONS = [
-  { value: "todas", label: "Todas" },
-  { value: "mensual", label: "Mensual" },
-  { value: "trimestral", label: "Trimestral" },
-  { value: "semestral-anual", label: "Semestral/Anual" },
-] as const
 
 function ariaSortValue(
   activeKey: DividendSortKey,
@@ -107,21 +100,16 @@ export function DividendsTable({
 }: DividendsTableProps) {
   const router = useRouter()
   const pathname = usePathname()
-  const searchParams = useSearchParams()
 
   const [query, setQuery] = useState("")
   const [frequencyParam, setFrequencyParam] = useState(initialFrequency)
-  const [sortKey, setSortKey] = useState<DividendSortKey>("exDate")
-  const [sortDir, setSortDir] = useState<DividendSortDir>("asc")
-
-  useEffect(() => {
-    setFrequencyParam(searchParams.get("frecuencia") ?? "todas")
-  }, [searchParams])
 
   const setFrequency = useCallback(
     (value: string) => {
       setFrequencyParam(value)
-      const params = new URLSearchParams(searchParams.toString())
+      const params = new URLSearchParams(
+        typeof window !== "undefined" ? window.location.search : "",
+      )
       if (value === "todas") {
         params.delete("frecuencia")
       } else {
@@ -130,8 +118,11 @@ export function DividendsTable({
       const qs = params.toString()
       router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false })
     },
-    [pathname, router, searchParams],
+    [pathname, router],
   )
+
+  const [sortKey, setSortKey] = useState<DividendSortKey>("exDate")
+  const [sortDir, setSortDir] = useState<DividendSortDir>("asc")
 
   function toggleSort(key: DividendSortKey) {
     if (sortKey === key) {
@@ -164,27 +155,10 @@ export function DividendsTable({
   }
 
   const frequencyFilters = (
-    <ToggleGroup
-      value={[frequencyParam]}
-      onValueChange={(values) => {
-        const next = values[0] ?? "todas"
-        setFrequency(next)
-      }}
-      aria-label="Filtrar por frecuencia"
-      variant="outline"
-      size="sm"
-      className="flex w-max max-w-full flex-nowrap gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-    >
-      {FREQUENCY_OPTIONS.map((option) => (
-        <ToggleGroupItem
-          key={option.value}
-          value={option.value}
-          className="min-h-11 shrink-0"
-        >
-          {option.label}
-        </ToggleGroupItem>
-      ))}
-    </ToggleGroup>
+    <DividendFrequencyToggleGroup
+      value={frequencyParam}
+      onValueChange={setFrequency}
+    />
   )
 
   return (
