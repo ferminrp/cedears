@@ -16,6 +16,11 @@ import { fileURLToPath } from "node:url"
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const REPO_ROOT = join(__dirname, "..")
 
+/** Production canonical origin (local dev still emits these via wrangler vars). */
+const PRODUCTION_CANONICAL_ORIGIN = (
+  process.env.VERIFY_CANONICAL_ORIGIN ?? "https://cedears.com"
+).replace(/\/$/, "")
+
 const RUN_ID =
   process.env.VERIFY_RUN_ID ??
   `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
@@ -51,7 +56,7 @@ Options:
   --port N               Port when launching locally (default: 3010)
   --no-screenshots       Skip Playwright desktop/mobile captures
 
-Env: VERIFY_BASE_URL, VERIFY_ARTIFACT_DIR, VERIFY_PORT, VERIFY_RUN_ID
+Env: VERIFY_BASE_URL, VERIFY_ARTIFACT_DIR, VERIFY_PORT, VERIFY_RUN_ID, VERIFY_CANONICAL_ORIGIN
 `)
       process.exit(0)
     } else {
@@ -121,10 +126,56 @@ function launchServer(opts) {
       PORT: String(opts.port),
     },
     stdio: ["ignore", "pipe", "pipe"],
+    detached: process.platform !== "win32",
   })
   child.stdout.pipe(logStream)
   child.stderr.pipe(logStream)
-  return { child, logPath }
+  return { child, logPath, logStream }
+}
+
+async function stopLaunchedServer(child, logStream) {
+  if (!child) return
+
+  const waitForExit = new Promise((resolve) => {
+    if (child.exitCode !== null) {
+      resolve()
+      return
+    }
+    child.once("exit", () => resolve())
+  })
+
+  const killProcessTree = (signal) => {
+    try {
+      if (process.platform !== "win32" && child.pid) {
+        process.kill(-child.pid, signal)
+      } else {
+        child.kill(signal)
+      }
+    } catch {
+      try {
+        child.kill(signal)
+      } catch {
+        /* already gone */
+      }
+    }
+  }
+
+  killProcessTree("SIGTERM")
+  await Promise.race([
+    waitForExit,
+    new Promise((r) => setTimeout(r, 5000)),
+  ])
+  if (child.exitCode === null) {
+    killProcessTree("SIGKILL")
+    await Promise.race([
+      waitForExit,
+      new Promise((r) => setTimeout(r, 2000)),
+    ])
+  }
+
+  if (logStream && !logStream.closed) {
+    await new Promise((resolve) => logStream.end(resolve))
+  }
 }
 
 async function doctor(baseUrl, artifactDir) {
@@ -198,9 +249,7 @@ function normalizeCanonicalUrl(url) {
 }
 
 async function smokeCanonicals(baseUrl, sampleTicker, artifactDir) {
-  const canonicalOrigin = (
-    process.env.NEXT_PUBLIC_SITE_URL ?? baseUrl
-  ).replace(/\/$/, "")
+  const canonicalOrigin = PRODUCTION_CANONICAL_ORIGIN
   const checks = [
     { path: "/", expected: `${canonicalOrigin}/` },
     { path: "/categorias", expected: `${canonicalOrigin}/categorias` },
@@ -239,7 +288,7 @@ async function smokeCanonicals(baseUrl, sampleTicker, artifactDir) {
   }
   await writeFile(
     join(artifactDir, "canonical-smoke.json"),
-    JSON.stringify({ baseUrl, results }, null, 2),
+    JSON.stringify({ baseUrl, canonicalOrigin, results }, null, 2),
     "utf8",
   )
 }
@@ -311,9 +360,10 @@ async function assertNoHorizontalOverflow(page, label) {
   )
 }
 
-async function captureScreenshots(baseUrl, artifactDir) {
+async function captureScreenshots(baseUrl, artifactDir, setBrowser) {
   const { chromium, devices } = await import("playwright")
   const browser = await chromium.launch({ headless: true })
+  setBrowser?.(browser)
   try {
     const desktop = await browser.newPage({
       viewport: { width: 1280, height: 800 },
@@ -388,6 +438,7 @@ async function captureScreenshots(baseUrl, artifactDir) {
     })
   } finally {
     await browser.close()
+    setBrowser?.(null)
   }
 }
 
@@ -396,6 +447,8 @@ async function main() {
   await mkdir(opts.artifactDir, { recursive: true })
 
   let child = null
+  let logStream = null
+  let browser = null
   const meta = {
     runId: RUN_ID,
     mode: opts.mode,
@@ -424,6 +477,7 @@ async function main() {
       console.log(`Launching ${opts.mode} at ${opts.baseUrl}…`)
       const launched = launchServer(opts)
       child = launched.child
+      logStream = launched.logStream
       meta.launched = true
       await waitForReady(opts.baseUrl, launched.logPath)
     }
@@ -440,7 +494,9 @@ async function main() {
 
     if (opts.screenshots) {
       console.log("Screenshots (Playwright)…")
-      await captureScreenshots(opts.baseUrl, opts.artifactDir)
+      await captureScreenshots(opts.baseUrl, opts.artifactDir, (b) => {
+        browser = b
+      })
     }
 
     meta.sampleTicker = sampleTicker
@@ -463,11 +519,13 @@ async function main() {
     console.error("verify-cedears: FAIL", meta.error)
     process.exitCode = 1
   } finally {
-    if (child && child.exitCode === null) {
-      child.kill("SIGTERM")
-      await new Promise((r) => setTimeout(r, 2000))
-      if (child.exitCode === null) child.kill("SIGKILL")
+    if (browser) {
+      await browser.close().catch(() => {})
+      browser = null
     }
+    await stopLaunchedServer(child, logStream)
+    const code = process.exitCode ?? (meta.ok === false ? 1 : 0)
+    process.exit(code)
   }
 }
 

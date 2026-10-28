@@ -99,7 +99,7 @@ Default artifact directory: `.verify-artifacts/<run-id>/` or pass `--artifact-di
 | --- | --- |
 | `doctor.txt` | Instance healthy, JSON feed reachable |
 | `smoke.json` | Key routes return expected status |
-| `canonical-smoke.json` | Absolute `rel=canonical` in initial `<head>` for home, categorías, sample CEDEAR, tecnología |
+| `canonical-smoke.json` | Absolute `rel=canonical` in initial `<head>` for home, categorías, sample CEDEAR, tecnología — expected URLs use production origin `https://cedears.com` (+ path), not the local `VERIFY_BASE_URL` |
 | `home-desktop.png` | Home renders on desktop |
 | `home-mobile.png` | Home renders on mobile (iPhone 13 profile) |
 | `home-search-desktop.png` | Search interaction filters the list (when data loaded) |
@@ -117,7 +117,9 @@ Proof standards:
 
 After a manual launch, stop the dev or wrangler process you started (SIGTERM on its PID).
 
-The helper script stops only its spawned child on exit. It does **not** remove `--artifact-dir`. Remove `.verify-artifacts/` only when you no longer need local proofs.
+The helper script stops only its spawned child process **group** on exit (so orphaned vinext dev servers do not linger). It always exits with status 0 or 1. It does **not** remove `--artifact-dir`. Remove `.verify-artifacts/` only when you no longer need local proofs.
+
+**Canonical smoke:** compares `<link rel="canonical">` to `https://cedears.com` + path (override with `VERIFY_CANONICAL_ORIGIN`). Local dev still serves production canonicals via wrangler `vars`; the harness does not expect the dev server origin in canonical tags.
 
 ## Helpers
 
