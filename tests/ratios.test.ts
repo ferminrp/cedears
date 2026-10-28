@@ -67,10 +67,10 @@ describe("ratios helpers", () => {
     assert.equal(label, "16/09/2026")
   })
 
-  it("builds metadata title with month and year", () => {
+  it("builds metadata title without date suffix", () => {
     const title = ratiosMetadataTitle(new Date("2026-10-27T15:30:00Z"))
-    assert.match(title, /actualizado octubre 2026/i)
-    assert.match(title, /tabla de conversión completa/)
+    assert.equal(title, "Ratio de CEDEARs: tabla de conversión completa")
+    assert.doesNotMatch(title, /actualizado/i)
   })
 
   it("formats title month year in Spanish", () => {

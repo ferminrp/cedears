@@ -420,6 +420,7 @@ async function captureScreenshots(baseUrl, artifactDir, setBrowser) {
       waitUntil: "networkidle",
       timeout: 120_000,
     })
+    await assertNoHorizontalOverflow(ratiosDesktop, "ratios 1440px")
     await ratiosDesktop.screenshot({
       path: join(artifactDir, "ratios-desktop-1440.png"),
       fullPage: false,
@@ -432,10 +433,20 @@ async function captureScreenshots(baseUrl, artifactDir, setBrowser) {
       waitUntil: "networkidle",
       timeout: 120_000,
     })
+    await assertNoHorizontalOverflow(ratiosMobile, "ratios 390px")
     await ratiosMobile.screenshot({
       path: join(artifactDir, "ratios-mobile-390.png"),
       fullPage: false,
     })
+
+    const ratios375 = await browser.newPage({
+      viewport: { width: 375, height: 812 },
+    })
+    await ratios375.goto(`${baseUrl}/ratios`, {
+      waitUntil: "networkidle",
+      timeout: 120_000,
+    })
+    await assertNoHorizontalOverflow(ratios375, "ratios 375px")
   } finally {
     await browser.close()
     setBrowser?.(null)

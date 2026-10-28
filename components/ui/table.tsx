@@ -4,20 +4,32 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-function Table({ className, ...props }: React.ComponentProps<"table">) {
+function Table({
+  className,
+  scrollContainer = true,
+  ...props
+}: React.ComponentProps<"table"> & { scrollContainer?: boolean }) {
+  const table = (
+    <table
+      data-slot="table"
+      className={cn(
+        "w-full caption-bottom font-[family-name:var(--font-ui)] text-[length:var(--size-s)] leading-[var(--line-s)]",
+        className
+      )}
+      {...props}
+    />
+  )
+
+  if (!scrollContainer) {
+    return table
+  }
+
   return (
     <div
       data-slot="table-container"
       className="relative w-full overflow-x-auto"
     >
-      <table
-        data-slot="table"
-        className={cn(
-          "w-full caption-bottom font-[family-name:var(--font-ui)] text-[length:var(--size-s)] leading-[var(--line-s)]",
-          className
-        )}
-        {...props}
-      />
+      {table}
     </div>
   )
 }

@@ -21,5 +21,5 @@ Tabla de ratios, calculadora CEDEARs ↔ acciones y export CSV en `/ratios`.
 ## Gotchas
 
 - CCL teórico depende de `summarizeImplicitDollar(..., "cable")`; sin datos cable, la calculadora ARS teórica muestra “—”.
-- H1 fijo sin fecha; la fecha de precios va en `<time>` en la intro. El `<title>` incluye «actualizado {mes} {año}».
+- H1 fijo sin fecha; la fecha de precios va en `<time>` en la intro. El `<title>` es fijo sin fecha de actualización.
 - Tabla con buscador sticky en mobile, columna Subyacente, y todos los CEDEARs (precio «—» si falta).

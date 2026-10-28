@@ -172,12 +172,15 @@ export function RatiosTable({ cedears }: { cedears: Cedear[] }) {
           ) : null}
         </Empty>
       ) : (
-        <div className="overflow-x-auto rounded-[var(--radius-m)] border border-border">
-          <Table className="w-full min-w-[18rem]">
-            <TableHeader>
-              <TableRow className="hover:bg-transparent">
+        <div className="rounded-[var(--radius-m)] border border-border md:overflow-x-auto">
+          <Table
+            scrollContainer={false}
+            className="w-full table-fixed md:min-w-[36rem] md:table-auto"
+          >
+            <TableHeader className="sticky top-0 z-[5] bg-background max-md:top-[7rem]">
+              <TableRow className="bg-background hover:bg-transparent md:static">
                 <TableHead
-                  className="min-w-[5.5rem]"
+                  className="w-[46%] md:w-auto md:min-w-[5.5rem]"
                   aria-sort={ariaSortValue(sortKey, "ticker", sortDir)}
                 >
                   <SortButton
@@ -199,7 +202,7 @@ export function RatiosTable({ cedears }: { cedears: Cedear[] }) {
                   />
                 </TableHead>
                 <TableHead
-                  className="min-w-[4rem]"
+                  className="hidden min-w-[4rem] md:table-cell"
                   aria-sort={ariaSortValue(sortKey, "underlying", sortDir)}
                 >
                   <SortButton
@@ -210,7 +213,7 @@ export function RatiosTable({ cedears }: { cedears: Cedear[] }) {
                   />
                 </TableHead>
                 <TableHead
-                  className="min-w-[3.5rem] text-right"
+                  className="w-[27%] text-right md:w-auto md:min-w-[3.5rem]"
                   aria-sort={ariaSortValue(sortKey, "ratio", sortDir)}
                 >
                   <span className="flex justify-end">
@@ -223,7 +226,7 @@ export function RatiosTable({ cedears }: { cedears: Cedear[] }) {
                   </span>
                 </TableHead>
                 <TableHead
-                  className="min-w-[4.5rem] text-right"
+                  className="w-[27%] text-right md:w-auto md:min-w-[4.5rem]"
                   aria-sort={ariaSortValue(sortKey, "price", sortDir)}
                 >
                   <span className="flex justify-end">
@@ -240,10 +243,10 @@ export function RatiosTable({ cedears }: { cedears: Cedear[] }) {
             <TableBody>
               {sorted.map((c) => (
                 <TableRow key={c.Cedears} className="hover:bg-muted/50">
-                  <TableCell className="p-0">
+                  <TableCell className="whitespace-normal p-0">
                     <Link
                       href={`/cedear/${c.Cedears}`}
-                      className="flex min-h-11 items-center gap-1.5 px-[var(--space-m)] py-2 font-mono text-sm font-medium underline-offset-4 hover:underline"
+                      className="flex min-h-11 max-w-full items-center gap-1.5 px-[var(--space-s)] py-2 font-mono text-sm font-medium underline-offset-4 hover:underline md:px-[var(--space-m)]"
                     >
                       <img
                         src={logoUrl(c.TickerOriginal)}
@@ -253,9 +256,9 @@ export function RatiosTable({ cedears }: { cedears: Cedear[] }) {
                         className="size-4 shrink-0 rounded-sm bg-muted object-contain"
                         loading="lazy"
                       />
-                      <span className="min-w-0">
-                        <span className="block">{c.Cedears}</span>
-                        <span className="block truncate font-sans text-xs font-normal text-muted-foreground md:hidden">
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate">{c.Cedears}</span>
+                        <span className="line-clamp-2 block font-sans text-xs leading-snug font-normal text-pretty text-muted-foreground md:hidden">
                           {c.Name}
                         </span>
                       </span>
@@ -264,13 +267,17 @@ export function RatiosTable({ cedears }: { cedears: Cedear[] }) {
                   <TableCell className="hidden max-w-52 truncate text-sm text-muted-foreground md:table-cell">
                     {c.Name}
                   </TableCell>
-                  <TableCell className="font-mono text-sm text-muted-foreground">
+                  <TableCell className="hidden font-mono text-sm text-muted-foreground md:table-cell">
                     {c.TickerOriginal}
                   </TableCell>
-                  <TableCell className={numericCellClassName}>
+                  <TableCell
+                    className={`${numericCellClassName} px-[var(--space-xs)] md:px-[var(--space-s)]`}
+                  >
                     {c.Ratio}:1
                   </TableCell>
-                  <TableCell className={numericCellClassName}>
+                  <TableCell
+                    className={`${numericCellClassName} px-[var(--space-xs)] md:px-[var(--space-s)]`}
+                  >
                     {formatArs(c.price)}
                   </TableCell>
                 </TableRow>
