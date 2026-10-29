@@ -25,6 +25,7 @@ export async function GET() {
     `- [Dólar MEP](${siteUrl}/dolar-mep): tipo de cambio implícito MEP por CEDEAR`,
     `- [Dólar cable](${siteUrl}/dolar-cable): tipo de cambio implícito CCL por CEDEAR`,
     `- [Earnings](${siteUrl}/earnings): calendario de resultados de subyacentes`,
+    `- [Dividendos](${siteUrl}/dividendos): CEDEARs que pagan dividendos, yield y fechas ex-dividend`,
     `- [Portfolio](${siteUrl}/portfolio): seguimiento de tenencias`,
     `- [Herramientas](${siteUrl}/herramientas): rebalanceo y DCA`,
     `- [ALyCs](${siteUrl}/alycs): comisiones de brokers para operar CEDEARs`,

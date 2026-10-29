@@ -6,7 +6,7 @@
 
 import assert from "node:assert/strict"
 import { spawn } from "node:child_process"
-import { mkdir, writeFile } from "node:fs/promises"
+import { mkdir, writeFile, copyFile } from "node:fs/promises"
 import { createWriteStream } from "node:fs"
 import http from "node:http"
 import https from "node:https"
@@ -306,6 +306,8 @@ const SMOKE_ROUTES = [
   { path: "/ratios", expectStatus: 200 },
   { path: "/ratios.csv", expectStatus: 200, contentTypeIncludes: "text/csv" },
   { path: "/earnings", expectStatus: 200 },
+  { path: "/dividendos", expectStatus: 200, timeoutMs: 600_000 },
+  { path: "/dividendos.csv", expectStatus: 200, contentTypeIncludes: "text/csv", timeoutMs: 120_000 },
   { path: "/cedears.csv", expectStatus: 200, contentTypeIncludes: "text/csv" },
   { path: "/cedears.md", expectStatus: 200 },
   { path: "/sitemap.xml", expectStatus: 200 },
@@ -315,7 +317,7 @@ async function smoke(baseUrl, sampleTicker, artifactDir) {
   const results = []
   for (const route of SMOKE_ROUTES) {
     const url = `${baseUrl}${route.path}`
-    const res = await fetchUrl(url)
+    const res = await fetchUrl(url, { timeoutMs: route.timeoutMs ?? 60_000 })
     const okStatus = res.status === route.expectStatus
     const ct = res.headers["content-type"] ?? ""
     const okCt =
@@ -459,6 +461,183 @@ async function assertRatiosPageGeometry(baseUrl, page, viewportLabel) {
   )
 }
 
+async function assertDividendosTableFitsContainer(page, label) {
+  const result = await page.evaluate(() => {
+    const heading = document.getElementById("dividendos-table-heading")
+    const section = heading?.closest("section")
+    const table = section?.querySelector(".overflow-x-auto table")
+    const wrapper = table?.closest(".overflow-x-auto")
+    if (!wrapper || !table) {
+      return { ok: false, reason: "missing table or wrapper" }
+    }
+    return {
+      ok: table.scrollWidth <= wrapper.clientWidth + 1,
+      tableWidth: table.scrollWidth,
+      containerWidth: wrapper.clientWidth,
+    }
+  })
+  assert.equal(
+    result.ok,
+    true,
+    `${label}: dividendos table wider than container (${result.tableWidth ?? "?"}px > ${result.containerWidth ?? "?"}px)${result.reason ? ` — ${result.reason}` : ""}`,
+  )
+}
+
+async function assertNoHydrationErrors(page, label) {
+  await page.waitForTimeout(300)
+  const errors = await page.evaluate(() => {
+    return window.__cedearsHydrationErrors ?? []
+  })
+  assert.equal(
+    errors.length,
+    0,
+    `${label}: hydration errors in console: ${errors.join(" | ")}`,
+  )
+}
+
+function attachHydrationListeners(page) {
+  page.addInitScript(() => {
+    window.__cedearsHydrationErrors = []
+  })
+  page.on("console", (msg) => {
+    if (msg.type() !== "error") return
+    const text = msg.text()
+    if (/hydrat/i.test(text) || /did not match/i.test(text)) {
+      page
+        .evaluate((entry) => {
+          window.__cedearsHydrationErrors?.push(entry)
+        }, text)
+        .catch(() => {})
+    }
+  })
+  page.on("pageerror", (err) => {
+    const text = String(err)
+    if (/hydrat/i.test(text)) {
+      page
+        .evaluate((entry) => {
+          window.__cedearsHydrationErrors?.push(entry)
+        }, text)
+        .catch(() => {})
+    }
+  })
+}
+
+async function captureDividendosScreenshots(baseUrl, artifactDir, browser) {
+  const capture = async (page, url, filename, label, options = {}) => {
+    const { checkTableWidth = false } = options
+    attachHydrationListeners(page)
+    await page.goto(url, { waitUntil: "networkidle", timeout: 600_000 })
+    await page.waitForSelector("input#dividendos-search", {
+      timeout: 600_000,
+    })
+    if (checkTableWidth) {
+      await page.waitForSelector(
+        "section:has(#dividendos-table-heading) .overflow-x-auto table",
+        { timeout: 600_000 },
+      )
+    }
+    await assertNoHorizontalOverflow(page, label)
+    if (checkTableWidth) {
+      await assertDividendosTableFitsContainer(page, label)
+    }
+    await assertNoHydrationErrors(page, label)
+    await page.screenshot({ path: join(artifactDir, filename), fullPage: false })
+  }
+
+  const desktop = await browser.newPage({
+    viewport: { width: 1440, height: 900 },
+  })
+  await capture(
+    desktop,
+    `${baseUrl}/dividendos`,
+    "dividendos-desktop-1440.png",
+    "dividendos 1440px",
+  )
+
+  const tabletLg = await browser.newPage({
+    viewport: { width: 1024, height: 768 },
+  })
+  await capture(
+    tabletLg,
+    `${baseUrl}/dividendos`,
+    "dividendos-tablet-1024.png",
+    "dividendos 1024px",
+    { checkTableWidth: true },
+  )
+
+  const tabletMd = await browser.newPage({
+    viewport: { width: 768, height: 1024 },
+  })
+  await capture(
+    tabletMd,
+    `${baseUrl}/dividendos`,
+    "dividendos-tablet-768.png",
+    "dividendos 768px",
+    { checkTableWidth: true },
+  )
+
+  const mobile = await browser.newPage({
+    viewport: { width: 390, height: 844 },
+  })
+  await capture(
+    mobile,
+    `${baseUrl}/dividendos`,
+    "dividendos-mobile-390.png",
+    "dividendos 390px",
+  )
+
+  const mobileFilter = await browser.newPage({
+    viewport: { width: 390, height: 844 },
+  })
+  await capture(
+    mobileFilter,
+    `${baseUrl}/dividendos?frecuencia=mensual`,
+    "dividendos-mobile-390-frecuencia.png",
+    "dividendos 390px frecuencia",
+  )
+
+  const mobileEmpty = await browser.newPage({
+    viewport: { width: 390, height: 844 },
+  })
+  attachHydrationListeners(mobileEmpty)
+  await mobileEmpty.goto(`${baseUrl}/dividendos`, {
+    waitUntil: "networkidle",
+    timeout: 600_000,
+  })
+  const search = mobileEmpty.getByRole("searchbox", { name: "Buscar CEDEAR" })
+  await search.waitFor({ state: "visible", timeout: 600_000 })
+  await search.fill("zzz")
+  await mobileEmpty.waitForTimeout(800)
+  await assertNoHorizontalOverflow(mobileEmpty, "dividendos 390px sin resultados")
+  await assertNoHydrationErrors(mobileEmpty, "dividendos 390px sin resultados")
+  await mobileEmpty.screenshot({
+    path: join(artifactDir, "dividendos-mobile-390-sin-resultados.png"),
+    fullPage: false,
+  })
+
+  const mobile375 = await browser.newPage({
+    viewport: { width: 375, height: 812 },
+  })
+  await capture(
+    mobile375,
+    `${baseUrl}/dividendos`,
+    "dividendos-mobile-375.png",
+    "dividendos 375px",
+  )
+
+  const agentStoreDir = join("/cursor/stores/self", "pr72")
+  await mkdir(agentStoreDir, { recursive: true })
+  const pr72Captures = [
+    "dividendos-mobile-390.png",
+    "dividendos-tablet-768.png",
+    "dividendos-tablet-1024.png",
+    "dividendos-desktop-1440.png",
+  ]
+  for (const name of pr72Captures) {
+    await copyFile(join(artifactDir, name), join(agentStoreDir, name))
+  }
+}
+
 async function captureScreenshots(baseUrl, artifactDir, setBrowser) {
   const { chromium, devices } = await import("playwright")
   const browser = await chromium.launch({ headless: true })
@@ -555,6 +734,8 @@ async function captureScreenshots(baseUrl, artifactDir, setBrowser) {
     })
     await assertNoHorizontalOverflow(ratios375, "ratios 375px")
     await assertRatiosPageGeometry(baseUrl, ratios375, "375")
+
+    await captureDividendosScreenshots(baseUrl, artifactDir, browser)
   } finally {
     await browser.close()
     setBrowser?.(null)
