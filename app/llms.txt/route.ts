@@ -29,6 +29,7 @@ export async function GET() {
     `- [Portfolio](${siteUrl}/portfolio): seguimiento de tenencias`,
     `- [Herramientas](${siteUrl}/herramientas): rebalanceo y DCA`,
     `- [ALyCs](${siteUrl}/alycs): comisiones de brokers para operar CEDEARs`,
+    `- [Cómo comprar CEDEARs](${siteUrl}/como-comprar-cedears): guía para principiantes (ALyC, ratio, costos)`,
     '',
   ].join('\n')
 

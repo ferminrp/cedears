@@ -163,6 +163,13 @@ export default async function Page() {
           <Link href="/ratios" className="text-foreground underline underline-offset-4">
             Ver tabla de ratios y calculadora
           </Link>
+          . Si es tu primera operación, leé{" "}
+          <Link
+            href="/como-comprar-cedears"
+            className="text-foreground underline underline-offset-4"
+          >
+            cómo comprar CEDEARs en Argentina
+          </Link>
           .
         </p>
       </section>
