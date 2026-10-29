@@ -28,10 +28,8 @@ export function formatRatiosTitleMonthYear(date: Date): string {
     .trim()
 }
 
-export function ratiosMetadataTitle(fetchedAt: Date | null): string {
-  const base = "Ratio de CEDEARs: tabla de conversión completa"
-  if (!fetchedAt) return base
-  return `${base} | actualizado ${formatRatiosTitleMonthYear(fetchedAt)}`
+export function ratiosMetadataTitle(_fetchedAt?: Date | null): string {
+  return "Ratio de CEDEARs: tabla de conversión completa"
 }
 
 export function filterRatiosCedears(cedears: Cedear[], query: string): Cedear[] {

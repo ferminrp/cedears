@@ -360,6 +360,105 @@ async function assertNoHorizontalOverflow(page, label) {
   )
 }
 
+async function assertRatiosPageGeometry(baseUrl, page, viewportLabel) {
+  const width = viewportLabel === "375" ? 375 : 390
+  await page.setViewportSize({ width, height: 844 })
+  await page.goto(`${baseUrl}/ratios`, {
+    waitUntil: "networkidle",
+    timeout: 120_000,
+  })
+
+  const atTop = await page.evaluate(() => {
+    const wrap = document.querySelector("[data-ratios-table-wrap]")
+    const thead = document.querySelector("[data-ratios-table] thead")
+    const firstRow = document.querySelector(
+      "[data-ratios-table] tbody tr:first-child",
+    )
+    const csv = document.getElementById("ratios-download-csv")
+    const mainPad =
+      Number.parseFloat(
+        getComputedStyle(document.querySelector("main") ?? document.body)
+          .paddingLeft,
+      ) || 0
+
+    const wrapRect = wrap?.getBoundingClientRect()
+    const theadRect = thead?.getBoundingClientRect()
+    const firstRect = firstRow?.getBoundingClientRect()
+    const csvRect = csv?.getBoundingClientRect()
+    const vp = document.documentElement.clientWidth
+
+    const gapAboveThead =
+      wrapRect && theadRect ? theadRect.top - wrapRect.top : Number.NaN
+    const headerAboveFirst =
+      theadRect && firstRect
+        ? theadRect.bottom <= firstRect.top + 1
+        : false
+    const tableInnerWidth =
+      document.querySelector("[data-ratios-table]")?.getBoundingClientRect()
+        .width ?? 0
+    const maxInner = vp - mainPad * 2
+    const wrapRightInside =
+      wrapRect !== undefined ? wrapRect.right <= vp - mainPad + 0.5 : false
+    const csvTouchHeight = csvRect?.height ?? 0
+
+    return {
+      gapAboveThead,
+      headerAboveFirst,
+      tableInnerWidth,
+      maxInner,
+      wrapRightInside,
+      wrapWidth: wrapRect?.width ?? 0,
+      csvTouchHeight,
+    }
+  })
+
+  assert.ok(
+    atTop.gapAboveThead <= 2,
+    `${viewportLabel}: gap above thead in table wrap (${atTop.gapAboveThead}px)`,
+  )
+  assert.equal(
+    atTop.headerAboveFirst,
+    true,
+    `${viewportLabel}: thead must sit above first tbody row at scroll 0`,
+  )
+  assert.ok(
+    atTop.tableInnerWidth <= atTop.maxInner + 0.5,
+    `${viewportLabel}: table width ${atTop.tableInnerWidth} exceeds content ${atTop.maxInner}`,
+  )
+  assert.equal(
+    atTop.wrapRightInside,
+    true,
+    `${viewportLabel}: table wrap right edge must stay inside viewport padding`,
+  )
+  assert.ok(
+    atTop.csvTouchHeight >= 44,
+    `${viewportLabel}: Descargar CSV touch height ${atTop.csvTouchHeight}px`,
+  )
+
+  await page.evaluate(() => window.scrollTo(0, 1200))
+  await page.waitForTimeout(200)
+
+  const scrolled = await page.evaluate(() => {
+    const search = document.getElementById("ratios-search-sticky")
+    const th = document.querySelector(
+      "[data-ratios-table] thead th:not(.hidden)",
+    )
+    const searchRect = search?.getBoundingClientRect()
+    const thRect = th?.getBoundingClientRect()
+    const stuckBelowSearch =
+      searchRect && thRect
+        ? Math.abs(thRect.top - searchRect.bottom) <= 2
+        : false
+    return { stuckBelowSearch, thTop: thRect?.top, searchBottom: searchRect?.bottom }
+  })
+
+  assert.equal(
+    scrolled.stuckBelowSearch,
+    true,
+    `${viewportLabel}: sticky th must align below search (th.top=${scrolled.thTop}, search.bottom=${scrolled.searchBottom})`,
+  )
+}
+
 async function captureScreenshots(baseUrl, artifactDir, setBrowser) {
   const { chromium, devices } = await import("playwright")
   const browser = await chromium.launch({ headless: true })
@@ -420,6 +519,7 @@ async function captureScreenshots(baseUrl, artifactDir, setBrowser) {
       waitUntil: "networkidle",
       timeout: 120_000,
     })
+    await assertNoHorizontalOverflow(ratiosDesktop, "ratios 1440px")
     await ratiosDesktop.screenshot({
       path: join(artifactDir, "ratios-desktop-1440.png"),
       fullPage: false,
@@ -432,10 +532,29 @@ async function captureScreenshots(baseUrl, artifactDir, setBrowser) {
       waitUntil: "networkidle",
       timeout: 120_000,
     })
+    await assertNoHorizontalOverflow(ratiosMobile, "ratios 390px")
+    await assertRatiosPageGeometry(baseUrl, ratiosMobile, "390")
+    await ratiosMobile.evaluate(() => window.scrollTo(0, 0))
     await ratiosMobile.screenshot({
       path: join(artifactDir, "ratios-mobile-390.png"),
       fullPage: false,
     })
+    await ratiosMobile.evaluate(() => window.scrollTo(0, 1200))
+    await ratiosMobile.waitForTimeout(200)
+    await ratiosMobile.screenshot({
+      path: join(artifactDir, "ratios-mobile-390-scrolled.png"),
+      fullPage: false,
+    })
+
+    const ratios375 = await browser.newPage({
+      viewport: { width: 375, height: 812 },
+    })
+    await ratios375.goto(`${baseUrl}/ratios`, {
+      waitUntil: "networkidle",
+      timeout: 120_000,
+    })
+    await assertNoHorizontalOverflow(ratios375, "ratios 375px")
+    await assertRatiosPageGeometry(baseUrl, ratios375, "375")
   } finally {
     await browser.close()
     setBrowser?.(null)

@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useLayoutEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
 import {
   ArrowDownIcon,
@@ -30,6 +30,10 @@ import {
 } from "@/components/ui/table"
 
 const numericCellClassName = "text-right font-mono tabular-nums text-sm"
+
+/** Sticky `<th>`; offset comes from `--ratios-sticky-search-height` on the table root. */
+const stickyHeadClassName =
+  "bg-background max-md:sticky max-md:top-[var(--ratios-sticky-search-height,0px)] max-md:z-[5] md:sticky md:top-0 md:z-[5]"
 
 type SortKey = "ticker" | "name" | "underlying" | "ratio" | "price"
 type SortDir = "asc" | "desc"
@@ -83,6 +87,30 @@ export function RatiosTable({ cedears }: { cedears: Cedear[] }) {
   const [query, setQuery] = useState("")
   const [sortKey, setSortKey] = useState<SortKey>("ticker")
   const [sortDir, setSortDir] = useState<SortDir>("asc")
+  const rootRef = useRef<HTMLDivElement>(null)
+  const searchStickyRef = useRef<HTMLDivElement>(null)
+
+  useLayoutEffect(() => {
+    const searchEl = searchStickyRef.current
+    const root = rootRef.current
+    if (!searchEl || !root) return
+
+    const syncStickyOffset = () => {
+      root.style.setProperty(
+        "--ratios-sticky-search-height",
+        `${searchEl.getBoundingClientRect().height}px`,
+      )
+    }
+
+    syncStickyOffset()
+    const observer = new ResizeObserver(syncStickyOffset)
+    observer.observe(searchEl)
+    window.addEventListener("resize", syncStickyOffset)
+    return () => {
+      observer.disconnect()
+      window.removeEventListener("resize", syncStickyOffset)
+    }
+  }, [query, cedears.length])
 
   function toggleSort(key: SortKey) {
     if (sortKey === key) {
@@ -120,8 +148,16 @@ export function RatiosTable({ cedears }: { cedears: Cedear[] }) {
     filtered.length === 1 ? "1 resultado" : `${filtered.length} resultados`
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="sticky top-0 z-10 -mx-[var(--space-l)] border-b border-border bg-background px-[var(--space-l)] py-3 md:static md:mx-0 md:border-0 md:px-0 md:py-0">
+    <div
+      ref={rootRef}
+      data-ratios-table-root
+      className="flex min-w-0 flex-col gap-3"
+    >
+      <div
+        ref={searchStickyRef}
+        id="ratios-search-sticky"
+        className="sticky top-0 z-10 -mx-[var(--space-l)] border-b border-border bg-background px-[var(--space-l)] py-3 md:static md:mx-0 md:border-0 md:px-0 md:py-0"
+      >
         <label htmlFor="ratios-search" className="sr-only">
           Buscar CEDEAR
         </label>
@@ -172,12 +208,19 @@ export function RatiosTable({ cedears }: { cedears: Cedear[] }) {
           ) : null}
         </Empty>
       ) : (
-        <div className="overflow-x-auto rounded-[var(--radius-m)] border border-border">
-          <Table className="w-full min-w-[18rem]">
+        <div
+          data-ratios-table-wrap
+          className="box-border w-full max-w-full min-w-0 rounded-[var(--radius-m)] border border-border md:overflow-x-auto"
+        >
+          <Table
+            scrollContainer={false}
+            data-ratios-table
+            className="w-full max-w-full table-fixed md:min-w-[36rem] md:table-auto"
+          >
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead
-                  className="min-w-[5.5rem]"
+                  className={`w-[46%] md:w-auto md:min-w-[5.5rem] ${stickyHeadClassName}`}
                   aria-sort={ariaSortValue(sortKey, "ticker", sortDir)}
                 >
                   <SortButton
@@ -188,7 +231,7 @@ export function RatiosTable({ cedears }: { cedears: Cedear[] }) {
                   />
                 </TableHead>
                 <TableHead
-                  className="hidden min-w-[5rem] md:table-cell"
+                  className={`hidden min-w-[5rem] md:table-cell ${stickyHeadClassName}`}
                   aria-sort={ariaSortValue(sortKey, "name", sortDir)}
                 >
                   <SortButton
@@ -199,7 +242,7 @@ export function RatiosTable({ cedears }: { cedears: Cedear[] }) {
                   />
                 </TableHead>
                 <TableHead
-                  className="min-w-[4rem]"
+                  className={`hidden min-w-[4rem] md:table-cell ${stickyHeadClassName}`}
                   aria-sort={ariaSortValue(sortKey, "underlying", sortDir)}
                 >
                   <SortButton
@@ -210,7 +253,7 @@ export function RatiosTable({ cedears }: { cedears: Cedear[] }) {
                   />
                 </TableHead>
                 <TableHead
-                  className="min-w-[3.5rem] text-right"
+                  className={`w-[27%] text-right md:w-auto md:min-w-[3.5rem] ${stickyHeadClassName}`}
                   aria-sort={ariaSortValue(sortKey, "ratio", sortDir)}
                 >
                   <span className="flex justify-end">
@@ -223,7 +266,7 @@ export function RatiosTable({ cedears }: { cedears: Cedear[] }) {
                   </span>
                 </TableHead>
                 <TableHead
-                  className="min-w-[4.5rem] text-right"
+                  className={`w-[27%] text-right md:w-auto md:min-w-[4.5rem] ${stickyHeadClassName}`}
                   aria-sort={ariaSortValue(sortKey, "price", sortDir)}
                 >
                   <span className="flex justify-end">
@@ -240,10 +283,10 @@ export function RatiosTable({ cedears }: { cedears: Cedear[] }) {
             <TableBody>
               {sorted.map((c) => (
                 <TableRow key={c.Cedears} className="hover:bg-muted/50">
-                  <TableCell className="p-0">
+                  <TableCell className="whitespace-normal p-0">
                     <Link
                       href={`/cedear/${c.Cedears}`}
-                      className="flex min-h-11 items-center gap-1.5 px-[var(--space-m)] py-2 font-mono text-sm font-medium underline-offset-4 hover:underline"
+                      className="flex min-h-11 max-w-full items-center gap-1.5 px-[var(--space-s)] py-2 font-mono text-sm font-medium underline-offset-4 hover:underline md:px-[var(--space-m)]"
                     >
                       <img
                         src={logoUrl(c.TickerOriginal)}
@@ -253,9 +296,9 @@ export function RatiosTable({ cedears }: { cedears: Cedear[] }) {
                         className="size-4 shrink-0 rounded-sm bg-muted object-contain"
                         loading="lazy"
                       />
-                      <span className="min-w-0">
-                        <span className="block">{c.Cedears}</span>
-                        <span className="block truncate font-sans text-xs font-normal text-muted-foreground md:hidden">
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate">{c.Cedears}</span>
+                        <span className="line-clamp-2 block font-sans text-xs leading-snug font-normal text-pretty text-muted-foreground md:hidden">
                           {c.Name}
                         </span>
                       </span>
@@ -264,13 +307,17 @@ export function RatiosTable({ cedears }: { cedears: Cedear[] }) {
                   <TableCell className="hidden max-w-52 truncate text-sm text-muted-foreground md:table-cell">
                     {c.Name}
                   </TableCell>
-                  <TableCell className="font-mono text-sm text-muted-foreground">
+                  <TableCell className="hidden font-mono text-sm text-muted-foreground md:table-cell">
                     {c.TickerOriginal}
                   </TableCell>
-                  <TableCell className={numericCellClassName}>
+                  <TableCell
+                    className={`${numericCellClassName} px-[var(--space-xs)] md:px-[var(--space-s)]`}
+                  >
                     {c.Ratio}:1
                   </TableCell>
-                  <TableCell className={numericCellClassName}>
+                  <TableCell
+                    className={`${numericCellClassName} px-[var(--space-xs)] md:px-[var(--space-s)]`}
+                  >
                     {formatArs(c.price)}
                   </TableCell>
                 </TableRow>

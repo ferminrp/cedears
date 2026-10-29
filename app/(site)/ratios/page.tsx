@@ -126,7 +126,7 @@ export default async function RatiosPage() {
 
           <section
             aria-labelledby="ratios-table-heading"
-            className="flex flex-col gap-4"
+            className="flex min-w-0 flex-col gap-4"
           >
             <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
               <h2
@@ -136,9 +136,10 @@ export default async function RatiosPage() {
                 Todos los ratios
               </h2>
               <Link
+                id="ratios-download-csv"
                 href="/ratios.csv"
                 download
-                className="text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                className="inline-flex min-h-11 items-center text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
               >
                 Descargar CSV
               </Link>
