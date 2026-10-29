@@ -274,9 +274,13 @@ export default async function CedearPage({ params }: PageProps) {
             <Link href="/ratios" className="underline underline-offset-4">
               Ratios y calculadora
             </Link>
+            .{" "}
+            <Link href="/como-comprar-cedears" className="underline underline-offset-4">
+              Cómo comprar CEDEARs
+            </Link>
             {paysDividends ? (
               <>
-                {" "}
+                .{" "}
                 <Link href="/dividendos" className="underline underline-offset-4">
                   Ver próximos dividendos
                 </Link>

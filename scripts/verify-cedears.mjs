@@ -307,6 +307,7 @@ const SMOKE_ROUTES = [
   { path: "/ratios.csv", expectStatus: 200, contentTypeIncludes: "text/csv" },
   { path: "/earnings", expectStatus: 200 },
   { path: "/dividendos", expectStatus: 200, timeoutMs: 600_000 },
+  { path: "/como-comprar-cedears", expectStatus: 200 },
   { path: "/dividendos.csv", expectStatus: 200, contentTypeIncludes: "text/csv", timeoutMs: 120_000 },
   { path: "/cedears.csv", expectStatus: 200, contentTypeIncludes: "text/csv" },
   { path: "/cedears.md", expectStatus: 200 },

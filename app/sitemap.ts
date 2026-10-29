@@ -95,6 +95,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     },
     {
+      url: `${siteUrl}/como-comprar-cedears`,
+      lastModified: staticRouteLastModified("/como-comprar-cedears"),
+      changeFrequency: "monthly",
+      priority: 0.85,
+    },
+    {
       url: `${siteUrl}/herramientas/rebalanceo`,
       lastModified: staticRouteLastModified("/herramientas/rebalanceo"),
       changeFrequency: "weekly",
