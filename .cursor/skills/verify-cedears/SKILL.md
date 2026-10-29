@@ -26,7 +26,7 @@ pnpm build
 pnpm start
 ```
 
-Wrangler prints a local URL (often `http://127.0.0.1:8787`). Use that as `VERIFY_BASE_URL` for doctor and smoke.
+Wrangler prints a local URL (often `http://127.0.0.1:8787`). Use that as `VERIFY_BASE_URL` for doctor and smoke. Cloudflare Workers Builds preview deployments use `preview_urls: true` in `wrangler.jsonc` (branch preview links in the dashboard; not exercised by the default local harness).
 
 **Isolation:** concurrent verify runs must not share a port. Set `VERIFY_PORT` (dev) or pass `--port` to the helper. Do not attach to a dev server the user already uses on 3000 unless they set `VERIFY_BASE_URL`.
 
@@ -101,8 +101,12 @@ Default artifact directory: `.verify-artifacts/<run-id>/` or pass `--artifact-di
 | `smoke.json` | Key routes return expected status |
 | `canonical-smoke.json` | Absolute `rel=canonical` in initial `<head>` for home, categorías, sample CEDEAR, tecnología — expected URLs use production origin `https://cedears.com` (+ path), not the local `VERIFY_BASE_URL` |
 | `home-desktop.png` | Home renders on desktop |
+| `home-1440.png` | Home at 1440×900 without horizontal overflow |
+| `home-390.png` | Home at 390×844 without horizontal overflow |
 | `home-mobile.png` | Home renders on mobile (iPhone 13 profile) |
 | `home-search-desktop.png` | Search interaction filters the list (when data loaded) |
+| `ratios-desktop-1440.png` | `/ratios` desktop layout |
+| `ratios-mobile-390.png` | `/ratios` mobile layout |
 | `summary.json` | Run metadata and pass/fail |
 | `server.log` | Dev/workers stdout when the helper launched the server |
 
