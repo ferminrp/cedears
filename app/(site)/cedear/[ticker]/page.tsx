@@ -30,7 +30,10 @@ import {
 } from "@/lib/similar-cedears"
 import { cedearYahooSymbol } from "@/lib/cedear-yahoo"
 import { formatDateInEastern } from "@/lib/dividend-display"
-import { getUnderlyingDividends } from "@/lib/underlying-dividends"
+import {
+  getUnderlyingDividends,
+  getUnderlyingPaysDividends,
+} from "@/lib/underlying-dividends"
 import { getCedearHistorical } from "@/lib/historical"
 import { getUnderlyingProfile } from "@/lib/underlying-profile"
 import { logoUrl } from "@/lib/logo"
@@ -63,12 +66,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     notFound()
   }
 
-  const dividends = await getUnderlyingDividends(cedearYahooSymbol(cedear))
-  const paysDividends =
-    dividends !== null &&
-    dividends.yield !== null &&
-    dividends.yield > 0
-  const title = buildCedearDetailTitle(cedear, paysDividends)
+  const yahooSymbol = cedearYahooSymbol(cedear)
+  const paysDividends = await getUnderlyingPaysDividends(yahooSymbol)
+  const title = buildCedearDetailTitle(cedear, paysDividends === true)
   const empresa = cedearCompanyLabel(cedear)
   const priceSnippet =
     cedear.price !== null ? ` Cotiza a ${formatArs(cedear.price)}.` : ""

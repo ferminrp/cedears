@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import {
@@ -47,6 +47,10 @@ import {
 
 const numericCellClassName =
   "text-right font-mono tabular-nums text-sm whitespace-nowrap"
+
+/** Sticky `<th>`; offset from `--dividendos-sticky-search-height` on the table root. */
+const stickyHeadClassName =
+  "bg-background max-md:sticky max-md:top-[var(--dividendos-sticky-search-height,0px)] max-md:z-[5] md:sticky md:top-0 md:z-[5]"
 
 function ariaSortValue(
   activeKey: DividendSortKey,
@@ -100,8 +104,33 @@ export function DividendsTable({
   const router = useRouter()
   const pathname = usePathname()
 
+  const rootRef = useRef<HTMLDivElement>(null)
+  const searchStickyRef = useRef<HTMLDivElement>(null)
+
   const [query, setQuery] = useState("")
   const [frequencyParam, setFrequencyParam] = useState(initialFrequency)
+
+  useLayoutEffect(() => {
+    const searchEl = searchStickyRef.current
+    const root = rootRef.current
+    if (!searchEl || !root) return
+
+    const syncStickyOffset = () => {
+      root.style.setProperty(
+        "--dividendos-sticky-search-height",
+        `${searchEl.getBoundingClientRect().height}px`,
+      )
+    }
+
+    syncStickyOffset()
+    const observer = new ResizeObserver(syncStickyOffset)
+    observer.observe(searchEl)
+    window.addEventListener("resize", syncStickyOffset)
+    return () => {
+      observer.disconnect()
+      window.removeEventListener("resize", syncStickyOffset)
+    }
+  }, [query, frequencyParam, rows.length])
 
   const setFrequency = useCallback(
     (value: string) => {
@@ -161,9 +190,15 @@ export function DividendsTable({
   )
 
   return (
-    <div className="flex flex-col gap-3">
+    <div
+      ref={rootRef}
+      data-dividendos-table-root
+      className="flex min-w-0 flex-col gap-3"
+    >
       <CedearTableSearch
+        ref={searchStickyRef}
         id="dividendos-search"
+        stickyId="dividendos-search-sticky"
         query={query}
         onQueryChange={setQuery}
         resultsLabel={resultsLabel}
@@ -198,12 +233,19 @@ export function DividendsTable({
           ) : null}
         </Empty>
       ) : (
-        <div className="overflow-x-auto rounded-[var(--radius-m)] border border-border">
-          <Table className="w-full table-fixed max-lg:table-fixed lg:table-auto lg:min-w-[20rem]">
+        <div
+          data-dividendos-table-wrap
+          className="box-border w-full max-w-full min-w-0 rounded-[var(--radius-m)] border border-border md:overflow-x-auto"
+        >
+          <Table
+            scrollContainer={false}
+            data-dividendos-table
+            className="w-full table-fixed max-lg:table-fixed lg:table-auto lg:min-w-[20rem]"
+          >
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead
-                  className="min-w-[6.5rem] max-w-[40vw] lg:max-w-none"
+                  className={`min-w-[6.5rem] max-w-[40vw] lg:max-w-none ${stickyHeadClassName}`}
                   aria-sort={ariaSortValue(sortKey, "ticker", sortDir)}
                 >
                   <SortButton
@@ -213,14 +255,18 @@ export function DividendsTable({
                     onClick={() => toggleSort("ticker")}
                   />
                 </TableHead>
-                <TableHead className="hidden min-w-[8rem] lg:table-cell">
+                <TableHead
+                  className={`hidden min-w-[8rem] lg:table-cell ${stickyHeadClassName}`}
+                >
                   Empresa
                 </TableHead>
-                <TableHead className="hidden min-w-[5rem] lg:table-cell">
+                <TableHead
+                  className={`hidden min-w-[5rem] lg:table-cell ${stickyHeadClassName}`}
+                >
                   Subyacente
                 </TableHead>
                 <TableHead
-                  className="min-w-[4rem] text-right"
+                  className={`min-w-[4rem] text-right ${stickyHeadClassName}`}
                   aria-sort={ariaSortValue(sortKey, "yield", sortDir)}
                 >
                   <span className="flex justify-end">
@@ -232,11 +278,13 @@ export function DividendsTable({
                     />
                   </span>
                 </TableHead>
-                <TableHead className="hidden min-w-[5rem] md:table-cell">
+                <TableHead
+                  className={`hidden min-w-[5rem] md:table-cell ${stickyHeadClassName}`}
+                >
                   Frecuencia
                 </TableHead>
                 <TableHead
-                  className="min-w-[4.5rem] text-right"
+                  className={`min-w-[4.5rem] text-right ${stickyHeadClassName}`}
                   aria-sort={ariaSortValue(sortKey, "exDate", sortDir)}
                 >
                   <span className="flex justify-end">
@@ -249,7 +297,7 @@ export function DividendsTable({
                   </span>
                 </TableHead>
                 <TableHead
-                  className="hidden min-w-[4rem] text-right md:table-cell"
+                  className={`hidden min-w-[4rem] text-right md:table-cell ${stickyHeadClassName}`}
                   aria-sort={ariaSortValue(sortKey, "payDate", sortDir)}
                 >
                   <span className="flex justify-end">
@@ -261,7 +309,9 @@ export function DividendsTable({
                     />
                   </span>
                 </TableHead>
-                <TableHead className="hidden min-w-[5.5rem] text-right md:table-cell">
+                <TableHead
+                  className={`hidden min-w-[5.5rem] text-right md:table-cell ${stickyHeadClassName}`}
+                >
                   Cobro est.
                 </TableHead>
               </TableRow>
