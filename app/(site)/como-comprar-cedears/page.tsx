@@ -20,11 +20,16 @@ import {
   COMO_COMPRAR_STEPS,
   COSTOS_SECTION,
   DIVIDENDOS_SECTION,
+  GUIDE_BODY_CLASS,
   GUIDE_CARD_CLASS,
+  GUIDE_DATE_MODIFIED_ISO,
+  GUIDE_RESUMEN_ROWS,
   GUIDE_SECTION_HEADING_CLASS,
+  GUIDE_STEP_NUMBER_CLASS,
   GUIDE_TOC_ITEMS,
   QUE_ES_CEDEAR,
   RATIO_SECTION,
+  formatGuideUpdatedDate,
 } from "@/lib/como-comprar-cedears"
 import { buildPageOpenGraph, getSiteUrl } from "@/lib/site"
 import { cn } from "@/lib/utils"
@@ -59,6 +64,7 @@ function ComoComprarJsonLd() {
         description: COMO_COMPRAR_META_DESCRIPTION,
         inLanguage: "es-AR",
         url: pageUrl,
+        dateModified: GUIDE_DATE_MODIFIED_ISO,
         author: {
           "@type": "Organization",
           name: "CEDEARs Argentina",
@@ -87,6 +93,9 @@ function ComoComprarJsonLd() {
   )
 }
 
+const GUIDE_CALLOUT_BUTTON_CLASS =
+  "mt-3 min-h-11 border-[var(--success)] bg-[var(--success-transparent)] text-foreground hover:bg-[var(--success-transparent)]/80"
+
 function GuideSection({
   id,
   title,
@@ -109,9 +118,7 @@ function GuideSection({
       <h2 id={headingId} className={GUIDE_SECTION_HEADING_CLASS}>
         {title}
       </h2>
-      <div className="mt-4 flex flex-col gap-3 text-sm leading-relaxed text-muted-foreground">
-        {children}
-      </div>
+      <div className={cn("mt-4 flex flex-col gap-3", GUIDE_BODY_CLASS)}>{children}</div>
     </section>
   )
 }
@@ -127,6 +134,8 @@ function GuideParagraphs({ paragraphs }: { paragraphs: readonly string[] }) {
 }
 
 export default function ComoComprarCedearsPage() {
+  const updatedLabel = formatGuideUpdatedDate(GUIDE_DATE_MODIFIED_ISO)
+
   return (
     <>
       <ComoComprarJsonLd />
@@ -145,26 +154,46 @@ export default function ComoComprarCedearsPage() {
         <h1 className="text-balance text-[length:var(--size-xl)] leading-[var(--line-xl)] font-semibold tracking-[var(--letter-spacing-xl)] md:text-[length:var(--size-xxl)] md:leading-[var(--line-xxl)]">
           {COMO_COMPRAR_PAGE_H1}
         </h1>
-        <p className="text-pretty text-muted-foreground">{COMO_COMPRAR_INTRO}</p>
+        <p className="max-w-[65ch] text-pretty text-base leading-relaxed text-foreground">
+          {COMO_COMPRAR_INTRO}
+        </p>
       </header>
 
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-10">
         <GuideToc items={[...GUIDE_TOC_ITEMS]} />
 
         <div className="flex min-w-0 flex-col gap-6 lg:w-[680px] lg:max-w-[680px]">
+          <GuideSection id="resumen" title="Resumen">
+            <dl className="flex flex-col gap-3">
+              {GUIDE_RESUMEN_ROWS.map((row) => (
+                <div
+                  key={row.label}
+                  className="flex flex-col gap-0.5 border-b border-border pb-3 last:border-0 last:pb-0 sm:flex-row sm:justify-between sm:gap-4"
+                >
+                  <dt className="text-muted-foreground">{row.label}</dt>
+                  <dd className="font-medium text-foreground sm:text-right">{row.value}</dd>
+                </div>
+              ))}
+            </dl>
+            <p className="text-sm text-muted-foreground">
+              Actualizado el{" "}
+              <time dateTime={GUIDE_DATE_MODIFIED_ISO}>{updatedLabel}</time>.
+            </p>
+          </GuideSection>
+
           <GuideSection id="que-es-cedear" title="¿Qué es un CEDEAR?">
             <GuideParagraphs paragraphs={QUE_ES_CEDEAR} />
           </GuideSection>
 
           <GuideSection id="ratio-cedear" title={RATIO_SECTION.title}>
             <GuideParagraphs paragraphs={RATIO_SECTION.paragraphs} />
-            <Alert className="mt-1 border border-border bg-[var(--success-transparent)] text-foreground shadow-none *:data-[slot=alert-description]:text-foreground">
+            <Alert className="mt-1 max-w-none border border-border bg-[var(--success-transparent)] text-foreground shadow-none *:data-[slot=alert-description]:text-foreground">
               <AlertDescription>
                 Consultá el ratio vigente y convertí CEDEARs ↔ acciones en la tabla
-                interactiva.{" "}
+                interactiva.
                 <Button
-                  variant="link"
-                  className="h-auto p-0 text-foreground"
+                  variant="secondary"
+                  className={GUIDE_CALLOUT_BUTTON_CLASS}
                   nativeButton={false}
                   render={<Link href="/ratios" />}
                 >
@@ -179,17 +208,14 @@ export default function ComoComprarCedearsPage() {
             id="pasos-comprar"
             title="Paso a paso: cuenta en una ALyC e inversión"
           >
-            <ol className="flex flex-col gap-6">
+            <ol className="flex max-w-none flex-col gap-6">
               {COMO_COMPRAR_STEPS.map((step, index) => (
                 <li key={step.name} className="flex gap-4">
-                  <span
-                    aria-hidden
-                    className="w-8 shrink-0 font-mono text-[length:var(--size-xxl)] leading-none tabular-nums text-muted-foreground"
-                  >
+                  <span aria-hidden className={GUIDE_STEP_NUMBER_CLASS}>
                     {index + 1}
                   </span>
                   <div className="min-w-0">
-                    <h3 className="text-sm font-medium text-foreground">{step.name}</h3>
+                    <h3 className="font-medium text-foreground">{step.name}</h3>
                     <p className="mt-2">{step.text}</p>
                   </div>
                 </li>
@@ -197,12 +223,14 @@ export default function ComoComprarCedearsPage() {
             </ol>
             <p>
               Para comparar comisiones publicadas entre ALyCs, podés consultar la{" "}
-              <Link href="/alycs" className="text-foreground underline underline-offset-4">
+              <Link href="/alycs" className="underline underline-offset-4">
                 tabla de comisiones
               </Link>{" "}
               (solo referencia; verificá siempre el tarifario oficial).
             </p>
           </GuideSection>
+
+          <BrokerCtaSlot />
 
           <GuideSection id="costos-impuestos" title={COSTOS_SECTION.title}>
             <GuideParagraphs paragraphs={COSTOS_SECTION.paragraphs} />
@@ -210,12 +238,12 @@ export default function ComoComprarCedearsPage() {
 
           <GuideSection id="dividendos-cedears" title={DIVIDENDOS_SECTION.title}>
             <GuideParagraphs paragraphs={DIVIDENDOS_SECTION.paragraphs} />
-            <Alert variant="callout" className="mt-1 shadow-none">
+            <Alert variant="callout" className="mt-1 max-w-none shadow-none">
               <AlertDescription>
-                Yield y fechas estimadas por ticker en el calendario del sitio.{" "}
+                Yield y fechas estimadas por ticker en el calendario del sitio.
                 <Button
-                  variant="link"
-                  className="h-auto p-0 text-foreground"
+                  variant="secondary"
+                  className="mt-3 min-h-11"
                   nativeButton={false}
                   render={<Link href="/dividendos" />}
                 >
@@ -226,12 +254,11 @@ export default function ComoComprarCedearsPage() {
             </Alert>
           </GuideSection>
 
-          <BrokerCtaSlot />
-
           <section className={GUIDE_CARD_CLASS}>
             <CedearFaqs
               faqs={[...COMO_COMPRAR_FAQ]}
               embedded
+              sectionId="preguntas-frecuentes"
               headingClassName={GUIDE_SECTION_HEADING_CLASS}
             />
           </section>
