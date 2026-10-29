@@ -1,5 +1,14 @@
 import type { CedearFaq } from "@/lib/cedear-faqs"
 
+export function formatGuideUpdatedDate(isoDate: string): string {
+  return new Intl.DateTimeFormat("es-AR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "America/Argentina/Buenos_Aires",
+  }).format(new Date(isoDate))
+}
+
 export const COMO_COMPRAR_PAGE_TITLE = "Cómo comprar CEDEARs en Argentina"
 
 export const COMO_COMPRAR_PAGE_H1 = "Cómo comprar CEDEARs en Argentina"
@@ -120,13 +129,30 @@ export const GUIDE_SECTION_HEADING_CLASS =
   "text-[length:var(--size-l)] leading-[var(--line-l)] font-semibold tracking-[var(--letter-spacing-l)]"
 
 export const GUIDE_TOC_ITEMS = [
+  { id: "resumen", label: "Resumen" },
   { id: "que-es-cedear", label: "¿Qué es un CEDEAR?" },
   { id: "ratio-cedear", label: "Ratio de conversión" },
   { id: "pasos-comprar", label: "Paso a paso" },
   { id: "costos-impuestos", label: "Costos e impuestos" },
   { id: "dividendos-cedears", label: "Dividendos" },
-  { id: "cedear-faqs-heading", label: "Preguntas frecuentes" },
+  { id: "preguntas-frecuentes", label: "Preguntas frecuentes" },
 ] as const
+
+export const GUIDE_DATE_MODIFIED_ISO = "2026-10-29T12:00:00.000Z"
+
+export const GUIDE_RESUMEN_ROWS = [
+  { label: "Mercado", value: "BYMA (Argentina)" },
+  { label: "Moneda de operación", value: "Pesos argentinos (ARS)" },
+  { label: "Intermediario", value: "ALyC o broker autorizado por la CNV" },
+  { label: "Cuenta", value: "Comitente en pesos" },
+  { label: "Ratio", value: "Varía por ticker; consultá antes de operar" },
+] as const
+
+export const GUIDE_BODY_CLASS =
+  "max-w-[65ch] text-base leading-relaxed text-foreground"
+
+export const GUIDE_STEP_NUMBER_CLASS =
+  "w-8 shrink-0 font-[family-name:var(--font-brand)] text-[length:var(--size-xxl)] font-semibold leading-none tabular-nums text-foreground"
 
 export const GUIDE_CARD_CLASS =
   "rounded-[var(--radius-xl)] border border-border bg-card p-6 shadow-[var(--shadow-s)]"

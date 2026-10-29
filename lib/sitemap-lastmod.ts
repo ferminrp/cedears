@@ -13,7 +13,7 @@ export const STATIC_ROUTE_LASTMOD: Readonly<Record<string, string>> = {
   "/herramientas/rebalanceo": "2026-10-07T12:27:58.000Z",
   "/herramientas/dca": "2026-10-07T12:27:58.000Z",
   "/alycs": "2026-10-07T12:27:58.000Z",
-  "/como-comprar-cedears": "2026-10-29T00:00:00.000Z",
+  "/como-comprar-cedears": "2026-10-29T12:00:00.000Z",
   "/llms.txt": "2026-10-07T12:27:58.000Z",
 }
 

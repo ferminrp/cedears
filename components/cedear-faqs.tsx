@@ -5,15 +5,19 @@ export function CedearFaqs({
   faqs,
   headingClassName,
   embedded = false,
+  sectionId = "cedear-faqs-heading",
 }: {
   faqs: CedearFaq[]
   headingClassName?: string
   embedded?: boolean
+  sectionId?: string
 }) {
+  const headingElementId = `${sectionId}-heading`
+
   return (
-    <section aria-labelledby="cedear-faqs-heading" className="space-y-4">
+    <section aria-labelledby={headingElementId} id={sectionId} className="space-y-4">
       <h2
-        id="cedear-faqs-heading"
+        id={headingElementId}
         className={cn(
           "text-[length:var(--size-l)] leading-[var(--line-l)] font-semibold tracking-[var(--letter-spacing-l)]",
           headingClassName,
