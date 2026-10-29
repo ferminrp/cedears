@@ -30,8 +30,8 @@ Each feature file uses H1, one intro paragraph, then these H2 sections in order:
 
 ## Features
 
-- [Home list and search](./home-list.md) — main CEDEAR table, filters, export buttons.
-- [CEDEAR detail](./cedear-detail.md) — per-ticker page, chart, FAQs.
+- [Home list and search](./home-list.md) — top-100 table, A–Z index, search/filters, export buttons.
+- [CEDEAR detail](./cedear-detail.md) — per-ticker page, breadcrumb, similares, chart, FAQs.
 - [Data exports and feeds](./data-exports.md) — CSV, Markdown, JSON, sitemap.
 - [Portfolio](./portfolio.md) — local portfolio tracking view.
 - [Tools (DCA and rebalance)](./herramientas.md) — calculators under Herramientas.
