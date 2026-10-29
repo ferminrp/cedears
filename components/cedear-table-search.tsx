@@ -1,7 +1,7 @@
 "use client"
 
 import { SearchIcon } from "lucide-react"
-import type { ReactNode } from "react"
+import { forwardRef, type ReactNode } from "react"
 import { Input } from "@/components/ui/input"
 
 type CedearTableSearchProps = {
@@ -11,17 +11,30 @@ type CedearTableSearchProps = {
   resultsLabel: string
   /** Optional filters (e.g. frequency ToggleGroup) between search and counter. */
   filters?: ReactNode
+  /** Sticky anchor id for verify geometry (defaults to `${id}-sticky`). */
+  stickyId?: string
 }
 
-export function CedearTableSearch({
-  id,
-  query,
-  onQueryChange,
-  resultsLabel,
-  filters,
-}: CedearTableSearchProps) {
+export const CedearTableSearch = forwardRef<
+  HTMLDivElement,
+  CedearTableSearchProps
+>(function CedearTableSearch(
+  {
+    id,
+    query,
+    onQueryChange,
+    resultsLabel,
+    filters,
+    stickyId,
+  },
+  ref,
+) {
   return (
-    <div className="sticky top-0 z-10 -mx-[var(--space-l)] border-b border-border bg-background px-[var(--space-l)] py-3 md:static md:mx-0 md:border-0 md:px-0 md:py-0">
+    <div
+      ref={ref}
+      id={stickyId ?? `${id}-sticky`}
+      className="sticky top-0 z-10 -mx-[var(--space-l)] border-b border-border bg-background px-[var(--space-l)] py-3 md:static md:mx-0 md:border-0 md:px-0 md:py-0"
+    >
       <label htmlFor={id} className="sr-only">
         Buscar CEDEAR
       </label>
@@ -47,4 +60,4 @@ export function CedearTableSearch({
       </p>
     </div>
   )
-}
+})

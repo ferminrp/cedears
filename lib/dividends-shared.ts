@@ -98,7 +98,7 @@ export function toDividendsCsv(rows: CedearDividendRow[]): string {
 }
 
 export const DIVIDENDOS_PAGE_TITLE =
-  "CEDEARs que pagan dividendos: yield y próximas fechas | CEDEARs Argentina"
+  "CEDEARs que pagan dividendos: yield y próximas fechas"
 
 export const DIVIDENDOS_PAGE_H1 = "CEDEARs que pagan dividendos"
 

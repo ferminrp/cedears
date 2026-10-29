@@ -56,7 +56,7 @@ Options:
   --port N               Port when launching locally (default: 3010)
   --no-screenshots       Skip Playwright desktop/mobile captures
 
-Env: VERIFY_BASE_URL, VERIFY_ARTIFACT_DIR, VERIFY_PORT, VERIFY_RUN_ID, VERIFY_CANONICAL_ORIGIN
+Env: VERIFY_BASE_URL, VERIFY_ARTIFACT_DIR, VERIFY_PORT, VERIFY_RUN_ID, VERIFY_CANONICAL_ORIGIN, VERIFY_AGENT_STORE_DIR
 `)
       process.exit(0)
     } else {
@@ -463,10 +463,8 @@ async function assertRatiosPageGeometry(baseUrl, page, viewportLabel) {
 
 async function assertDividendosTableFitsContainer(page, label) {
   const result = await page.evaluate(() => {
-    const heading = document.getElementById("dividendos-table-heading")
-    const section = heading?.closest("section")
-    const table = section?.querySelector(".overflow-x-auto table")
-    const wrapper = table?.closest(".overflow-x-auto")
+    const wrapper = document.querySelector("[data-dividendos-table-wrap]")
+    const table = document.querySelector("[data-dividendos-table]")
     if (!wrapper || !table) {
       return { ok: false, reason: "missing table or wrapper" }
     }
@@ -480,6 +478,71 @@ async function assertDividendosTableFitsContainer(page, label) {
     result.ok,
     true,
     `${label}: dividendos table wider than container (${result.tableWidth ?? "?"}px > ${result.containerWidth ?? "?"}px)${result.reason ? ` — ${result.reason}` : ""}`,
+  )
+}
+
+async function assertDividendosPageGeometry(baseUrl, page, viewportLabel) {
+  const width = viewportLabel === "375" ? 375 : 390
+  await page.setViewportSize({ width, height: 844 })
+  await page.goto(`${baseUrl}/dividendos`, {
+    waitUntil: "networkidle",
+    timeout: 600_000,
+  })
+  await page.waitForSelector("input#dividendos-search", { timeout: 600_000 })
+
+  const atTop = await page.evaluate(() => {
+    const wrap = document.querySelector("[data-dividendos-table-wrap]")
+    const thead = document.querySelector("[data-dividendos-table] thead")
+    const firstRow = document.querySelector(
+      "[data-dividendos-table] tbody tr:first-child",
+    )
+    const wrapRect = wrap?.getBoundingClientRect()
+    const theadRect = thead?.getBoundingClientRect()
+    const firstRect = firstRow?.getBoundingClientRect()
+    const gapAboveThead =
+      wrapRect && theadRect ? theadRect.top - wrapRect.top : Number.NaN
+    const headerAboveFirst =
+      theadRect && firstRect
+        ? theadRect.bottom <= firstRect.top + 1
+        : false
+    return { gapAboveThead, headerAboveFirst, hasTable: Boolean(wrap && thead) }
+  })
+
+  if (!atTop.hasTable) {
+    return
+  }
+
+  assert.ok(
+    atTop.gapAboveThead <= 2,
+    `${viewportLabel}: dividendos gap above thead (${atTop.gapAboveThead}px)`,
+  )
+  assert.equal(
+    atTop.headerAboveFirst,
+    true,
+    `${viewportLabel}: dividendos thead must sit above first tbody row at scroll 0`,
+  )
+
+  await page.evaluate(() => window.scrollTo(0, 1200))
+  await page.waitForTimeout(200)
+
+  const scrolled = await page.evaluate(() => {
+    const search = document.getElementById("dividendos-search-sticky")
+    const th = document.querySelector(
+      "[data-dividendos-table] thead th:not(.hidden)",
+    )
+    const searchRect = search?.getBoundingClientRect()
+    const thRect = th?.getBoundingClientRect()
+    const stuckBelowSearch =
+      searchRect && thRect
+        ? Math.abs(thRect.top - searchRect.bottom) <= 2
+        : false
+    return { stuckBelowSearch, thTop: thRect?.top, searchBottom: searchRect?.bottom }
+  })
+
+  assert.equal(
+    scrolled.stuckBelowSearch,
+    true,
+    `${viewportLabel}: dividendos sticky th must align below search (th.top=${scrolled.thTop}, search.bottom=${scrolled.searchBottom})`,
   )
 }
 
@@ -531,10 +594,9 @@ async function captureDividendosScreenshots(baseUrl, artifactDir, browser) {
       timeout: 600_000,
     })
     if (checkTableWidth) {
-      await page.waitForSelector(
-        "section:has(#dividendos-table-heading) .overflow-x-auto table",
-        { timeout: 600_000 },
-      )
+      await page.waitForSelector("[data-dividendos-table-wrap] table", {
+        timeout: 600_000,
+      })
     }
     await assertNoHorizontalOverflow(page, label)
     if (checkTableWidth) {
@@ -579,6 +641,8 @@ async function captureDividendosScreenshots(baseUrl, artifactDir, browser) {
   const mobile = await browser.newPage({
     viewport: { width: 390, height: 844 },
   })
+  await assertDividendosPageGeometry(baseUrl, mobile, "390")
+  await mobile.evaluate(() => window.scrollTo(0, 0))
   await capture(
     mobile,
     `${baseUrl}/dividendos`,
@@ -618,6 +682,8 @@ async function captureDividendosScreenshots(baseUrl, artifactDir, browser) {
   const mobile375 = await browser.newPage({
     viewport: { width: 375, height: 812 },
   })
+  await assertDividendosPageGeometry(baseUrl, mobile375, "375")
+  await mobile375.evaluate(() => window.scrollTo(0, 0))
   await capture(
     mobile375,
     `${baseUrl}/dividendos`,
@@ -625,16 +691,18 @@ async function captureDividendosScreenshots(baseUrl, artifactDir, browser) {
     "dividendos 375px",
   )
 
-  const agentStoreDir = join("/cursor/stores/self", "pr72")
-  await mkdir(agentStoreDir, { recursive: true })
-  const pr72Captures = [
-    "dividendos-mobile-390.png",
-    "dividendos-tablet-768.png",
-    "dividendos-tablet-1024.png",
-    "dividendos-desktop-1440.png",
-  ]
-  for (const name of pr72Captures) {
-    await copyFile(join(artifactDir, name), join(agentStoreDir, name))
+  const agentStoreDir = process.env.VERIFY_AGENT_STORE_DIR?.trim()
+  if (agentStoreDir) {
+    await mkdir(agentStoreDir, { recursive: true })
+    const pr72Captures = [
+      "dividendos-mobile-390.png",
+      "dividendos-tablet-768.png",
+      "dividendos-tablet-1024.png",
+      "dividendos-desktop-1440.png",
+    ]
+    for (const name of pr72Captures) {
+      await copyFile(join(artifactDir, name), join(agentStoreDir, name))
+    }
   }
 }
 
