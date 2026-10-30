@@ -163,6 +163,10 @@ export default async function Page() {
           <Link href="/ratios" className="text-foreground underline underline-offset-4">
             Ver tabla de ratios y calculadora
           </Link>
+          . ¿Usás Claude, Cursor o ChatGPT?{" "}
+          <a href="/mcp" className="text-foreground underline underline-offset-4">
+            Conectá el MCP de CEDEARs
+          </a>
           .
         </p>
       </section>
