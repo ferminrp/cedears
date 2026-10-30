@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { prefersMarkdown } from '@/lib/accept-markdown'
+import { prefersMcpDocsHtml } from '@/lib/mcp/accept'
 import { CATEGORY_SLUG_REDIRECTS } from '@/lib/category-redirects'
 import { isKnownCedearTicker } from '@/lib/cedear-ticker-guard'
 
@@ -103,6 +104,20 @@ export async function middleware(request: NextRequest) {
     const url = request.nextUrl.clone()
     url.pathname = '/mcp-well-known'
     return NextResponse.rewrite(url)
+  }
+
+  if (
+    pathname === '/mcp' &&
+    request.method === 'GET' &&
+    prefersMcpDocsHtml(accept)
+  ) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/mcp-docs'
+    return NextResponse.rewrite(url)
+  }
+
+  if (pathname === '/mcp-docs') {
+    return absoluteRedirect(request, '/mcp')
   }
 
   if (pathname === '/' && prefersMarkdown(accept)) {
