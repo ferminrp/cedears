@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import type { CedearFaq } from "@/lib/cedear-faqs"
 import { CedearFaqs } from "@/components/cedear-faqs"
 import { CopyButton } from "@/components/copy-button"
 import { JsonHighlight } from "@/components/json-highlight"
@@ -11,15 +12,19 @@ import {
   MCP_DOCS_LEAD,
   MCP_DOCS_PATH,
   MCP_DOCS_TITLE,
-  MCP_FAQS,
+  MCP_EARNINGS_WINDOW_END_FALLBACK,
+  buildMcpFaqs,
   MCP_SECTION_HEADING_CLASS,
   MCP_STEP_NUMBER_CLASS,
   MCP_TOOL_COPY,
   buildMcpClientSteps,
 } from "@/lib/mcp-docs"
 import { MCP_CAPTURED_AT_ISO, MCP_CAPTURED_AT_LABEL, MCP_TOOL_CAPTURES } from "@/lib/mcp-docs-captures"
+import { getEarningsTimeline } from "@/lib/earnings"
 import { TOOL_DEFINITIONS } from "@/lib/mcp/tools"
 import { buildPageOpenGraph, getSiteUrl } from "@/lib/site"
+
+export const revalidate = 3600
 
 // Served at /mcp via middleware content negotiation (Accept: text/html, not text/event-stream).
 export const metadata: Metadata = {
@@ -35,11 +40,11 @@ export const metadata: Metadata = {
 
 type SchemaProp = { type?: string; description?: string }
 
-function FaqJsonLd() {
+function FaqJsonLd({ faqs }: { faqs: CedearFaq[] }) {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: MCP_FAQS.map((f) => ({
+    mainEntity: faqs.map((f) => ({
       "@type": "Question",
       name: f.question,
       acceptedAnswer: { "@type": "Answer", text: f.answer },
@@ -55,18 +60,28 @@ const preClass =
 const outLinkClass =
   "inline-flex min-h-11 items-center font-medium text-foreground underline underline-offset-4"
 
-export default function McpDocsPage() {
+async function earningsWindowEnd(): Promise<string> {
+  try {
+    const timeline = await getEarningsTimeline()
+    return timeline.dateRange.end || MCP_EARNINGS_WINDOW_END_FALLBACK
+  } catch {
+    return MCP_EARNINGS_WINDOW_END_FALLBACK
+  }
+}
+
+export default async function McpDocsPage() {
+  const faqs = buildMcpFaqs(await earningsWindowEnd())
   const endpoint = `${getSiteUrl()}${MCP_DOCS_PATH}`
   const clients = buildMcpClientSteps(endpoint)
 
   return (
     <>
-      <FaqJsonLd />
+      <FaqJsonLd faqs={faqs} />
       <header className="flex min-w-0 flex-col gap-4">
         <h1 className="text-balance text-[length:var(--size-xl)] leading-[var(--line-xl)] font-semibold tracking-[var(--letter-spacing-xl)] md:text-[length:var(--size-xxl)] md:leading-[var(--line-xxl)]">
           {MCP_DOCS_H1}
         </h1>
-        <p className="max-w-[65ch] text-pretty text-muted-foreground">{MCP_DOCS_LEAD}</p>
+        <p className={`${MCP_BODY_CLASS} text-pretty`}>{MCP_DOCS_LEAD}</p>
         <div className="flex min-w-0 items-stretch gap-2">
           <div className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap rounded-[var(--radius-m)] bg-muted px-4 py-3 font-mono text-[15px]" translate="no">
             {endpoint}
@@ -74,10 +89,17 @@ export default function McpDocsPage() {
           <CopyButton value={endpoint} label="Copiar URL del MCP" />
         </div>
         <p className="text-sm text-muted-foreground">
-          HTTP streamable (JSON-RPC 2.0 por POST) · Sin autenticación · {TOOL_DEFINITIONS.length} herramientas ·{" "}
-          <a href="/cedears.csv" className={footerLinkClassName}>CSV</a> ·{" "}
-          <a href="/.well-known/mcp.json" className={footerLinkClassName} translate="no">/.well-known/mcp.json</a>
+          HTTP streamable (JSON-RPC 2.0 por POST) · Sin autenticación · {TOOL_DEFINITIONS.length} herramientas
         </p>
+        <ul className="flex flex-wrap items-center gap-x-1 text-sm text-muted-foreground">
+          <li>
+            <a href="/cedears.csv" className={`${footerLinkClassName} inline-flex min-h-11 items-center px-1`}>CSV</a>
+          </li>
+          <li aria-hidden>·</li>
+          <li>
+            <a href="/.well-known/mcp.json" className={`${footerLinkClassName} inline-flex min-h-11 items-center px-1`} translate="no">/.well-known/mcp.json</a>
+          </li>
+        </ul>
       </header>
 
       <section aria-labelledby="herramientas" className="flex min-w-0 flex-col gap-4">
@@ -91,7 +113,7 @@ export default function McpDocsPage() {
             <article key={tool.name} className={`${MCP_CARD_CLASS} flex flex-col gap-4`}>
               <div className="flex flex-col gap-1">
                 <h3 className="text-lg font-semibold"><code translate="no">{tool.name}</code></h3>
-                <p className={`${MCP_BODY_CLASS} text-muted-foreground`}>{copy?.summary ?? tool.description}</p>
+                <p className={MCP_BODY_CLASS}>{copy?.summary ?? tool.description}</p>
               </div>
               <div className="min-w-0">
                 <h4 className="mb-2 text-sm font-medium">Argumentos</h4>
@@ -111,7 +133,7 @@ export default function McpDocsPage() {
               </div>
               {copy ? (
                 <figure className="border-l-2 border-border pl-4">
-                  <figcaption className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Ejemplo de pedido</figcaption>
+                  <figcaption className="text-sm font-medium text-muted-foreground">Ejemplo de pedido</figcaption>
                   <blockquote className="mt-1 text-base">“{copy.examplePrompt}”</blockquote>
                 </figure>
               ) : null}
@@ -160,9 +182,12 @@ export default function McpDocsPage() {
         </ol>
       </section>
 
-      <div className={MCP_CARD_CLASS}>
-        <CedearFaqs faqs={MCP_FAQS} />
-      </div>
+      <section aria-labelledby="mcp-faqs-heading" className="flex min-w-0 flex-col gap-4">
+        <h2 id="mcp-faqs-heading" className={MCP_SECTION_HEADING_CLASS}>Preguntas frecuentes</h2>
+        <div className={MCP_CARD_CLASS}>
+          <CedearFaqs faqs={faqs} embedded showHeading={false} sectionId="mcp-faqs" />
+        </div>
+      </section>
 
       <SiteFooter>
         Datos de{" "}

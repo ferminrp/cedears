@@ -1,4 +1,16 @@
+import { createElement as h } from "react"
 import type { CedearFaq } from "@/lib/cedear-faqs"
+
+export const CHATGPT_MCP_HELP_URL =
+  "https://help.openai.com/en/articles/12584461-connecting-custom-mcp-servers-in-chatgpt"
+
+/** Fallback when the earnings cache is unavailable (window end seen in the 30/10/2026 capture). */
+export const MCP_EARNINGS_WINDOW_END_FALLBACK = "2027-01-30"
+
+export function formatIsoDayAr(iso: string): string {
+  const [y, m, d] = iso.split("-")
+  return `${d}/${m}/${y}`
+}
 
 export const MCP_DOCS_PATH = "/mcp"
 export const MCP_DOCS_TITLE =
@@ -50,7 +62,11 @@ export const MCP_TOOL_COPY: Record<
   },
 }
 
-export const MCP_FAQS: CedearFaq[] = [
+export function buildMcpFaqs(earningsWindowEndIso: string): CedearFaq[] {
+  const windowEnd = formatIsoDayAr(earningsWindowEndIso)
+  const outLink = (text: string) =>
+    h("a", { href: CHATGPT_MCP_HELP_URL, target: "_blank", rel: "noopener noreferrer", className: "font-medium text-foreground underline underline-offset-4" }, text)
+  return [
   {
     question: "¿Qué es este MCP?",
     answer:
@@ -73,24 +89,34 @@ export const MCP_FAQS: CedearFaq[] = [
   {
     question: "¿Qué planes de ChatGPT lo permiten?",
     answer:
-      "ChatGPT permite conectar servidores MCP propios en planes Business y Enterprise/Edu. En el plan Pro la conexión es más limitada (solo lectura, según corresponda al plan); si una herramienta no aparece o falla, revisá qué permite tu plan. Fuente: help.openai.com/en/articles/12584461-connecting-custom-mcp-servers-in-chatgpt.",
+      "ChatGPT permite conectar servidores MCP propios en los planes Business y Enterprise/Edu. En el plan Pro la conexión es más limitada (solo lectura). Si una herramienta no aparece o falla, revisá qué permite tu plan.",
+    answerNode: h(
+      "span",
+      null,
+      "ChatGPT permite conectar servidores MCP propios en los ",
+      outLink("planes Business y Enterprise/Edu"),
+      ". En el ",
+      outLink("plan Pro"),
+      " la conexión es más limitada (solo lectura). Si una herramienta no aparece o falla, revisá qué permite tu plan.",
+    ),
   },
   {
     question: "¿Los datos están actualizados?",
     answer:
-      "Los precios son en vivo desde BYMA al momento de cada consulta; los balances cubren la ventana disponible en el servidor (hoy hasta el 30/01/2027). Cada respuesta del servidor indica su fecha.",
+      `Los precios salen de la cotización en vivo de BYMA que consulta el servidor; a veces un precio puede figurar sin dato. Los balances cubren la ventana disponible en el servidor (hoy hasta el ${windowEnd}). Las respuestas de earnings incluyen la fecha del balance; list_cedears y get_cedear devuelven el precio al momento de la consulta, sin fecha propia.`,
   },
   {
     question: "¿Puedo usar los datos en un producto o sitio?",
     answer:
-      "Está pensado para consultas personales desde un asistente. Si querés reutilizar los datos a mayor escala, escribinos antes.",
+      "Está pensado para consultas personales desde un asistente. Si querés reutilizar los datos a mayor escala, escribinos por email antes.",
   },
   {
     question: "¿Es asesoramiento financiero?",
     answer:
       "No. Es una herramienta de consulta de datos; no recomendamos comprar ni vender ningún instrumento.",
   },
-]
+  ]
+}
 
 export type McpClientStep = {
   id: string
