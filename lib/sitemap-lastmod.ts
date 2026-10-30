@@ -8,6 +8,7 @@ export const STATIC_ROUTE_LASTMOD: Readonly<Record<string, string>> = {
   "/dolar-cable": "2026-10-07T12:27:58.000Z",
   "/earnings": "2026-10-07T12:27:58.000Z",
   "/dividendos": "2026-10-28T00:00:00.000Z",
+  "/mcp": "2026-10-30T00:00:00.000Z",
   "/categorias": "2026-10-07T12:27:58.000Z",
   "/herramientas": "2026-10-07T12:27:58.000Z",
   "/herramientas/rebalanceo": "2026-10-07T12:27:58.000Z",

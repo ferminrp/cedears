@@ -12,3 +12,10 @@ export function mcpGetIntent(accept: string | null): McpGetIntent {
   }
   return { kind: "descriptor" }
 }
+
+/** Browsers get the /mcp docs page; MCP clients (SSE or JSON) keep the server responses. */
+export function prefersMcpDocsHtml(accept: string | null): boolean {
+  if (!accept) return false
+  const a = accept.toLowerCase()
+  return a.includes("text/html") && !a.includes("text/event-stream")
+}

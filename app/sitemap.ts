@@ -77,6 +77,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.85,
     },
     {
+      url: `${siteUrl}/mcp`,
+      lastModified: staticRouteLastModified("/mcp"),
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
       url: `${siteUrl}/categorias`,
       lastModified: staticRouteLastModified("/categorias"),
       changeFrequency: "daily",

@@ -313,6 +313,52 @@ const SMOKE_ROUTES = [
   { path: "/sitemap.xml", expectStatus: 200 },
 ]
 
+function requestUrl(url, { method = "GET", headers = {}, body, timeoutMs = 60_000 } = {}) {
+  return new Promise((resolve, reject) => {
+    const lib = url.startsWith("https") ? https : http
+    const req = lib.request(url, { method, headers, timeout: timeoutMs }, (res) => {
+      const chunks = []
+      res.on("data", (c) => chunks.push(c))
+      res.on("end", () =>
+        resolve({ status: res.statusCode ?? 0, headers: res.headers, body: Buffer.concat(chunks).toString("utf8") }),
+      )
+    })
+    req.on("error", reject)
+    req.on("timeout", () => { req.destroy(); reject(new Error(`Timeout ${url}`)) })
+    if (body) req.write(body)
+    req.end()
+  })
+}
+
+async function smokeMcp(baseUrl) {
+  const html = await requestUrl(`${baseUrl}/mcp`, { headers: { Accept: "text/html" } })
+  assert.equal(html.status, 200, "GET /mcp (html)")
+  assert.ok((html.headers["content-type"] ?? "").includes("text/html"), "/mcp html content-type")
+  assert.ok(html.body.includes("Conectá cedears.com a tu asistente de IA"), "/mcp docs h1")
+  assert.ok(html.body.includes('"FAQPage"'), "/mcp FAQPage JSON-LD")
+  assert.ok((html.headers["cache-control"] ?? "").includes("no-store"), "/mcp html must not be cached (shared URL with MCP JSON)")
+  assert.ok(html.body.includes("sin fecha propia"), "/mcp FAQ datos actualizados copy")
+  assert.ok(!html.body.includes("Cada respuesta del servidor indica su fecha"), "/mcp old FAQ copy removed")
+  const sse = await requestUrl(`${baseUrl}/mcp`, { headers: { Accept: "text/html, text/event-stream" } })
+  assert.equal(sse.status, 405, "GET /mcp with text/event-stream keeps MCP 405")
+  const json = await requestUrl(`${baseUrl}/mcp`, { headers: { Accept: "application/json" } })
+  assert.equal(json.status, 200, "GET /mcp (json)")
+  assert.deepEqual(JSON.parse(json.body).tools, ["list_cedears", "get_cedear", "earnings"])
+  const bare = await requestUrl(`${baseUrl}/mcp`)
+  assert.ok((bare.headers["content-type"] ?? "").includes("application/json"), "GET /mcp no Accept stays JSON")
+  const rpc = await requestUrl(`${baseUrl}/mcp`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json, text/event-stream" },
+    body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/list" }),
+  })
+  assert.equal(rpc.status, 200, "POST /mcp tools/list")
+  assert.equal(JSON.parse(rpc.body).result.tools.length, 3)
+  const sitemap = await requestUrl(`${baseUrl}/sitemap.xml`)
+  for (const path of ["/ratios", "/dividendos", "/mcp"]) {
+    assert.ok(sitemap.body.includes(`${path}</loc>`), `sitemap includes ${path}`)
+  }
+}
+
 async function smoke(baseUrl, sampleTicker, artifactDir) {
   const results = []
   for (const route of SMOKE_ROUTES) {
@@ -348,6 +394,7 @@ async function smoke(baseUrl, sampleTicker, artifactDir) {
   )
 
   await smokeCanonicals(baseUrl, sampleTicker, artifactDir)
+  await smokeMcp(baseUrl)
 }
 
 async function assertNoHorizontalOverflow(page, label) {
@@ -522,6 +569,24 @@ function attachHydrationListeners(page) {
   })
 }
 
+async function captureMcpScreenshots(baseUrl, artifactDir, browser) {
+  for (const width of [390, 768, 1024, 1440]) {
+    const page = await browser.newPage({ viewport: { width, height: 900 } })
+    await page.goto(`${baseUrl}/mcp`, { waitUntil: "networkidle", timeout: 120_000 })
+    await page.waitForSelector("h1")
+    await page.evaluate(() => document.querySelectorAll("details").forEach((d) => (d.open = true)))
+    await assertNoHorizontalOverflow(page, `mcp ${width}px`)
+    const small = await page.evaluate(() =>
+      [...document.querySelectorAll("main section button, main section summary, main header:has(h1) button")]
+        .filter((el) => el.getBoundingClientRect().height < 44)
+        .map((el) => el.textContent?.trim().slice(0, 40)),
+    )
+    assert.deepEqual(small, [], `mcp ${width}px: touch targets < 44px`)
+    await page.screenshot({ path: join(artifactDir, `mcp-${width}.png`), fullPage: true })
+    await page.close()
+  }
+}
+
 async function captureDividendosScreenshots(baseUrl, artifactDir, browser) {
   const capture = async (page, url, filename, label, options = {}) => {
     const { checkTableWidth = false } = options
@@ -625,8 +690,16 @@ async function captureDividendosScreenshots(baseUrl, artifactDir, browser) {
     "dividendos 375px",
   )
 
-  const agentStoreDir = join("/cursor/stores/self", "pr72")
-  await mkdir(agentStoreDir, { recursive: true })
+  const agentStoreDir = join(
+    process.env.VERIFY_AGENT_STORE_DIR ?? "/cursor/stores/self",
+    "pr72",
+  )
+  try {
+    await mkdir(agentStoreDir, { recursive: true })
+  } catch (err) {
+    console.warn(`skip agent store copy (${err.code ?? err})`)
+    return
+  }
   const pr72Captures = [
     "dividendos-mobile-390.png",
     "dividendos-tablet-768.png",
@@ -735,6 +808,7 @@ async function captureScreenshots(baseUrl, artifactDir, setBrowser) {
     await assertNoHorizontalOverflow(ratios375, "ratios 375px")
     await assertRatiosPageGeometry(baseUrl, ratios375, "375")
 
+    await captureMcpScreenshots(baseUrl, artifactDir, browser)
     await captureDividendosScreenshots(baseUrl, artifactDir, browser)
   } finally {
     await browser.close()

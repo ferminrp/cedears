@@ -1,3 +1,4 @@
+import type { ReactNode } from "react"
 import {
   type Cedear,
   fairUsdPrice,
@@ -8,7 +9,10 @@ import {
 
 export type CedearFaq = {
   question: string
+  /** Plain text; used for FAQPage JSON-LD. */
   answer: string
+  /** Optional rich rendering (links) of the same text. */
+  answerNode?: ReactNode
 }
 
 export function buildCedearFaqs(cedear: Cedear): CedearFaq[] {
