@@ -24,7 +24,8 @@ import { getEarningsTimeline } from "@/lib/earnings"
 import { TOOL_DEFINITIONS } from "@/lib/mcp/tools"
 import { buildPageOpenGraph, getSiteUrl } from "@/lib/site"
 
-export const revalidate = 3600
+// Must stay dynamic: /mcp is shared with the MCP JSON responses, so a cached HTML render would be served to MCP clients.
+export const dynamic = "force-dynamic"
 
 // Served at /mcp via middleware content negotiation (Accept: text/html, not text/event-stream).
 export const metadata: Metadata = {

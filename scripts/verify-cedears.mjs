@@ -336,6 +336,7 @@ async function smokeMcp(baseUrl) {
   assert.ok((html.headers["content-type"] ?? "").includes("text/html"), "/mcp html content-type")
   assert.ok(html.body.includes("Conectá cedears.com a tu asistente de IA"), "/mcp docs h1")
   assert.ok(html.body.includes('"FAQPage"'), "/mcp FAQPage JSON-LD")
+  assert.ok((html.headers["cache-control"] ?? "").includes("no-store"), "/mcp html must not be cached (shared URL with MCP JSON)")
   assert.ok(html.body.includes("sin fecha propia"), "/mcp FAQ datos actualizados copy")
   assert.ok(!html.body.includes("Cada respuesta del servidor indica su fecha"), "/mcp old FAQ copy removed")
   const sse = await requestUrl(`${baseUrl}/mcp`, { headers: { Accept: "text/html, text/event-stream" } })

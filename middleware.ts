@@ -113,7 +113,10 @@ export async function middleware(request: NextRequest) {
   ) {
     const url = request.nextUrl.clone()
     url.pathname = '/mcp-docs'
-    return NextResponse.rewrite(url)
+    const res = NextResponse.rewrite(url)
+    res.headers.set('Vary', 'Accept')
+    res.headers.set('Cache-Control', 'no-store')
+    return res
   }
 
   if (pathname === '/mcp-docs') {
