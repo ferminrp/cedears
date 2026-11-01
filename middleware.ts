@@ -115,6 +115,10 @@ export async function middleware(request: NextRequest) {
   if (pathname === '/dividendos' && request.nextUrl.searchParams.has('frecuencia')) {
     response.headers.set('X-Robots-Tag', 'noindex, follow')
   }
+  if (pathname === '/sitemap.xml') {
+    // vinext ignores `revalidate` on metadata routes, so set the CDN TTL here (1h).
+    response.headers.set('CDN-Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400')
+  }
   response.headers.append('Vary', 'Accept')
   response.headers.append(
     'Link',
