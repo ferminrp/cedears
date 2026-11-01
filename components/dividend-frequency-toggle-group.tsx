@@ -32,7 +32,8 @@ export function DividendFrequencyToggleGroup({
         {FREQUENCY_OPTIONS.map((option) => (
           <span
             key={option.value}
-            className="inline-flex min-h-11 shrink-0 items-center rounded-lg border border-input px-3 text-sm"
+            data-active={option.value === value ? "" : undefined}
+            className="inline-flex min-h-11 shrink-0 items-center rounded-lg border border-input px-3 text-sm data-[active]:border-foreground data-[active]:bg-foreground data-[active]:text-background"
           >
             {option.label}
           </span>
@@ -56,7 +57,8 @@ export function DividendFrequencyToggleGroup({
         <ToggleGroupItem
           key={option.value}
           value={option.value}
-          className="min-h-11 shrink-0"
+          aria-pressed={option.value === value}
+          className="min-h-11 shrink-0 aria-pressed:border-foreground aria-pressed:bg-foreground aria-pressed:text-background aria-pressed:hover:bg-foreground/90 aria-pressed:hover:text-background"
         >
           {option.label}
         </ToggleGroupItem>

@@ -1,3 +1,4 @@
+import { parseDividendFrequencyFilter } from '@/lib/dividends-shared'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { prefersMarkdown } from '@/lib/accept-markdown'
@@ -111,10 +112,22 @@ export async function middleware(request: NextRequest) {
     return NextResponse.rewrite(url)
   }
 
-  const response = NextResponse.next()
   if (pathname === '/dividendos' && request.nextUrl.searchParams.has('frecuencia')) {
-    response.headers.set('X-Robots-Tag', 'noindex, follow')
+    // Filtered deep links: serve the per-filter ISR page so first paint is already filtered.
+    const frequency = parseDividendFrequencyFilter(request.nextUrl.searchParams.get('frecuencia'))
+    const rewritten = frequency
+      ? (() => {
+          const url = request.nextUrl.clone()
+          url.pathname = `/dividendos/f/${frequency}`
+          url.search = ''
+          return NextResponse.rewrite(url)
+        })()
+      : NextResponse.next()
+    rewritten.headers.set('X-Robots-Tag', 'noindex, follow')
+    return rewritten
   }
+
+  const response = NextResponse.next()
   if (pathname === '/sitemap.xml') {
     // vinext ignores `revalidate` on metadata routes, so set the CDN TTL here (1h).
     response.headers.set('CDN-Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400')

@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
 import {
   ArrowDownIcon,
@@ -92,7 +92,7 @@ function SortButton({
 type DividendsTableProps = {
   rows: CedearDividendRow[]
   referenceDateIso: string
-  /** Server default; the real filter is read from ?frecuencia= on mount so the page stays CDN-cacheable. */
+  /** Filter from ?frecuencia=, resolved on the server (middleware rewrite) so first paint is filtered. */
   initialFrequency?: string
 }
 
@@ -128,13 +128,6 @@ export function DividendsTable({
       window.removeEventListener("resize", syncStickyOffset)
     }
   }, [query, frequencyParam, rows.length])
-
-  useEffect(() => {
-    const fromUrl = new URLSearchParams(window.location.search)
-      .get("frecuencia")
-      ?.trim()
-    if (fromUrl) setFrequencyParam(fromUrl)
-  }, [])
 
   const setFrequency = useCallback(
     (value: string) => {
@@ -226,7 +219,11 @@ export function DividendsTable({
                 ? `No encontramos “${query.trim()}”.`
                 : "No hay CEDEARs que coincidan con este filtro."}
               {" "}
-              Probá con otro ticker o quitá el filtro de frecuencia.
+              {query.trim() && frequencyParam !== "todas"
+                ? "Probá con otro ticker o quitá los filtros."
+                : query.trim()
+                  ? "Probá con otro ticker."
+                  : "Probá con otra frecuencia."}
             </EmptyDescription>
           </EmptyHeader>
           {hasActiveFilter ? (
@@ -237,7 +234,7 @@ export function DividendsTable({
               className="min-h-11"
               onClick={clearFilters}
             >
-              Limpiar búsqueda
+              Limpiar filtros
             </Button>
           ) : null}
         </Empty>

@@ -133,3 +133,22 @@ export const DIVIDENDOS_FAQ = [
       "De forma estimada, el dividendo anual en USD del subyacente dividido el ratio del CEDEAR (ver columna «Cobro est.»). El monto real por evento depende del calendario de pagos y de retenciones. Consultá también la tabla de ratios.",
   },
 ] as const
+
+export const DIVIDEND_FREQUENCY_FILTERS = [
+  "mensual",
+  "trimestral",
+  "semestral-anual",
+] as const
+
+export type DividendFrequencyFilter =
+  | "todas"
+  | (typeof DIVIDEND_FREQUENCY_FILTERS)[number]
+
+export function parseDividendFrequencyFilter(
+  value: string | null | undefined,
+): DividendFrequencyFilter | null {
+  const v = value?.trim().toLowerCase()
+  return (DIVIDEND_FREQUENCY_FILTERS as readonly string[]).includes(v ?? "")
+    ? (v as DividendFrequencyFilter)
+    : null
+}
