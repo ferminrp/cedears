@@ -26,16 +26,10 @@ import { BanknoteIcon } from "lucide-react"
 
 export const revalidate = 86400
 
-type PageProps = {
-  searchParams: Promise<{ frecuencia?: string }>
-}
-
-export async function generateMetadata({
-  searchParams,
-}: PageProps): Promise<Metadata> {
-  const params = await searchParams
-  const filtered = Boolean(params.frecuencia?.trim())
-
+// No searchParams here: reading them makes the route dynamic (cf-cache-status BYPASS,
+// a full render per request). ?frecuencia= is applied client-side; middleware sends
+// X-Robots-Tag noindex for filtered URLs.
+export async function generateMetadata(): Promise<Metadata> {
   return {
     title: DIVIDENDOS_PAGE_TITLE,
     description: DIVIDENDOS_META_DESCRIPTION,
@@ -47,7 +41,6 @@ export async function generateMetadata({
     alternates: {
       canonical: absoluteCanonical("/dividendos"),
     },
-    robots: filtered ? { index: false, follow: true } : undefined,
     openGraph: buildPageOpenGraph({
       title: DIVIDENDOS_PAGE_TITLE,
       description: DIVIDENDOS_META_DESCRIPTION,
@@ -116,9 +109,7 @@ function DividendosJsonLd({
   )
 }
 
-export default async function DividendosPage({ searchParams }: PageProps) {
-  const params = await searchParams
-  const initialFrequency = params.frecuencia?.trim() || "todas"
+export default async function DividendosPage() {
   const data = await getDividendsTableData()
   const updatedLabel = formatDividendosUpdatedDate(data.asOfDate)
 
@@ -154,7 +145,6 @@ export default async function DividendosPage({ searchParams }: PageProps) {
       <DividendsTable
         rows={data.rows}
         referenceDateIso={data.asOfDate}
-        initialFrequency={initialFrequency}
       />
     )
   }

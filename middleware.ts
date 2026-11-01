@@ -112,6 +112,9 @@ export async function middleware(request: NextRequest) {
   }
 
   const response = NextResponse.next()
+  if (pathname === '/dividendos' && request.nextUrl.searchParams.has('frecuencia')) {
+    response.headers.set('X-Robots-Tag', 'noindex, follow')
+  }
   response.headers.append('Vary', 'Accept')
   response.headers.append(
     'Link',

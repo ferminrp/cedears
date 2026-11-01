@@ -10,6 +10,9 @@ import {
 } from "@/lib/sitemap-lastmod"
 import { getSiteUrl } from "@/lib/site"
 
+// ~75KB XML rebuilt from the CEDEAR list; the list changes at most daily.
+export const revalidate = 3600
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = getSiteUrl()
   let bases: Awaited<ReturnType<typeof getCedearBases>> = []

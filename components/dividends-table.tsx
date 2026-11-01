@@ -1,8 +1,7 @@
 "use client"
 
-import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
 import {
   ArrowDownIcon,
   ArrowUpDownIcon,
@@ -93,17 +92,15 @@ function SortButton({
 type DividendsTableProps = {
   rows: CedearDividendRow[]
   referenceDateIso: string
-  initialFrequency: string
+  /** Server default; the real filter is read from ?frecuencia= on mount so the page stays CDN-cacheable. */
+  initialFrequency?: string
 }
 
 export function DividendsTable({
   rows,
   referenceDateIso,
-  initialFrequency,
+  initialFrequency = "todas",
 }: DividendsTableProps) {
-  const router = useRouter()
-  const pathname = usePathname()
-
   const rootRef = useRef<HTMLDivElement>(null)
   const searchStickyRef = useRef<HTMLDivElement>(null)
 
@@ -132,6 +129,13 @@ export function DividendsTable({
     }
   }, [query, frequencyParam, rows.length])
 
+  useEffect(() => {
+    const fromUrl = new URLSearchParams(window.location.search)
+      .get("frecuencia")
+      ?.trim()
+    if (fromUrl) setFrequencyParam(fromUrl)
+  }, [])
+
   const setFrequency = useCallback(
     (value: string) => {
       setFrequencyParam(value)
@@ -144,9 +148,14 @@ export function DividendsTable({
         params.set("frecuencia", value)
       }
       const qs = params.toString()
-      router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false })
+      // Client-only filter: update the URL without a server round trip.
+      window.history.replaceState(
+        window.history.state,
+        "",
+        qs ? `${window.location.pathname}?${qs}` : window.location.pathname,
+      )
     },
-    [pathname, router],
+    [],
   )
 
   const [sortKey, setSortKey] = useState<DividendSortKey>("exDate")
