@@ -1,3 +1,5 @@
+import { canonicalCategorySlug } from "@/lib/category-redirects"
+
 export function slugifyTag(tag: string): string {
   return tag
     .toLowerCase()
@@ -7,6 +9,43 @@ export function slugifyTag(tag: string): string {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "")
+}
+
+/**
+ * Canonical category slug → raw `slugifyTag(tag)` values that belong to one theme.
+ * Legacy slugs (e.g. `tech`) are merged into the canonical URL slug (see middleware 301).
+ */
+export const CATEGORY_TAG_SLUG_ALIASES: Readonly<
+  Record<string, readonly string[]>
+> = {
+  tecnologia: ["tecnologia", "tech"],
+  "cripto-y-bitcoin": ["cripto-y-bitcoin", "cripto"],
+  salud: ["salud", "farma-y-biotecnologia"],
+}
+
+const PREFERRED_TAG_BY_CANONICAL_SLUG: Readonly<Record<string, string>> = {
+  tecnologia: "Tecnología",
+  "cripto-y-bitcoin": "Cripto & Bitcoin",
+  "mineria-y-metales": "Minería & Metales",
+  salud: "Salud",
+}
+
+export function resolveCategorySlug(slug: string): string {
+  return canonicalCategorySlug(slug)
+}
+
+/** Canonical slug for a tag string (for hrefs and sitemap). */
+export function canonicalTagSlugFromTag(tag: string): string {
+  const raw = slugifyTag(tag)
+  for (const [canonical, aliases] of Object.entries(CATEGORY_TAG_SLUG_ALIASES)) {
+    if (aliases.includes(raw)) return canonical
+  }
+  return canonicalCategorySlug(raw)
+}
+
+function tagSlugAliasesForCategory(canonicalSlug: string): readonly string[] {
+  const resolved = resolveCategorySlug(canonicalSlug)
+  return CATEGORY_TAG_SLUG_ALIASES[resolved] ?? [resolved]
 }
 
 export function getUniqueTags(cedears: { tags: string[] }[]): string[] {
@@ -19,32 +58,56 @@ export function getUniqueTags(cedears: { tags: string[] }[]): string[] {
   return [...unique].sort((a, b) => a.localeCompare(b, "es"))
 }
 
-export function findTagBySlug(tags: string[], slug: string): string | null {
-  return tags.find((tag) => slugifyTag(tag) === slug) ?? null
-}
-
-/** All tags that share a slug (e.g. "Minería & Metales" and "Minería y metales"). */
 export function findTagsBySlug(tags: string[], slug: string): string[] {
-  return tags.filter((tag) => slugifyTag(tag) === slug)
+  const canonical = resolveCategorySlug(slug)
+  const allowed = new Set(tagSlugAliasesForCategory(canonical))
+  return tags.filter((tag) => allowed.has(slugifyTag(tag)))
 }
 
-/** Unique slug params for SSG — one entry per slug, preferring the first tag. */
+export function findTagBySlug(tags: string[], slug: string): string | null {
+  const matching = findTagsBySlug(tags, slug)
+  if (matching.length === 0) return null
+
+  const canonical = resolveCategorySlug(slug)
+  const preferred = PREFERRED_TAG_BY_CANONICAL_SLUG[canonical]
+  if (preferred && matching.includes(preferred)) return preferred
+
+  return [...matching].sort((a, b) => a.localeCompare(b, "es"))[0]
+}
+
+/** Unique slug params for SSG — one entry per canonical slug. */
 export function getUniqueTagSlugs(cedears: { tags: string[] }[]): {
   tag: string
   slug: string
 }[] {
-  const bySlug = new Map<string, string>()
-  for (const tag of getUniqueTags(cedears)) {
-    const slug = slugifyTag(tag)
-    if (!bySlug.has(slug)) {
-      bySlug.set(slug, tag)
+  const tags = getUniqueTags(cedears)
+  const byCanonical = new Map<string, string>()
+
+  for (const tag of tags) {
+    const canonical = canonicalTagSlugFromTag(tag)
+    if (!byCanonical.has(canonical)) {
+      byCanonical.set(canonical, tag)
     }
   }
-  return [...bySlug.entries()].map(([slug, tag]) => ({ tag, slug }))
+
+  for (const [canonical] of [...byCanonical.entries()]) {
+    const preferred = PREFERRED_TAG_BY_CANONICAL_SLUG[canonical]
+    const matching = findTagsBySlug(tags, canonical)
+    if (preferred && matching.includes(preferred)) {
+      byCanonical.set(canonical, preferred)
+    } else if (matching.length > 0) {
+      byCanonical.set(
+        canonical,
+        [...matching].sort((a, b) => a.localeCompare(b, "es"))[0],
+      )
+    }
+  }
+
+  return [...byCanonical.entries()].map(([slug, tag]) => ({ tag, slug }))
 }
 
 export function categoryPath(tag: string): string {
-  return `/categoria/${slugifyTag(tag)}`
+  return `/categoria/${canonicalTagSlugFromTag(tag)}`
 }
 
 export function categoryTitle(tag: string): string {
@@ -96,4 +159,14 @@ export function getCategoryIndex(
       }
     })
     .sort((a, b) => a.tag.localeCompare(b.tag, "es"))
+}
+
+export function countCedearsForCategorySlug(
+  cedears: { tags: string[] }[],
+  slug: string,
+): number {
+  const tags = getUniqueTags(cedears)
+  const matchingTags = findTagsBySlug(tags, slug)
+  const tagSet = new Set(matchingTags)
+  return cedears.filter((c) => c.tags.some((t) => tagSet.has(t))).length
 }
