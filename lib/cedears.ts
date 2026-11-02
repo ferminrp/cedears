@@ -10,6 +10,8 @@ export type Cedear = {
   tags: string[]
   price: number | null
   pctChange: number | null
+  /** BYMA session opening price (data912 `q_op`), when available. */
+  sessionOpen: number | null
   volume: number | null
   usPrice: number | null
   priceMep: number | null
@@ -87,6 +89,16 @@ export function pctClassName(value: number | null): string {
   if (value === null || value === 0) return "text-muted-foreground"
   if (value > 0) return "text-success"
   return "text-destructive"
+}
+
+/** Live `pct_change`, or vs session open when missing (avoids em dash when price exists). */
+export function resolveCedearPctChange(cedear: Cedear): number | null {
+  if (cedear.pctChange !== null) return cedear.pctChange
+  if (cedear.price === null) return null
+  const open = cedear.sessionOpen
+  if (open === null || open <= 0) return null
+  const pct = ((cedear.price - open) / open) * 100
+  return Number.isFinite(pct) ? pct : null
 }
 
 export function formatVolume(value: number | null): string {

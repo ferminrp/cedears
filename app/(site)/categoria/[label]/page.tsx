@@ -5,7 +5,7 @@ import { CedearFaqs } from "@/components/cedear-faqs"
 import { CedearsThemeTable } from "@/components/cedears-theme-table"
 import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Button } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button"
 import {
   Empty,
   EmptyDescription,
@@ -26,6 +26,7 @@ import {
   type CategoryIntroPart,
 } from "@/lib/category-content"
 import { absoluteCanonical } from "@/lib/canonical"
+import { isBymaRegularSessionOpen } from "@/lib/byma-hours"
 import type { Cedear } from "@/lib/cedears"
 import {
   findTagBySlug,
@@ -42,6 +43,7 @@ import {
 } from "@/lib/get-cedears"
 import { formatRatiosDataDate } from "@/lib/ratios"
 import { buildPageOpenGraph, getSiteUrl } from "@/lib/site"
+import { cn } from "@/lib/utils"
 
 export const revalidate = 300
 
@@ -85,9 +87,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const matchingTags = findTagsBySlug(tags, label)
   const count = countMatchingBases(bases, matchingTags)
   const canonicalSlug = canonicalCategorySlug(label)
+  const displayTag = tag
   const fetchedAt = await getCedearsLivePricesFetchedAt()
-  const title = categorySeoTitle(canonicalSlug)
-  const description = categorySeoDescription(canonicalSlug, count, fetchedAt)
+  const title = categorySeoTitle(canonicalSlug, displayTag)
+  const description = categorySeoDescription(
+    canonicalSlug,
+    count,
+    fetchedAt,
+    displayTag,
+  )
   const canonical = absoluteCanonical(`/categoria/${canonicalSlug}`)
 
   return {
@@ -137,16 +145,18 @@ function CategoryJsonLd({
   count,
   cedears,
   faqs,
+  tagLabel,
 }: {
   slug: string
   pageName: string
   count: number
   cedears: Cedear[]
   faqs: CedearFaq[]
+  tagLabel?: string | null
 }) {
   const siteUrl = getSiteUrl()
   const pageUrl = `${siteUrl}/categoria/${slug}`
-  const breadcrumbName = getCategoryDisplay(slug).h1Theme
+  const breadcrumbName = getCategoryDisplay(slug, tagLabel).h1Theme
   const sorted = [...cedears].sort((a, b) => a.Cedears.localeCompare(b.Cedears))
 
   const graph: Record<string, unknown>[] = [
@@ -238,10 +248,13 @@ export default async function CategoryPage({ params }: PageProps) {
 
   const matchingTags = findTagsBySlug(tags, label)
   const matchingTagSet = new Set(matchingTags)
-  const h1 = categoryPageH1(canonicalSlug)
-  const themeSectionTitle = `Todos los CEDEARs de ${getCategoryDisplay(canonicalSlug).themeLower}`
+  const displayTag = tag
+  const h1 = categoryPageH1(canonicalSlug, displayTag)
+  const themeSectionTitle = `Todos los CEDEARs de ${getCategoryDisplay(canonicalSlug, displayTag).themeLower}`
   const baseCount = countMatchingBases(bases, matchingTags)
   const fetchedAt = await getCedearsLivePricesFetchedAt()
+  const quoteTime = fetchedAt ?? new Date()
+  const showPreviousCloseLabel = !isBymaRegularSessionOpen(quoteTime)
   const dateLabel = fetchedAt
     ? formatRatiosDataDate(fetchedAt)
     : formatRatiosDataDate(new Date())
@@ -279,6 +292,7 @@ export default async function CategoryPage({ params }: PageProps) {
         <CedearsThemeTable
           cedears={filtered}
           hideUnderlying={canonicalSlug === "etfs"}
+          showPreviousCloseLabel={showPreviousCloseLabel}
         />
       )
     }
@@ -299,11 +313,12 @@ export default async function CategoryPage({ params }: PageProps) {
     sampleTickers: sampleTickers(filtered.length ? filtered : [], 5),
     slug: canonicalSlug,
   }
-  const introParts = buildCategoryIntroParts(canonicalSlug, faqContext)
+  const introParts = buildCategoryIntroParts(canonicalSlug, faqContext, displayTag)
   const faqs = buildCategoryFaqs(canonicalSlug, faqContext)
+  const categoryDisplay = getCategoryDisplay(canonicalSlug, displayTag)
   const breadcrumbLabel =
-    getCategoryDisplay(canonicalSlug).h1Theme.charAt(0).toUpperCase() +
-    getCategoryDisplay(canonicalSlug).h1Theme.slice(1)
+    categoryDisplay.h1Theme.charAt(0).toUpperCase() +
+    categoryDisplay.h1Theme.slice(1)
 
   return (
     <>
@@ -313,6 +328,7 @@ export default async function CategoryPage({ params }: PageProps) {
         count={filtered.length || baseCount}
         cedears={filtered}
         faqs={faqs}
+        tagLabel={displayTag}
       />
       <header className="flex flex-col gap-4">
         <nav aria-label="Migas de pan" className="text-xs text-muted-foreground">
@@ -382,17 +398,21 @@ export default async function CategoryPage({ params }: PageProps) {
             </Link>
           </div>
           <ul className="flex flex-wrap gap-2">
-            {siblingSlugs.map((s) => (
+            {siblingSlugs.map((s) => {
+              const chipTag = findTagBySlug(tags, s)
+              return (
               <li key={s}>
-                <Button
-                  variant="outline"
-                  className="min-h-11 touch-manipulation rounded-[var(--radius-m)]"
-                  asChild
+                <Link
+                  href={`/categoria/${s}`}
+                  className={cn(
+                    buttonVariants({ variant: "outline" }),
+                    "min-h-11 touch-manipulation rounded-[var(--radius-m)]",
+                  )}
                 >
-                  <Link href={`/categoria/${s}`}>{siblingChipLabel(s)}</Link>
-                </Button>
+                  {siblingChipLabel(s, chipTag)}
+                </Link>
               </li>
-            ))}
+            )})}
           </ul>
         </section>
       ) : null}

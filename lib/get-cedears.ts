@@ -16,7 +16,8 @@ export type CedearBase = {
 type LiveQuote = {
   symbol: string
   c: number
-  pct_change: number
+  pct_change: number | null
+  q_op: number | null
   v: number
 }
 
@@ -87,15 +88,21 @@ function parseLiveQuote(value: unknown): LiveQuote | null {
   if (typeof value.c !== "number" || !Number.isFinite(value.c)) {
     return null
   }
-  if (typeof value.pct_change !== "number" || !Number.isFinite(value.pct_change)) {
-    return null
-  }
+  const pctRaw = value.pct_change
+  const pct_change =
+    typeof pctRaw === "number" && Number.isFinite(pctRaw) ? pctRaw : null
+  const qOpRaw = value.q_op
+  const q_op =
+    typeof qOpRaw === "number" && Number.isFinite(qOpRaw) && qOpRaw > 0
+      ? qOpRaw
+      : null
   const volume =
     typeof value.v === "number" && Number.isFinite(value.v) ? value.v : 0
   return {
     symbol: value.symbol,
     c: value.c,
-    pct_change: value.pct_change,
+    pct_change,
+    q_op,
     v: volume,
   }
 }
@@ -136,6 +143,7 @@ function withEmptyQuotes(cedears: CedearBase[]): Cedear[] {
     ...c,
     price: null,
     pctChange: null,
+    sessionOpen: null,
     volume: null,
     usPrice: null,
     priceMep: null,
@@ -156,6 +164,7 @@ function mergeQuotes(
       ...c,
       price: argQuote?.c ?? null,
       pctChange: argQuote?.pct_change ?? null,
+      sessionOpen: argQuote?.q_op ?? null,
       volume: argQuote?.v ?? null,
       usPrice: quotePrice(usaQuotes, c.TickerOriginal),
       priceMep: quotePrice(argQuotes, `${ticker}D`),

@@ -14,6 +14,7 @@ import {
   formatPct,
   parseRatio,
   pctClassName,
+  resolveCedearPctChange,
 } from "@/lib/cedears"
 import { filterRatiosCedears } from "@/lib/ratios"
 import { logoUrl } from "@/lib/logo"
@@ -99,10 +100,12 @@ export function CedearsThemeTable({
   cedears,
   hideUnderlying = false,
   searchInputId = "category-theme-search",
+  showPreviousCloseLabel = false,
 }: {
   cedears: Cedear[]
   hideUnderlying?: boolean
   searchInputId?: string
+  showPreviousCloseLabel?: boolean
 }) {
   const [query, setQuery] = useState("")
   const [sortKey, setSortKey] = useState<SortKey>("ticker")
@@ -162,7 +165,10 @@ export function CedearsThemeTable({
       } else if (sortKey === "price") {
         cmp = compareNullableNumber(a.price, b.price)
       } else if (sortKey === "pctChange") {
-        cmp = compareNullableNumber(a.pctChange, b.pctChange)
+        cmp = compareNullableNumber(
+          resolveCedearPctChange(a),
+          resolveCedearPctChange(b),
+        )
       }
       return sortDir === "asc" ? cmp : -cmp
     })
@@ -175,11 +181,11 @@ export function CedearsThemeTable({
     <div
       ref={rootRef}
       data-category-theme-table-root
-      className="flex min-w-0 flex-col gap-3"
+      className="flex min-w-0 flex-col gap-3 [--ratios-sticky-search-height:5.75rem] md:[--ratios-sticky-search-height:0px]"
     >
       <div
         ref={searchStickyRef}
-        className="sticky top-0 z-10 -mx-[var(--space-l)] border-b border-border bg-background px-[var(--space-l)] py-3 md:static md:mx-0 md:border-0 md:px-0 md:py-0"
+        className="sticky top-0 z-10 min-h-[var(--ratios-sticky-search-height)] -mx-[var(--space-l)] border-b border-border bg-background px-[var(--space-l)] py-3 md:static md:min-h-0 md:mx-0 md:border-0 md:px-0 md:py-0"
       >
         <label htmlFor={searchInputId} className="sr-only">
           Buscar en esta categoría
@@ -196,7 +202,7 @@ export function CedearsThemeTable({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Ticker, empresa o subyacente"
-            className="pl-9"
+            className="min-h-11 pl-9"
             autoComplete="off"
           />
         </div>
@@ -231,7 +237,7 @@ export function CedearsThemeTable({
           ) : null}
         </Empty>
       ) : (
-        <div className="box-border w-full max-w-full min-w-0 overflow-x-auto rounded-[var(--radius-m)] border border-border">
+        <div className="box-border w-full max-w-full min-w-0 rounded-[var(--radius-m)] border border-border md:overflow-x-auto">
           <Table scrollContainer={false} className="w-full max-w-full table-fixed md:min-w-[36rem] md:table-auto">
             <TableHeader>
               <TableRow className="hover:bg-transparent">
@@ -299,7 +305,11 @@ export function CedearsThemeTable({
                 <TableHead
                   className={`hidden text-right md:table-cell md:min-w-[4.5rem] ${stickyHeadClassName}`}
                   aria-sort={ariaSortValue(sortKey, "pctChange", sortDir)}
-                  aria-label="Variación porcentual, cierre anterior"
+                  aria-label={
+                    showPreviousCloseLabel
+                      ? "Variación porcentual, cierre anterior"
+                      : "Variación porcentual"
+                  }
                 >
                   <span className="flex flex-col items-end gap-0.5">
                     <SortButton
@@ -308,15 +318,19 @@ export function CedearsThemeTable({
                       direction={sortDir}
                       onClick={() => toggleSort("pctChange")}
                     />
-                    <span className="text-xs font-normal leading-none text-muted-foreground">
-                      cierre anterior
-                    </span>
+                    {showPreviousCloseLabel ? (
+                      <span className="text-xs font-normal leading-none text-muted-foreground">
+                        cierre anterior
+                      </span>
+                    ) : null}
                   </span>
                 </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {sorted.map((c) => (
+              {sorted.map((c) => {
+                const pct = resolveCedearPctChange(c)
+                return (
                 <TableRow key={c.Cedears} className="hover:bg-muted/50">
                   <TableCell scope="row" className="whitespace-normal p-0">
                     <Link
@@ -358,12 +372,12 @@ export function CedearsThemeTable({
                     {formatArs(c.price)}
                   </TableCell>
                   <TableCell
-                    className={`hidden md:table-cell ${numericCellClassName} px-[var(--space-xs)] md:px-[var(--space-s)] ${pctClassName(c.pctChange)}`}
+                    className={`hidden md:table-cell ${numericCellClassName} px-[var(--space-xs)] md:px-[var(--space-s)] ${pctClassName(pct)}`}
                   >
-                    {formatPct(c.pctChange)}
+                    {formatPct(pct)}
                   </TableCell>
                 </TableRow>
-              ))}
+              )})}
             </TableBody>
           </Table>
         </div>

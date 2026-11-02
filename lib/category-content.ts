@@ -48,7 +48,7 @@ export const CATEGORY_DISPLAY: Record<string, CategoryDisplay> = {
     themeLower: "mercados emergentes",
     h1Theme: "mercados emergentes",
   },
-  salud: { themeLower: "salud y farma", h1Theme: "salud" },
+  salud: { themeLower: "salud y farma", h1Theme: "salud y farma" },
   "inteligencia-artificial": {
     themeLower: "inteligencia artificial",
     h1Theme: "inteligencia artificial",
@@ -64,22 +64,36 @@ export const CATEGORY_DISPLAY: Record<string, CategoryDisplay> = {
   },
 }
 
-export function getCategoryDisplay(slug: string): CategoryDisplay {
-  return (
-    CATEGORY_DISPLAY[slug] ?? {
-      themeLower: slug.replace(/-/g, " "),
-      h1Theme: slug.replace(/-/g, " "),
-    }
-  )
+export function tagLabelToThemeLower(tagLabel: string): string {
+  return tagLabel
+    .replace(/\s*&\s*/g, " y ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLocaleLowerCase("es-AR")
 }
 
-export function categoryPageH1(slug: string): string {
-  const { h1Theme } = getCategoryDisplay(slug)
+export function getCategoryDisplay(
+  slug: string,
+  tagLabel?: string | null,
+): CategoryDisplay {
+  if (CATEGORY_DISPLAY[slug]) return CATEGORY_DISPLAY[slug]
+  if (tagLabel) {
+    const themeLower = tagLabelToThemeLower(tagLabel)
+    return { themeLower, h1Theme: themeLower }
+  }
+  return {
+    themeLower: slug.replace(/-/g, " "),
+    h1Theme: slug.replace(/-/g, " "),
+  }
+}
+
+export function categoryPageH1(slug: string, tagLabel?: string | null): string {
+  const { h1Theme } = getCategoryDisplay(slug, tagLabel)
   return `CEDEARs de ${h1Theme}`
 }
 
-export function categorySeoTitle(slug: string): string {
-  const { h1Theme } = getCategoryDisplay(slug)
+export function categorySeoTitle(slug: string, tagLabel?: string | null): string {
+  const { h1Theme } = getCategoryDisplay(slug, tagLabel)
   return `CEDEARs de ${h1Theme}: precios y ratios hoy`
 }
 
@@ -87,8 +101,9 @@ export function categorySeoDescription(
   slug: string,
   count: number,
   fetchedAt: Date | null,
+  tagLabel?: string | null,
 ): string {
-  const { themeLower } = getCategoryDisplay(slug)
+  const { themeLower } = getCategoryDisplay(slug, tagLabel)
   const dateLabel = fetchedAt ? formatRatiosDataDate(fetchedAt) : "hoy"
   return `${count} CEDEARs de ${themeLower} con precio en pesos y ratio de conversión, actualizados al ${dateLabel}. Datos de cedears.com.`
 }
@@ -122,7 +137,7 @@ function comprarFaqAnswer(themeLower: string): string {
 function introWithGuide(leadParts: CategoryIntroPart[]): CategoryIntroPart[] {
   return [
     ...leadParts,
-    { type: "text", value: " Mirá ratio y precio, o mirá " },
+    { type: "text", value: " Mirá " },
     { type: "guide-link" },
     { type: "text", value: "." },
   ]
@@ -223,11 +238,12 @@ const CUSTOM_INTRO_PARTS: Partial<
 export function buildCategoryIntroParts(
   slug: string,
   _ctx: CategoryFaqContext,
+  tagLabel?: string | null,
 ): CategoryIntroPart[] {
   if (isTopCategorySlug(slug) && CUSTOM_INTRO_PARTS[slug]) {
     return CUSTOM_INTRO_PARTS[slug]!
   }
-  const { themeLower } = getCategoryDisplay(slug)
+  const { themeLower } = getCategoryDisplay(slug, tagLabel)
   return introWithGuide([
     {
       type: "text",
@@ -447,8 +463,8 @@ export function getSiblingCategorySlugs(
   return result.slice(0, SIBLING_CHIP_MAX)
 }
 
-export function siblingChipLabel(slug: string): string {
-  const display = getCategoryDisplay(slug)
+export function siblingChipLabel(slug: string, tagLabel?: string | null): string {
+  const display = getCategoryDisplay(slug, tagLabel)
   const label = display.h1Theme
   return label.charAt(0).toUpperCase() + label.slice(1)
 }
