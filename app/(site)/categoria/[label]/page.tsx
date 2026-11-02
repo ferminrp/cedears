@@ -15,7 +15,7 @@ import {
 import { canonicalCategorySlug } from "@/lib/category-redirects"
 import {
   buildCategoryFaqs,
-  buildCategoryIntro,
+  buildCategoryIntroParts,
   categoryPageH1,
   categorySeoDescription,
   categorySeoTitle,
@@ -23,6 +23,7 @@ import {
   getCategoryDisplay,
   getSiblingCategorySlugs,
   siblingChipLabel,
+  type CategoryIntroPart,
 } from "@/lib/category-content"
 import { absoluteCanonical } from "@/lib/canonical"
 import type { Cedear } from "@/lib/cedears"
@@ -98,21 +99,34 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-function CategoryLead({ slug, intro }: { slug: string; intro: string }) {
-  const parts = intro.split(CATEGORY_GUIDE_LINK.linkText)
-  if (parts.length < 2) {
-    return <p className="max-w-[60ch] text-muted-foreground">{intro}</p>
-  }
+function CategoryLead({ parts }: { parts: CategoryIntroPart[] }) {
   return (
     <p className="max-w-[60ch] text-muted-foreground">
-      {parts[0]}
-      <Link
-        href={CATEGORY_GUIDE_LINK.href}
-        className="underline underline-offset-4 hover:text-foreground"
-      >
-        {CATEGORY_GUIDE_LINK.linkText}
-      </Link>
-      {parts[1]}
+      {parts.map((part, index) => {
+        if (part.type === "text") {
+          return <span key={index}>{part.value}</span>
+        }
+        if (part.type === "cedear-link") {
+          return (
+            <Link
+              key={index}
+              href={`/cedear/${part.ticker}`}
+              className="underline underline-offset-4 hover:text-foreground"
+            >
+              {part.ticker}
+            </Link>
+          )
+        }
+        return (
+          <Link
+            key={index}
+            href={CATEGORY_GUIDE_LINK.href}
+            className="underline underline-offset-4 hover:text-foreground"
+          >
+            {CATEGORY_GUIDE_LINK.linkText}
+          </Link>
+        )
+      })}
     </p>
   )
 }
@@ -285,7 +299,7 @@ export default async function CategoryPage({ params }: PageProps) {
     sampleTickers: sampleTickers(filtered.length ? filtered : [], 5),
     slug: canonicalSlug,
   }
-  const intro = buildCategoryIntro(canonicalSlug, faqContext)
+  const introParts = buildCategoryIntroParts(canonicalSlug, faqContext)
   const faqs = buildCategoryFaqs(canonicalSlug, faqContext)
   const breadcrumbLabel =
     getCategoryDisplay(canonicalSlug).h1Theme.charAt(0).toUpperCase() +
@@ -335,7 +349,7 @@ export default async function CategoryPage({ params }: PageProps) {
         <h1 className="text-balance text-[length:var(--size-xl)] leading-[var(--line-xl)] font-semibold tracking-[var(--letter-spacing-xl)] md:text-[length:var(--size-xxl)] md:leading-[var(--line-xxl)]">
           {h1}
         </h1>
-        <CategoryLead slug={canonicalSlug} intro={intro} />
+        <CategoryLead parts={introParts} />
         <p className="text-sm text-muted-foreground">
           {baseCount} CEDEARs · Precios actualizados el {dateLabel}
         </p>

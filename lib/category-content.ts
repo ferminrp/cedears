@@ -7,17 +7,18 @@ export const CATEGORY_GUIDE_LINK = {
   linkText: "en qué ALyC comprarlos",
 } as const
 
+/** PM/SEO top 10 (GSC 28d); canonical slugs (`farma-y-biotecnologia` → `salud`). */
 export const TOP_CATEGORY_SLUGS = [
-  "tecnologia",
+  "indices-de-estados-unidos",
   "etfs",
+  "tecnologia",
+  "paises-y-regiones",
+  "mercados-emergentes",
   "salud",
-  "petroleo-y-gas",
-  "bancos",
-  "mineria-y-metales",
-  "consumo-basico",
-  "software-y-cloud",
-  "semiconductores",
-  "retail-y-e-commerce",
+  "inteligencia-artificial",
+  "industriales",
+  "aeroespacial-y-defensa",
+  "nuclear-y-uranio",
 ] as const
 
 export type TopCategorySlug = (typeof TOP_CATEGORY_SLUGS)[number]
@@ -27,31 +28,38 @@ export function isTopCategorySlug(slug: string): slug is TopCategorySlug {
 }
 
 export type CategoryDisplay = {
-  /** Running text, e.g. "tecnología" */
   themeLower: string
-  /** H1 fragment after "CEDEARs de" */
   h1Theme: string
 }
 
 export const CATEGORY_DISPLAY: Record<string, CategoryDisplay> = {
-  tecnologia: { themeLower: "tecnología", h1Theme: "tecnología" },
+  "indices-de-estados-unidos": {
+    themeLower: "índices de Estados Unidos",
+    h1Theme: "índices de Estados Unidos",
+  },
   etfs: { themeLower: "ETFs", h1Theme: "ETFs" },
-  salud: { themeLower: "salud", h1Theme: "salud" },
-  "petroleo-y-gas": { themeLower: "petróleo y gas", h1Theme: "petróleo y gas" },
-  bancos: { themeLower: "bancos", h1Theme: "bancos" },
-  "mineria-y-metales": {
-    themeLower: "minería y metales",
-    h1Theme: "minería y metales",
+  tecnologia: { themeLower: "tecnología", h1Theme: "tecnología" },
+  "paises-y-regiones": {
+    themeLower: "países y regiones",
+    h1Theme: "países y regiones",
   },
-  "consumo-basico": { themeLower: "consumo básico", h1Theme: "consumo básico" },
-  "software-y-cloud": {
-    themeLower: "software y cloud",
-    h1Theme: "software y cloud",
+  "mercados-emergentes": {
+    themeLower: "mercados emergentes",
+    h1Theme: "mercados emergentes",
   },
-  semiconductores: { themeLower: "semiconductores", h1Theme: "semiconductores" },
-  "retail-y-e-commerce": {
-    themeLower: "retail y e-commerce",
-    h1Theme: "retail y e-commerce",
+  salud: { themeLower: "salud y farma", h1Theme: "salud" },
+  "inteligencia-artificial": {
+    themeLower: "inteligencia artificial",
+    h1Theme: "inteligencia artificial",
+  },
+  industriales: { themeLower: "industriales", h1Theme: "industriales" },
+  "aeroespacial-y-defensa": {
+    themeLower: "aeroespacial y defensa",
+    h1Theme: "aeroespacial y defensa",
+  },
+  "nuclear-y-uranio": {
+    themeLower: "nuclear y uranio",
+    h1Theme: "nuclear y uranio",
   },
 }
 
@@ -80,9 +88,7 @@ export function categorySeoDescription(
   fetchedAt: Date | null,
 ): string {
   const { themeLower } = getCategoryDisplay(slug)
-  const dateLabel = fetchedAt
-    ? formatRatiosDataDate(fetchedAt)
-    : "hoy"
+  const dateLabel = fetchedAt ? formatRatiosDataDate(fetchedAt) : "hoy"
   return `${count} CEDEARs de ${themeLower} con precio en pesos y ratio de conversión, actualizados al ${dateLabel}. Datos de cedears.com.`
 }
 
@@ -94,6 +100,11 @@ export type CategoryFaqContext = {
   sampleTickers: string[]
   slug: string
 }
+
+export type CategoryIntroPart =
+  | { type: "text"; value: string }
+  | { type: "cedear-link"; ticker: string }
+  | { type: "guide-link" }
 
 function tickerSamplePhrase(tickers: string[]): string {
   if (tickers.length === 0) return "varios tickers"
@@ -107,56 +118,169 @@ function comprarFaqAnswer(themeLower: string): string {
   return `Elegí un ALyC, abrí una cuenta comitente y buscá el ticker en la plataforma. En esta web tenés el listado de ${themeLower} con ratio y precio; podés ver ${CATEGORY_GUIDE_LINK.linkText} en la guía de ALyCs.`
 }
 
-type IntroBuilder = (ctx: CategoryFaqContext) => string
-
-const CUSTOM_INTROS: Partial<Record<TopCategorySlug, IntroBuilder>> = {
-  tecnologia: () =>
-    `Las empresas tech que podés comprar en pesos desde Argentina: Apple, Microsoft, Nvidia y más. Mirá el ratio y el precio de cada una, o mirá ${CATEGORY_GUIDE_LINK.linkText}.`,
-  etfs: () =>
-    `Fondos que replican un índice o un sector, como SPY, QQQ o EEM, operables en pesos desde Argentina. Con un solo CEDEAR te diversificás. Mirá ratio y precio, o mirá ${CATEGORY_GUIDE_LINK.linkText}.`,
-  salud: () =>
-    "Farmacéuticas, dispositivos médicos y servicios de salud listados en EE.UU., operables en pesos desde Argentina. Mirá ratio y precio de cada CEDEAR, o mirá en qué ALyC comprarlos.",
-  "petroleo-y-gas": () =>
-    "Energía y petroleras con CEDEAR en BYMA. Compará ratio y precio en pesos, o mirá en qué ALyC comprarlos.",
-  bancos: () =>
-    "Entidades financieras globales en pesos argentinos. Revisá ratio y precio de cada CEDEAR, o mirá en qué ALyC comprarlos.",
-  "mineria-y-metales": () =>
-    "Mineras y metalúrgicas con acciones en EE.UU. y certificados locales. Mirá ratio y precio, o mirá en qué ALyC comprarlos.",
-  "consumo-basico": () =>
-    "Alimentos, bebidas y consumo de primera necesidad. Consultá ratio y precio en pesos, o mirá en qué ALyC comprarlos.",
-  "software-y-cloud": () =>
-    "Empresas de software y servicios en la nube con CEDEAR en Argentina. Mirá ratio y precio, o mirá en qué ALyC comprarlos.",
-  semiconductores: () =>
-    "Fabricantes de chips y equipamiento del sector. Compará ratio y precio en pesos, o mirá en qué ALyC comprarlos.",
-  "retail-y-e-commerce": () =>
-    "Retail y comercio electrónico global en pesos. Mirá ratio y precio de cada CEDEAR, o mirá en qué ALyC comprarlos.",
+function introWithGuide(leadParts: CategoryIntroPart[]): CategoryIntroPart[] {
+  return [
+    ...leadParts,
+    { type: "text", value: " Mirá ratio y precio, o mirá " },
+    { type: "guide-link" },
+    { type: "text", value: "." },
+  ]
 }
 
+const CUSTOM_INTRO_PARTS: Partial<
+  Record<TopCategorySlug, CategoryIntroPart[]>
+> = {
+  "indices-de-estados-unidos": introWithGuide([
+    {
+      type: "text",
+      value:
+        "CEDEARs que replican índices de EE.UU., como el S&P 500 con ",
+    },
+    { type: "cedear-link", ticker: "SPY" },
+    { type: "text", value: " o el Nasdaq con " },
+    { type: "cedear-link", ticker: "QQQ" },
+    {
+      type: "text",
+      value: ", operables en pesos desde Argentina.",
+    },
+  ]),
+  etfs: introWithGuide([
+    {
+      type: "text",
+      value:
+        "Fondos que replican un índice o un sector. Entre los más buscados están ",
+    },
+    { type: "cedear-link", ticker: "SPY" },
+    { type: "text", value: " y " },
+    { type: "cedear-link", ticker: "QQQ" },
+    {
+      type: "text",
+      value:
+        "; con un solo CEDEAR te diversificás en pesos desde Argentina.",
+    },
+  ]),
+  tecnologia: [
+    {
+      type: "text",
+      value:
+        "Las empresas tech que podés comprar en pesos desde Argentina: Apple, Microsoft, Nvidia y más. Mirá el ratio y el precio de cada una, o mirá ",
+    },
+    { type: "guide-link" },
+    { type: "text", value: "." },
+  ],
+  "paises-y-regiones": introWithGuide([
+    {
+      type: "text",
+      value:
+        "ETFs y acciones ligadas a un país o región (Brasil, China, Europa y más), operables en pesos desde Argentina.",
+    },
+  ]),
+  "mercados-emergentes": introWithGuide([
+    {
+      type: "text",
+      value:
+        "Exposición a economías emergentes vía CEDEARs en BYMA. Compará ratio y precio de cada uno.",
+    },
+  ]),
+  salud: introWithGuide([
+    {
+      type: "text",
+      value:
+        "Farmacéuticas, biotecnología y salud listadas en EE.UU., unificadas en esta categoría (incluye el listado histórico de farma y biotecnología).",
+    },
+  ]),
+  "inteligencia-artificial": introWithGuide([
+    {
+      type: "text",
+      value:
+        "Empresas vinculadas a IA, chips y software, con CEDEAR en Argentina. Revisá ratio y precio en pesos.",
+    },
+  ]),
+  industriales: introWithGuide([
+    {
+      type: "text",
+      value:
+        "Manufactura, transporte y servicios industriales con acciones en EE.UU. y certificados locales.",
+    },
+  ]),
+  "aeroespacial-y-defensa": introWithGuide([
+    {
+      type: "text",
+      value:
+        "Aerolíneas, defensa y equipamiento aeroespacial operables en pesos desde Argentina.",
+    },
+  ]),
+  "nuclear-y-uranio": introWithGuide([
+    {
+      type: "text",
+      value:
+        "Mineras de uranio y empresas del ciclo nuclear con CEDEAR en BYMA.",
+    },
+  ]),
+}
+
+export function buildCategoryIntroParts(
+  slug: string,
+  _ctx: CategoryFaqContext,
+): CategoryIntroPart[] {
+  if (isTopCategorySlug(slug) && CUSTOM_INTRO_PARTS[slug]) {
+    return CUSTOM_INTRO_PARTS[slug]!
+  }
+  const { themeLower } = getCategoryDisplay(slug)
+  return introWithGuide([
+    {
+      type: "text",
+      value: `Todos los CEDEARs de ${themeLower} que podés comprar en pesos desde Argentina, con su ratio y precio actualizado.`,
+    },
+  ])
+}
+
+/** Plain-text fallback (tests, JSON-LD). */
 export function buildCategoryIntro(
   slug: string,
   ctx: CategoryFaqContext,
 ): string {
-  if (isTopCategorySlug(slug) && CUSTOM_INTROS[slug]) {
-    return CUSTOM_INTROS[slug]!(ctx)
-  }
-  const { themeLower } = getCategoryDisplay(slug)
-  return `Todos los CEDEARs de ${themeLower} que podés comprar en pesos desde Argentina, con su ratio y precio actualizado. Mirá en qué ALyC comprarlos.`
+  return buildCategoryIntroParts(slug, ctx)
+    .map((part) => {
+      if (part.type === "text") return part.value
+      if (part.type === "cedear-link") return part.ticker
+      return CATEGORY_GUIDE_LINK.linkText
+    })
+    .join("")
 }
 
 type FaqBuilder = (ctx: CategoryFaqContext) => CedearFaq[]
 
+function defaultThemeFaqs(ctx: CategoryFaqContext): CedearFaq[] {
+  const { themeLower } = getCategoryDisplay(ctx.slug)
+  const sample = tickerSamplePhrase(ctx.sampleTickers)
+  return [
+    {
+      question: `¿Qué CEDEARs de ${themeLower} hay?`,
+      answer: `Hay ${ctx.count} en esta categoría, entre ellos ${sample}. La tabla los lista completos.`,
+    },
+    {
+      question: `¿Cómo compro un CEDEAR de ${themeLower}?`,
+      answer: comprarFaqAnswer(themeLower),
+    },
+    {
+      question: "¿Qué es el ratio?",
+      answer: RATIO_FAQ_ANSWER,
+    },
+  ]
+}
+
 const CUSTOM_FAQS: Partial<Record<TopCategorySlug, FaqBuilder>> = {
-  tecnologia: (ctx) => {
-    const { themeLower } = getCategoryDisplay(ctx.slug)
+  "indices-de-estados-unidos": (ctx) => {
     const sample = tickerSamplePhrase(ctx.sampleTickers)
     return [
       {
-        question: `¿Qué CEDEARs de ${themeLower} hay?`,
-        answer: `Hoy hay ${ctx.count}, entre ellos ${sample}. La tabla de arriba los lista todos.`,
+        question: "¿Qué CEDEARs de índices de EE.UU. hay?",
+        answer: `Hay ${ctx.count} en esta categoría, entre ellos ${sample}. SPY y QQQ suelen ser los más consultados; la tabla los lista todos.`,
       },
       {
-        question: `¿Cómo compro un CEDEAR de ${themeLower}?`,
-        answer: comprarFaqAnswer(themeLower),
+        question: "¿Cómo compro un CEDEAR de un índice?",
+        answer: comprarFaqAnswer("índices de Estados Unidos"),
       },
       {
         question: "¿Qué es el ratio?",
@@ -180,33 +304,46 @@ const CUSTOM_FAQS: Partial<Record<TopCategorySlug, FaqBuilder>> = {
       answer: RATIO_FAQ_ANSWER,
     },
   ],
-  salud: (ctx) => defaultThemeFaqs(ctx),
-  "petroleo-y-gas": (ctx) => defaultThemeFaqs(ctx),
-  bancos: (ctx) => defaultThemeFaqs(ctx),
-  "mineria-y-metales": (ctx) => defaultThemeFaqs(ctx),
-  "consumo-basico": (ctx) => defaultThemeFaqs(ctx),
-  "software-y-cloud": (ctx) => defaultThemeFaqs(ctx),
-  semiconductores: (ctx) => defaultThemeFaqs(ctx),
-  "retail-y-e-commerce": (ctx) => defaultThemeFaqs(ctx),
-}
-
-function defaultThemeFaqs(ctx: CategoryFaqContext): CedearFaq[] {
-  const { themeLower } = getCategoryDisplay(ctx.slug)
-  const sample = tickerSamplePhrase(ctx.sampleTickers)
-  return [
-    {
-      question: `¿Qué CEDEARs de ${themeLower} hay?`,
-      answer: `Hay ${ctx.count} en esta categoría, entre ellos ${sample}. La tabla los lista completos.`,
-    },
-    {
-      question: `¿Cómo compro un CEDEAR de ${themeLower}?`,
-      answer: comprarFaqAnswer(themeLower),
-    },
-    {
-      question: "¿Qué es el ratio?",
-      answer: RATIO_FAQ_ANSWER,
-    },
-  ]
+  tecnologia: (ctx) => {
+    const sample = tickerSamplePhrase(ctx.sampleTickers)
+    return [
+      {
+        question: "¿Qué CEDEARs de tecnología hay?",
+        answer: `Hoy hay ${ctx.count}, entre ellos ${sample}. La tabla de arriba los lista todos.`,
+      },
+      {
+        question: "¿Cómo compro un CEDEAR de tecnología?",
+        answer: comprarFaqAnswer("tecnología"),
+      },
+      {
+        question: "¿Qué es el ratio?",
+        answer: RATIO_FAQ_ANSWER,
+      },
+    ]
+  },
+  "paises-y-regiones": (ctx) => defaultThemeFaqs(ctx),
+  "mercados-emergentes": (ctx) => defaultThemeFaqs(ctx),
+  salud: (ctx) => {
+    const sample = tickerSamplePhrase(ctx.sampleTickers)
+    return [
+      {
+        question: "¿Qué CEDEARs de salud y farma hay?",
+        answer: `Hay ${ctx.count} en esta categoría (Salud y Farma & Biotecnología), entre ellos ${sample}. La tabla los lista todos.`,
+      },
+      {
+        question: "¿Cómo compro un CEDEAR de salud?",
+        answer: comprarFaqAnswer("salud y farma"),
+      },
+      {
+        question: "¿Qué es el ratio?",
+        answer: RATIO_FAQ_ANSWER,
+      },
+    ]
+  },
+  "inteligencia-artificial": (ctx) => defaultThemeFaqs(ctx),
+  industriales: (ctx) => defaultThemeFaqs(ctx),
+  "aeroespacial-y-defensa": (ctx) => defaultThemeFaqs(ctx),
+  "nuclear-y-uranio": (ctx) => defaultThemeFaqs(ctx),
 }
 
 export function buildCategoryFaqs(
@@ -218,7 +355,6 @@ export function buildCategoryFaqs(
   return builder(ctx)
 }
 
-/** Curated sibling chips per theme; fallback computed in getSiblingCategories. */
 export const CATEGORY_SIBLING_SLUGS: Partial<
   Record<TopCategorySlug, readonly string[]>
 > = {
@@ -232,13 +368,19 @@ export const CATEGORY_SIBLING_SLUGS: Partial<
     "medios-y-streaming",
   ],
   etfs: [
-    "indices-de-ee-uu",
+    "indices-de-estados-unidos",
     "mercados-emergentes",
     "mercados-desarrollados",
     "paises-y-regiones",
     "commodities",
     "oro-y-plata",
     "apalancados",
+  ],
+  "indices-de-estados-unidos": [
+    "etfs",
+    "mercados-desarrollados",
+    "apalancados",
+    "oro-y-plata",
   ],
 }
 
@@ -260,5 +402,6 @@ export function getSiblingCategorySlugs(
 
 export function siblingChipLabel(slug: string): string {
   const display = getCategoryDisplay(slug)
-  return display.h1Theme.charAt(0).toUpperCase() + display.h1Theme.slice(1)
+  const label = display.h1Theme
+  return label.charAt(0).toUpperCase() + label.slice(1)
 }
