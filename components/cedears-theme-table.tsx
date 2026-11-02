@@ -118,7 +118,13 @@ export function CedearsThemeTable({
     const root = rootRef.current
     if (!searchEl || !root) return
 
+    const mobileQuery = window.matchMedia("(max-width: 767px)")
+
     const syncStickyOffset = () => {
+      if (!mobileQuery.matches) {
+        root.style.removeProperty("--ratios-sticky-search-height")
+        return
+      }
       root.style.setProperty(
         "--ratios-sticky-search-height",
         `${searchEl.getBoundingClientRect().height}px`,
@@ -129,9 +135,12 @@ export function CedearsThemeTable({
     const observer = new ResizeObserver(syncStickyOffset)
     observer.observe(searchEl)
     window.addEventListener("resize", syncStickyOffset)
+    mobileQuery.addEventListener("change", syncStickyOffset)
     return () => {
       observer.disconnect()
       window.removeEventListener("resize", syncStickyOffset)
+      mobileQuery.removeEventListener("change", syncStickyOffset)
+      root.style.removeProperty("--ratios-sticky-search-height")
     }
   }, [query, cedears.length])
 
@@ -181,11 +190,11 @@ export function CedearsThemeTable({
     <div
       ref={rootRef}
       data-category-theme-table-root
-      className="flex min-w-0 flex-col gap-3 [--ratios-sticky-search-height:5.75rem] md:[--ratios-sticky-search-height:0px]"
+      className="flex min-w-0 flex-col gap-3 max-md:[--ratios-sticky-search-height:0px]"
     >
       <div
         ref={searchStickyRef}
-        className="sticky top-0 z-10 min-h-[var(--ratios-sticky-search-height)] -mx-[var(--space-l)] border-b border-border bg-background px-[var(--space-l)] py-3 md:static md:min-h-0 md:mx-0 md:border-0 md:px-0 md:py-0"
+        className="sticky top-0 z-10 -mx-[var(--space-l)] border-b border-border bg-background px-[var(--space-l)] py-3 md:static md:mx-0 md:border-0 md:px-0 md:py-0"
       >
         <label htmlFor={searchInputId} className="sr-only">
           Buscar en esta categoría
@@ -237,7 +246,7 @@ export function CedearsThemeTable({
           ) : null}
         </Empty>
       ) : (
-        <div className="box-border w-full max-w-full min-w-0 rounded-[var(--radius-m)] border border-border md:overflow-x-auto">
+        <div className="box-border w-full max-w-full min-w-0 max-md:overflow-x-auto rounded-[var(--radius-m)] border border-border md:overflow-visible">
           <Table scrollContainer={false} className="w-full max-w-full table-fixed md:min-w-[36rem] md:table-auto">
             <TableHeader>
               <TableRow className="hover:bg-transparent">

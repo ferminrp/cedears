@@ -21,7 +21,7 @@ const sample: Cedear = {
   tags: [],
   price: 15000,
   pctChange: 1,
-  sessionOpen: null,
+  previousClose: null,
   volume: 1000,
   usPrice: 200,
   priceMep: 18,

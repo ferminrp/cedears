@@ -17,7 +17,7 @@ function sample(ticker: string, volume: number | null): Cedear {
     tags: [],
     price: 100,
     pctChange: 1,
-    sessionOpen: null,
+    previousClose: null,
     volume,
     usPrice: 10,
     priceMep: null,

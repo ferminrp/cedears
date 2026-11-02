@@ -39,7 +39,7 @@ import type { CedearFaq } from "@/lib/cedear-faqs"
 import {
   getCedearBases,
   getCedears,
-  getCedearsLivePricesFetchedAt,
+  tryGetCedearsLivePricesFetchedAt,
 } from "@/lib/get-cedears"
 import { formatRatiosDataDate } from "@/lib/ratios"
 import { buildPageOpenGraph, getSiteUrl } from "@/lib/site"
@@ -88,7 +88,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const count = countMatchingBases(bases, matchingTags)
   const canonicalSlug = canonicalCategorySlug(label)
   const displayTag = tag
-  const fetchedAt = await getCedearsLivePricesFetchedAt()
+  const fetchedAt = await tryGetCedearsLivePricesFetchedAt()
   const title = categorySeoTitle(canonicalSlug, displayTag)
   const description = categorySeoDescription(
     canonicalSlug,
@@ -109,7 +109,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 function CategoryLead({ parts }: { parts: CategoryIntroPart[] }) {
   return (
-    <p className="max-w-[60ch] text-muted-foreground">
+    <p className="max-w-[60ch] min-h-[4.5rem] text-pretty text-muted-foreground md:min-h-[3.75rem]">
       {parts.map((part, index) => {
         if (part.type === "text") {
           return <span key={index}>{part.value}</span>
@@ -252,12 +252,10 @@ export default async function CategoryPage({ params }: PageProps) {
   const h1 = categoryPageH1(canonicalSlug, displayTag)
   const themeSectionTitle = `Todos los CEDEARs de ${getCategoryDisplay(canonicalSlug, displayTag).themeLower}`
   const baseCount = countMatchingBases(bases, matchingTags)
-  const fetchedAt = await getCedearsLivePricesFetchedAt()
-  const quoteTime = fetchedAt ?? new Date()
-  const showPreviousCloseLabel = !isBymaRegularSessionOpen(quoteTime)
-  const dateLabel = fetchedAt
-    ? formatRatiosDataDate(fetchedAt)
-    : formatRatiosDataDate(new Date())
+  let fetchedAt: Date | null = null
+  let quoteTime = new Date()
+  let showPreviousCloseLabel = false
+  const dateLabelFallback = formatRatiosDataDate(new Date())
 
   const categoryIndex = getCategoryIndex(bases)
   const siblingSlugs = getSiblingCategorySlugs(
@@ -269,6 +267,9 @@ export default async function CategoryPage({ params }: PageProps) {
   let tableContent
 
   try {
+    fetchedAt = await tryGetCedearsLivePricesFetchedAt()
+    quoteTime = fetchedAt ?? new Date()
+    showPreviousCloseLabel = !isBymaRegularSessionOpen(quoteTime)
     const cedears = await getCedears()
     filtered = cedears
       .filter((c) => c.tags.some((t) => matchingTagSet.has(t)))
@@ -319,6 +320,9 @@ export default async function CategoryPage({ params }: PageProps) {
   const breadcrumbLabel =
     categoryDisplay.h1Theme.charAt(0).toUpperCase() +
     categoryDisplay.h1Theme.slice(1)
+  const dateLabel = fetchedAt
+    ? formatRatiosDataDate(fetchedAt)
+    : dateLabelFallback
 
   return (
     <>

@@ -70,6 +70,7 @@ export function tagLabelToThemeLower(tagLabel: string): string {
     .replace(/\s+/g, " ")
     .trim()
     .toLocaleLowerCase("es-AR")
+    .replace(/\bev\b/g, "EV")
 }
 
 export function getCategoryDisplay(

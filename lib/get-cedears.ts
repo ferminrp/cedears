@@ -1,6 +1,8 @@
 import { cache } from "react"
 import { unstable_cache } from "next/cache"
 import { type Cedear } from "@/lib/cedears"
+import { previousPriceFromChange } from "@/lib/portfolio"
+import { tryLoad } from "@/lib/try-load"
 
 export type CedearBase = {
   Cedears: string
@@ -17,7 +19,6 @@ type LiveQuote = {
   symbol: string
   c: number
   pct_change: number | null
-  q_op: number | null
   v: number
 }
 
@@ -91,18 +92,12 @@ function parseLiveQuote(value: unknown): LiveQuote | null {
   const pctRaw = value.pct_change
   const pct_change =
     typeof pctRaw === "number" && Number.isFinite(pctRaw) ? pctRaw : null
-  const qOpRaw = value.q_op
-  const q_op =
-    typeof qOpRaw === "number" && Number.isFinite(qOpRaw) && qOpRaw > 0
-      ? qOpRaw
-      : null
   const volume =
     typeof value.v === "number" && Number.isFinite(value.v) ? value.v : 0
   return {
     symbol: value.symbol,
     c: value.c,
     pct_change,
-    q_op,
     v: volume,
   }
 }
@@ -143,7 +138,7 @@ function withEmptyQuotes(cedears: CedearBase[]): Cedear[] {
     ...c,
     price: null,
     pctChange: null,
-    sessionOpen: null,
+    previousClose: null,
     volume: null,
     usPrice: null,
     priceMep: null,
@@ -159,12 +154,18 @@ function mergeQuotes(
   return cedears.map((c) => {
     const ticker = normalizeSymbol(c.Cedears)
     const argQuote = argQuotes?.get(ticker)
+    const price = argQuote?.c ?? null
+    const pctChange = argQuote?.pct_change ?? null
+    const previousClose =
+      price !== null && pctChange !== null
+        ? previousPriceFromChange(price, pctChange)
+        : null
 
     return {
       ...c,
-      price: argQuote?.c ?? null,
-      pctChange: argQuote?.pct_change ?? null,
-      sessionOpen: argQuote?.q_op ?? null,
+      price,
+      pctChange,
+      previousClose,
       volume: argQuote?.v ?? null,
       usPrice: quotePrice(usaQuotes, c.TickerOriginal),
       priceMep: quotePrice(argQuotes, `${ticker}D`),
@@ -330,6 +331,10 @@ export async function getCedearsLivePricesFetchedAt(): Promise<Date | null> {
   const iso = (await getCedearsPayloadCached()).livePricesFetchedAtIso
   const parsed = new Date(iso)
   return Number.isFinite(parsed.getTime()) ? parsed : null
+}
+
+export async function tryGetCedearsLivePricesFetchedAt(): Promise<Date | null> {
+  return tryLoad(getCedearsLivePricesFetchedAt)
 }
 
 export const getCedears = cache(async (): Promise<Cedear[]> => {
