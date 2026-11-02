@@ -10,8 +10,6 @@ export type Cedear = {
   tags: string[]
   price: number | null
   pctChange: number | null
-  /** Prior session close (ARS), derived from live price and pct when API omits pct. */
-  previousClose: number | null
   volume: number | null
   usPrice: number | null
   priceMep: number | null
@@ -89,16 +87,6 @@ export function pctClassName(value: number | null): string {
   if (value === null || value === 0) return "text-muted-foreground"
   if (value > 0) return "text-success"
   return "text-destructive"
-}
-
-/** Live `pct_change`, or vs stored previous close when pct is missing. */
-export function resolveCedearPctChange(cedear: Cedear): number | null {
-  if (cedear.pctChange !== null) return cedear.pctChange
-  if (cedear.price === null) return null
-  const prev = cedear.previousClose
-  if (prev === null || prev <= 0) return null
-  const pct = ((cedear.price - prev) / prev) * 100
-  return Number.isFinite(pct) ? pct : null
 }
 
 export function formatVolume(value: number | null): string {

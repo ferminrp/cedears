@@ -1,7 +1,6 @@
 import { cache } from "react"
 import { unstable_cache } from "next/cache"
 import { type Cedear } from "@/lib/cedears"
-import { previousPriceFromChange } from "@/lib/portfolio"
 import { tryLoad } from "@/lib/try-load"
 
 export type CedearBase = {
@@ -138,7 +137,6 @@ function withEmptyQuotes(cedears: CedearBase[]): Cedear[] {
     ...c,
     price: null,
     pctChange: null,
-    previousClose: null,
     volume: null,
     usPrice: null,
     priceMep: null,
@@ -156,16 +154,11 @@ function mergeQuotes(
     const argQuote = argQuotes?.get(ticker)
     const price = argQuote?.c ?? null
     const pctChange = argQuote?.pct_change ?? null
-    const previousClose =
-      price !== null && pctChange !== null
-        ? previousPriceFromChange(price, pctChange)
-        : null
 
     return {
       ...c,
       price,
       pctChange,
-      previousClose,
       volume: argQuote?.v ?? null,
       usPrice: quotePrice(usaQuotes, c.TickerOriginal),
       priceMep: quotePrice(argQuotes, `${ticker}D`),

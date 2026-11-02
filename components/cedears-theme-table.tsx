@@ -14,7 +14,6 @@ import {
   formatPct,
   parseRatio,
   pctClassName,
-  resolveCedearPctChange,
 } from "@/lib/cedears"
 import { filterRatiosCedears } from "@/lib/ratios"
 import { logoUrl } from "@/lib/logo"
@@ -174,10 +173,7 @@ export function CedearsThemeTable({
       } else if (sortKey === "price") {
         cmp = compareNullableNumber(a.price, b.price)
       } else if (sortKey === "pctChange") {
-        cmp = compareNullableNumber(
-          resolveCedearPctChange(a),
-          resolveCedearPctChange(b),
-        )
+        cmp = compareNullableNumber(a.pctChange, b.pctChange)
       }
       return sortDir === "asc" ? cmp : -cmp
     })
@@ -194,6 +190,7 @@ export function CedearsThemeTable({
     >
       <div
         ref={searchStickyRef}
+        id="category-theme-search-sticky"
         className="sticky top-0 z-10 -mx-[var(--space-l)] border-b border-border bg-background px-[var(--space-l)] py-3 md:static md:mx-0 md:border-0 md:px-0 md:py-0"
       >
         <label htmlFor={searchInputId} className="sr-only">
@@ -246,8 +243,15 @@ export function CedearsThemeTable({
           ) : null}
         </Empty>
       ) : (
-        <div className="box-border w-full max-w-full min-w-0 max-md:overflow-x-auto rounded-[var(--radius-m)] border border-border md:overflow-visible">
-          <Table scrollContainer={false} className="w-full max-w-full table-fixed md:min-w-[36rem] md:table-auto">
+        <div
+          data-category-theme-table-wrap
+          className="box-border w-full max-w-full min-w-0 rounded-[var(--radius-m)] border border-border"
+        >
+          <Table
+            scrollContainer={false}
+            data-category-theme-table
+            className="w-full max-w-full table-fixed md:min-w-[36rem] md:table-auto"
+          >
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead
@@ -338,7 +342,7 @@ export function CedearsThemeTable({
             </TableHeader>
             <TableBody>
               {sorted.map((c) => {
-                const pct = resolveCedearPctChange(c)
+                const pct = c.pctChange
                 return (
                 <TableRow key={c.Cedears} className="hover:bg-muted/50">
                   <TableCell scope="row" className="whitespace-normal p-0">

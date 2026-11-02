@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import type { ReactNode } from "react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { CedearFaqs } from "@/components/cedear-faqs"
@@ -66,6 +67,16 @@ function sampleTickers(cedears: Cedear[], limit = 5): string[] {
     .map((c) => c.Cedears)
 }
 
+function isNextNotFoundError(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "digest" in error &&
+    typeof (error as { digest: unknown }).digest === "string" &&
+    (error as { digest: string }).digest.includes("NEXT_NOT_FOUND")
+  )
+}
+
 export async function generateStaticParams() {
   const bases = await getCedearBases()
   return getUniqueTagSlugs(bases).map(({ slug }) => ({ label: slug }))
@@ -109,7 +120,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 function CategoryLead({ parts }: { parts: CategoryIntroPart[] }) {
   return (
-    <p className="max-w-[60ch] min-h-[4.5rem] text-pretty text-muted-foreground md:min-h-[3.75rem]">
+    <p className="max-w-[60ch] min-h-[3.25rem] text-pretty text-muted-foreground md:min-h-[3.75rem]">
       {parts.map((part, index) => {
         if (part.type === "text") {
           return <span key={index}>{part.value}</span>
@@ -238,37 +249,35 @@ function CategoryJsonLd({
 export default async function CategoryPage({ params }: PageProps) {
   const { label } = await params
   const canonicalSlug = canonicalCategorySlug(label)
-  const bases = await getCedearBases()
-  const tags = getUniqueTags(bases)
-  const tag = findTagBySlug(tags, label)
 
-  if (!tag) {
-    notFound()
-  }
-
-  const matchingTags = findTagsBySlug(tags, label)
-  const matchingTagSet = new Set(matchingTags)
-  const displayTag = tag
-  const h1 = categoryPageH1(canonicalSlug, displayTag)
-  const themeSectionTitle = `Todos los CEDEARs de ${getCategoryDisplay(canonicalSlug, displayTag).themeLower}`
-  const baseCount = countMatchingBases(bases, matchingTags)
+  let tag: string | null = null
+  let tags: string[] = []
+  let matchingTags: string[] = []
+  let baseCount = 0
+  let siblingSlugs: string[] = []
+  let filtered: Cedear[] = []
   let fetchedAt: Date | null = null
-  let quoteTime = new Date()
   let showPreviousCloseLabel = false
+  let tableContent: ReactNode = null
   const dateLabelFallback = formatRatiosDataDate(new Date())
 
-  const categoryIndex = getCategoryIndex(bases)
-  const siblingSlugs = getSiblingCategorySlugs(
-    canonicalSlug,
-    categoryIndex.map((c) => ({ slug: c.slug, count: c.count })),
-  )
-
-  let filtered: Cedear[] = []
-  let tableContent
-
   try {
+    const bases = await getCedearBases()
+    tags = getUniqueTags(bases)
+    const foundTag = findTagBySlug(tags, label)
+    if (!foundTag) notFound()
+    tag = foundTag
+    matchingTags = findTagsBySlug(tags, label)
+    const matchingTagSet = new Set(matchingTags)
+    baseCount = countMatchingBases(bases, matchingTags)
+    const categoryIndex = getCategoryIndex(bases)
+    siblingSlugs = getSiblingCategorySlugs(
+      canonicalSlug,
+      categoryIndex.map((c) => ({ slug: c.slug, count: c.count })),
+    )
+
     fetchedAt = await tryGetCedearsLivePricesFetchedAt()
-    quoteTime = fetchedAt ?? new Date()
+    const quoteTime = fetchedAt ?? new Date()
     showPreviousCloseLabel = !isBymaRegularSessionOpen(quoteTime)
     const cedears = await getCedears()
     filtered = cedears
@@ -297,7 +306,8 @@ export default async function CategoryPage({ params }: PageProps) {
         />
       )
     }
-  } catch {
+  } catch (error) {
+    if (isNextNotFoundError(error)) throw error
     tableContent = (
       <Alert variant="destructive">
         <AlertTitle>Error al cargar los datos</AlertTitle>
@@ -308,6 +318,23 @@ export default async function CategoryPage({ params }: PageProps) {
       </Alert>
     )
   }
+
+  if (!tag) {
+    return (
+      <>
+        {tableContent}
+        <SiteFooter>
+          <Link href="/" className={footerLinkClassName}>
+            Volver al listado completo
+          </Link>
+        </SiteFooter>
+      </>
+    )
+  }
+
+  const displayTag = tag
+  const h1 = categoryPageH1(canonicalSlug, displayTag)
+  const themeSectionTitle = `Todos los CEDEARs de ${getCategoryDisplay(canonicalSlug, displayTag).themeLower}`
 
   const faqContext = {
     count: filtered.length || baseCount,

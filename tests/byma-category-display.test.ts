@@ -27,53 +27,6 @@ describe("tag display labels", () => {
       "minería y metales",
     )
     assert.equal(tagLabelToThemeLower("Petróleo y Gas"), "petróleo y gas")
-    assert.equal(
-      tagLabelToThemeLower("Automotrices y EV"),
-      "automotrices y EV",
-    )
-  })
-})
-
-describe("resolveCedearPctChange", () => {
-  it("uses previous close when pct_change is missing", async () => {
-    const { resolveCedearPctChange } = await import("../lib/cedears.ts")
-    const cedear = {
-      Cedears: "X",
-      Name: "X",
-      Market: "NYSE",
-      Ratio: "1",
-      TickerOriginal: "X",
-      yahooSymbol: null,
-      tags: [],
-      price: 110,
-      pctChange: null,
-      previousClose: 100,
-      volume: null,
-      usPrice: null,
-      priceMep: null,
-      priceCcl: null,
-    }
-    assert.equal(resolveCedearPctChange(cedear), 10)
-  })
-
-  it("returns null without previous close", async () => {
-    const { resolveCedearPctChange } = await import("../lib/cedears.ts")
-    const cedear = {
-      Cedears: "X",
-      Name: "X",
-      Market: "NYSE",
-      Ratio: "1",
-      TickerOriginal: "X",
-      yahooSymbol: null,
-      tags: [],
-      price: 110,
-      pctChange: null,
-      previousClose: null,
-      volume: null,
-      usPrice: null,
-      priceMep: null,
-      priceCcl: null,
-    }
-    assert.equal(resolveCedearPctChange(cedear), null)
+    assert.equal(tagLabelToThemeLower("Automotrices y EV"), "automotrices y EV")
   })
 })

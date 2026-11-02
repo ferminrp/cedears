@@ -17,7 +17,6 @@ function cedear(partial: Partial<Cedear> & Pick<Cedear, "Cedears">): Cedear {
     tags: [],
     price: null,
     pctChange: null,
-    previousClose: null,
     volume: null,
     usPrice: null,
     priceMep: null,
