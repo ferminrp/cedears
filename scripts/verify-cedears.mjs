@@ -313,6 +313,24 @@ const SMOKE_ROUTES = [
   { path: "/sitemap.xml", expectStatus: 200 },
 ]
 
+async function assertUnknownCategoryNotFound(baseUrl) {
+  const path = "/categoria/no-existe-xyz"
+  const res = await fetchUrl(`${baseUrl}${path}`)
+  const body = Buffer.isBuffer(res.body)
+    ? res.body.toString("utf8")
+    : String(res.body ?? "")
+  const notFoundPage =
+    res.status === 404 || body.includes("Página no encontrada")
+  assert.ok(
+    notFoundPage,
+    `unknown category slug must 404 or show not-found page (status=${res.status})`,
+  )
+  assert.ok(
+    !body.includes("Error al cargar los datos"),
+    "unknown category slug must not show data load error alert",
+  )
+}
+
 async function smoke(baseUrl, sampleTicker, artifactDir) {
   const results = []
   for (const route of SMOKE_ROUTES) {
@@ -346,6 +364,8 @@ async function smoke(baseUrl, sampleTicker, artifactDir) {
     JSON.stringify({ baseUrl, sampleTicker, results }, null, 2),
     "utf8",
   )
+
+  await assertUnknownCategoryNotFound(baseUrl)
 
   await smokeCanonicals(baseUrl, sampleTicker, artifactDir)
 }

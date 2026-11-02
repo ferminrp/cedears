@@ -21,6 +21,7 @@ import {
   categorySeoDescription,
   categorySeoTitle,
   CATEGORY_GUIDE_LINK,
+  categoryListingRobots,
   getCategoryDisplay,
   getSiblingCategorySlugs,
   siblingChipLabel,
@@ -67,16 +68,6 @@ function sampleTickers(cedears: Cedear[], limit = 5): string[] {
     .map((c) => c.Cedears)
 }
 
-function isNextNotFoundError(error: unknown): boolean {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "digest" in error &&
-    typeof (error as { digest: unknown }).digest === "string" &&
-    (error as { digest: string }).digest.includes("NEXT_NOT_FOUND")
-  )
-}
-
 export async function generateStaticParams() {
   const bases = await getCedearBases()
   return getUniqueTagSlugs(bases).map(({ slug }) => ({ label: slug }))
@@ -112,7 +103,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title,
     description,
-    robots: count === 0 ? { index: false, follow: true } : undefined,
+    robots: categoryListingRobots(count),
     alternates: { canonical },
     openGraph: buildPageOpenGraph({ title, description, url: canonical }),
   }
@@ -250,11 +241,40 @@ export default async function CategoryPage({ params }: PageProps) {
   const { label } = await params
   const canonicalSlug = canonicalCategorySlug(label)
 
-  let tag: string | null = null
-  let tags: string[] = []
-  let matchingTags: string[] = []
-  let baseCount = 0
-  let siblingSlugs: string[] = []
+  let bases: Awaited<ReturnType<typeof getCedearBases>>
+  try {
+    bases = await getCedearBases()
+  } catch {
+    return (
+      <>
+        <Alert variant="destructive">
+          <AlertTitle>Error al cargar los datos</AlertTitle>
+          <AlertDescription>
+            No se pudo obtener la lista de CEDEARs. Intentá recargar la página en unos
+            minutos.
+          </AlertDescription>
+        </Alert>
+        <SiteFooter>
+          <Link href="/" className={footerLinkClassName}>
+            Volver al listado completo
+          </Link>
+        </SiteFooter>
+      </>
+    )
+  }
+
+  const tags = getUniqueTags(bases)
+  const tag = findTagBySlug(tags, label)
+  if (!tag) notFound()
+
+  const matchingTags = findTagsBySlug(tags, label)
+  const baseCount = countMatchingBases(bases, matchingTags)
+  const categoryIndex = getCategoryIndex(bases)
+  const siblingSlugs = getSiblingCategorySlugs(
+    canonicalSlug,
+    categoryIndex.map((c) => ({ slug: c.slug, count: c.count })),
+  )
+
   let filtered: Cedear[] = []
   let fetchedAt: Date | null = null
   let showPreviousCloseLabel = false
@@ -262,23 +282,10 @@ export default async function CategoryPage({ params }: PageProps) {
   const dateLabelFallback = formatRatiosDataDate(new Date())
 
   try {
-    const bases = await getCedearBases()
-    tags = getUniqueTags(bases)
-    const foundTag = findTagBySlug(tags, label)
-    if (!foundTag) notFound()
-    tag = foundTag
-    matchingTags = findTagsBySlug(tags, label)
-    const matchingTagSet = new Set(matchingTags)
-    baseCount = countMatchingBases(bases, matchingTags)
-    const categoryIndex = getCategoryIndex(bases)
-    siblingSlugs = getSiblingCategorySlugs(
-      canonicalSlug,
-      categoryIndex.map((c) => ({ slug: c.slug, count: c.count })),
-    )
-
     fetchedAt = await tryGetCedearsLivePricesFetchedAt()
     const quoteTime = fetchedAt ?? new Date()
     showPreviousCloseLabel = !isBymaRegularSessionOpen(quoteTime)
+    const matchingTagSet = new Set(matchingTags)
     const cedears = await getCedears()
     filtered = cedears
       .filter((c) => c.tags.some((t) => matchingTagSet.has(t)))
@@ -306,8 +313,7 @@ export default async function CategoryPage({ params }: PageProps) {
         />
       )
     }
-  } catch (error) {
-    if (isNextNotFoundError(error)) throw error
+  } catch {
     tableContent = (
       <Alert variant="destructive">
         <AlertTitle>Error al cargar los datos</AlertTitle>
@@ -316,19 +322,6 @@ export default async function CategoryPage({ params }: PageProps) {
           minutos.
         </AlertDescription>
       </Alert>
-    )
-  }
-
-  if (!tag) {
-    return (
-      <>
-        {tableContent}
-        <SiteFooter>
-          <Link href="/" className={footerLinkClassName}>
-            Volver al listado completo
-          </Link>
-        </SiteFooter>
-      </>
     )
   }
 

@@ -109,6 +109,13 @@ export function categorySeoDescription(
   return `${count} CEDEARs de ${themeLower} con precio en pesos y ratio de conversión, actualizados al ${dateLabel}. Datos de cedears.com.`
 }
 
+/** Listing pages with zero matching CEDEARs are noindex but follow links. */
+export function categoryListingRobots(
+  count: number,
+): { index: false; follow: true } | undefined {
+  return count === 0 ? { index: false, follow: true } : undefined
+}
+
 const RATIO_FAQ_ANSWER =
   "El ratio indica cuántos CEDEARs equivalen a una acción del activo subyacente en el mercado de origen. Por ejemplo, un ratio 10:1 significa que diez CEDEARs representan una acción."
 
