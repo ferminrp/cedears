@@ -20,12 +20,14 @@ export const CATEGORY_TAG_SLUG_ALIASES: Readonly<
 > = {
   tecnologia: ["tecnologia", "tech"],
   "cripto-y-bitcoin": ["cripto-y-bitcoin", "cripto"],
+  salud: ["salud", "farma-y-biotecnologia"],
 }
 
 const PREFERRED_TAG_BY_CANONICAL_SLUG: Readonly<Record<string, string>> = {
   tecnologia: "Tecnología",
   "cripto-y-bitcoin": "Cripto & Bitcoin",
   "mineria-y-metales": "Minería & Metales",
+  salud: "Salud",
 }
 
 export function resolveCategorySlug(slug: string): string {

@@ -3,6 +3,7 @@ import { describe, it } from "node:test"
 import {
   CATEGORY_SLUG_REDIRECTS,
   canonicalCategorySlug,
+  LEGACY_CATEGORY_SLUGS,
 } from "../lib/category-redirects.ts"
 import { buildCedearTickerSet } from "../lib/cedear-ticker-set.ts"
 import {
@@ -33,6 +34,13 @@ describe("category redirects", () => {
     assert.equal(CATEGORY_SLUG_REDIRECTS.tech, "tecnologia")
     assert.equal(CATEGORY_SLUG_REDIRECTS.cripto, "cripto-y-bitcoin")
     assert.equal(CATEGORY_SLUG_REDIRECTS["farma-y-biotecnologia"], "salud")
+  })
+
+  it("legacy slugs are duplicates, not separate themes", () => {
+    assert.deepEqual(
+      [...LEGACY_CATEGORY_SLUGS].sort(),
+      ["cripto", "farma-y-biotecnologia", "tech"].sort(),
+    )
   })
 
   it("leaves canonical slugs unchanged", () => {
