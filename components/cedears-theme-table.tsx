@@ -299,14 +299,18 @@ export function CedearsThemeTable({
                 <TableHead
                   className={`hidden text-right md:table-cell md:min-w-[4.5rem] ${stickyHeadClassName}`}
                   aria-sort={ariaSortValue(sortKey, "pctChange", sortDir)}
+                  aria-label="Variación porcentual, cierre anterior"
                 >
-                  <span className="flex justify-end">
+                  <span className="flex flex-col items-end gap-0.5">
                     <SortButton
                       label="Var. %"
                       active={sortKey === "pctChange"}
                       direction={sortDir}
                       onClick={() => toggleSort("pctChange")}
                     />
+                    <span className="text-xs font-normal leading-none text-muted-foreground">
+                      cierre anterior
+                    </span>
                   </span>
                 </TableHead>
               </TableRow>

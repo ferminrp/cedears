@@ -1,4 +1,5 @@
 import type { CedearFaq } from "@/lib/cedear-faqs"
+import { resolveCategorySlug } from "@/lib/cedear-tags"
 import { formatRatiosDataDate } from "@/lib/ratios"
 
 /** Switch to /como-comprar-cedears when #76 merges (SPEC). */
@@ -384,20 +385,66 @@ export const CATEGORY_SIBLING_SLUGS: Partial<
   ],
 }
 
+export const SIBLING_CHIP_MIN = 6
+export const SIBLING_CHIP_MAX = 8
+
+function slugCountsByCanonical(
+  allSlugs: { slug: string; count: number }[],
+): Map<string, number> {
+  const byCanonical = new Map<string, number>()
+  for (const { slug, count } of allSlugs) {
+    const canonical = resolveCategorySlug(slug)
+    byCanonical.set(canonical, count)
+  }
+  return byCanonical
+}
+
+function isValidSiblingChip(
+  candidate: string,
+  canonical: string,
+  counts: Map<string, number>,
+): boolean {
+  const resolved = resolveCategorySlug(candidate)
+  if (resolved === canonical) return false
+  return (counts.get(resolved) ?? 0) > 0
+}
+
 export function getSiblingCategorySlugs(
   slug: string,
   allSlugs: { slug: string; count: number }[],
 ): string[] {
-  const curated = CATEGORY_SIBLING_SLUGS[slug as TopCategorySlug]
-  if (curated) {
-    const known = new Set(allSlugs.map((e) => e.slug))
-    return curated.filter((s) => known.has(s) && s !== slug).slice(0, 8)
+  const canonical = resolveCategorySlug(slug)
+  const counts = slugCountsByCanonical(allSlugs)
+  const picked = new Set<string>()
+  const result: string[] = []
+
+  const push = (raw: string) => {
+    const resolved = resolveCategorySlug(raw)
+    if (!isValidSiblingChip(resolved, canonical, counts) || picked.has(resolved)) {
+      return
+    }
+    picked.add(resolved)
+    result.push(resolved)
   }
-  return allSlugs
-    .filter((e) => e.slug !== slug)
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 8)
-    .map((e) => e.slug)
+
+  const curated = CATEGORY_SIBLING_SLUGS[canonical as TopCategorySlug]
+  const available = [...counts.entries()]
+    .filter(([s, c]) => s !== canonical && c > 0)
+    .sort((a, b) => b[1] - a[1])
+
+  if (curated) {
+    for (const entry of curated) {
+      if (result.length >= SIBLING_CHIP_MAX) break
+      push(entry)
+    }
+  }
+
+  for (const [s] of available) {
+    if (result.length >= SIBLING_CHIP_MAX) break
+    push(s)
+  }
+
+  return result.slice(0, SIBLING_CHIP_MAX)
 }
 
 export function siblingChipLabel(slug: string): string {
