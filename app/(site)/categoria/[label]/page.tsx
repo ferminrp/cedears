@@ -1,24 +1,48 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { CedearsList } from "@/components/cedears-list"
+import { CedearFaqs } from "@/components/cedear-faqs"
+import { CedearsThemeTable } from "@/components/cedears-theme-table"
 import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { canonicalCategorySlug } from "@/lib/category-redirects"
-import { absoluteCanonical } from "@/lib/canonical"
+import { Button } from "@/components/ui/button"
 import {
-  categoryDescription,
-  categoryPath,
-  categoryTitle,
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from "@/components/ui/empty"
+import { canonicalCategorySlug } from "@/lib/category-redirects"
+import {
+  buildCategoryFaqs,
+  buildCategoryIntro,
+  categoryPageH1,
+  categorySeoDescription,
+  categorySeoTitle,
+  CATEGORY_GUIDE_LINK,
+  getCategoryDisplay,
+  getSiblingCategorySlugs,
+  siblingChipLabel,
+} from "@/lib/category-content"
+import { absoluteCanonical } from "@/lib/canonical"
+import type { Cedear } from "@/lib/cedears"
+import {
   findTagBySlug,
   findTagsBySlug,
+  getCategoryIndex,
   getUniqueTags,
   getUniqueTagSlugs,
 } from "@/lib/cedear-tags"
-import { getCedearBases, getCedears } from "@/lib/get-cedears"
-import { getSiteUrl, buildPageOpenGraph } from "@/lib/site"
+import type { CedearFaq } from "@/lib/cedear-faqs"
+import {
+  getCedearBases,
+  getCedears,
+  getCedearsLivePricesFetchedAt,
+} from "@/lib/get-cedears"
+import { formatRatiosDataDate } from "@/lib/ratios"
+import { buildPageOpenGraph, getSiteUrl } from "@/lib/site"
 
-export const revalidate = 3600
+export const revalidate = 300
 
 type PageProps = {
   params: Promise<{ label: string }>
@@ -30,6 +54,13 @@ function countMatchingBases(
 ) {
   const tagSet = new Set(matchingTags)
   return bases.filter((c) => c.tags.some((t) => tagSet.has(t))).length
+}
+
+function sampleTickers(cedears: Cedear[], limit = 5): string[] {
+  return [...cedears]
+    .sort((a, b) => a.Cedears.localeCompare(b.Cedears))
+    .slice(0, limit)
+    .map((c) => c.Cedears)
 }
 
 export async function generateStaticParams() {
@@ -52,58 +83,124 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const matchingTags = findTagsBySlug(tags, label)
   const count = countMatchingBases(bases, matchingTags)
-  const title = categoryTitle(tag)
-  const description = categoryDescription(tag, count)
-  const canonical = absoluteCanonical(
-    `/categoria/${canonicalCategorySlug(label)}`,
-  )
+  const canonicalSlug = canonicalCategorySlug(label)
+  const fetchedAt = await getCedearsLivePricesFetchedAt()
+  const title = categorySeoTitle(canonicalSlug)
+  const description = categorySeoDescription(canonicalSlug, count, fetchedAt)
+  const canonical = absoluteCanonical(`/categoria/${canonicalSlug}`)
 
   return {
     title,
     description,
-    keywords: [
-      `cedears ${tag}`,
-      `cedears de ${tag.toLowerCase()}`,
-      "cedears argentina",
-      "listado cedears",
-    ],
+    robots: count === 0 ? { index: false, follow: true } : undefined,
     alternates: { canonical },
     openGraph: buildPageOpenGraph({ title, description, url: canonical }),
   }
 }
 
+function CategoryLead({ slug, intro }: { slug: string; intro: string }) {
+  const parts = intro.split(CATEGORY_GUIDE_LINK.linkText)
+  if (parts.length < 2) {
+    return <p className="max-w-[60ch] text-muted-foreground">{intro}</p>
+  }
+  return (
+    <p className="max-w-[60ch] text-muted-foreground">
+      {parts[0]}
+      <Link
+        href={CATEGORY_GUIDE_LINK.href}
+        className="underline underline-offset-4 hover:text-foreground"
+      >
+        {CATEGORY_GUIDE_LINK.linkText}
+      </Link>
+      {parts[1]}
+    </p>
+  )
+}
+
 function CategoryJsonLd({
-  tag,
+  slug,
+  pageName,
   count,
+  cedears,
+  faqs,
 }: {
-  tag: string
+  slug: string
+  pageName: string
   count: number
+  cedears: Cedear[]
+  faqs: CedearFaq[]
 }) {
   const siteUrl = getSiteUrl()
-  const pageUrl = `${siteUrl}${categoryPath(tag)}`
-  const title = categoryTitle(tag)
-  const description = categoryDescription(tag, count)
+  const pageUrl = `${siteUrl}/categoria/${slug}`
+  const breadcrumbName = getCategoryDisplay(slug).h1Theme
+  const sorted = [...cedears].sort((a, b) => a.Cedears.localeCompare(b.Cedears))
+
+  const graph: Record<string, unknown>[] = [
+    {
+      "@type": "WebPage",
+      "@id": `${pageUrl}#webpage`,
+      url: pageUrl,
+      name: pageName,
+      inLanguage: "es-AR",
+      isPartOf: { "@id": `${siteUrl}/#website` },
+      breadcrumb: { "@id": `${pageUrl}#breadcrumb` },
+      mainEntity: { "@id": `${pageUrl}#list` },
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": `${pageUrl}#breadcrumb`,
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Inicio",
+          item: `${siteUrl}/`,
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Categorías",
+          item: `${siteUrl}/categorias`,
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: breadcrumbName.charAt(0).toUpperCase() + breadcrumbName.slice(1),
+        },
+      ],
+    },
+    {
+      "@type": "ItemList",
+      "@id": `${pageUrl}#list`,
+      name: pageName,
+      numberOfItems: count,
+      itemListOrder: "https://schema.org/ItemListOrderAscending",
+      itemListElement: sorted.map((c, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        url: `${siteUrl}/cedear/${c.Cedears}`,
+        name: `${c.Name} (${c.Cedears})`,
+      })),
+    },
+  ]
+
+  if (faqs.length > 0) {
+    graph.push({
+      "@type": "FAQPage",
+      mainEntity: faqs.map((faq) => ({
+        "@type": "Question",
+        name: faq.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: faq.answer,
+        },
+      })),
+    })
+  }
 
   const jsonLd = {
     "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "WebPage",
-        "@id": `${pageUrl}#webpage`,
-        url: pageUrl,
-        name: title,
-        description,
-        inLanguage: "es-AR",
-        isPartOf: { "@id": `${siteUrl}/#website` },
-      },
-      {
-        "@type": "ItemList",
-        name: title,
-        description,
-        inLanguage: "es-AR",
-        numberOfItems: count,
-      },
-    ],
+    "@graph": graph,
   }
 
   return (
@@ -116,6 +213,7 @@ function CategoryJsonLd({
 
 export default async function CategoryPage({ params }: PageProps) {
   const { label } = await params
+  const canonicalSlug = canonicalCategorySlug(label)
   const bases = await getCedearBases()
   const tags = getUniqueTags(bases)
   const tag = findTagBySlug(tags, label)
@@ -126,19 +224,52 @@ export default async function CategoryPage({ params }: PageProps) {
 
   const matchingTags = findTagsBySlug(tags, label)
   const matchingTagSet = new Set(matchingTags)
-  const title = categoryTitle(tag)
+  const h1 = categoryPageH1(canonicalSlug)
+  const themeSectionTitle = `Todos los CEDEARs de ${getCategoryDisplay(canonicalSlug).themeLower}`
   const baseCount = countMatchingBases(bases, matchingTags)
+  const fetchedAt = await getCedearsLivePricesFetchedAt()
+  const dateLabel = fetchedAt
+    ? formatRatiosDataDate(fetchedAt)
+    : formatRatiosDataDate(new Date())
 
-  let content
+  const categoryIndex = getCategoryIndex(bases)
+  const siblingSlugs = getSiblingCategorySlugs(
+    canonicalSlug,
+    categoryIndex.map((c) => ({ slug: c.slug, count: c.count })),
+  )
+
+  let filtered: Cedear[] = []
+  let tableContent
 
   try {
     const cedears = await getCedears()
-    const filtered = cedears.filter((c) =>
-      c.tags.some((t) => matchingTagSet.has(t)),
-    )
-    content = <CedearsList cedears={filtered} />
+    filtered = cedears
+      .filter((c) => c.tags.some((t) => matchingTagSet.has(t)))
+      .sort((a, b) => a.Cedears.localeCompare(b.Cedears))
+
+    if (filtered.length === 0) {
+      tableContent = (
+        <Empty className="rounded-[var(--radius-m)] border border-border">
+          <EmptyHeader>
+            <EmptyTitle>Todavía no hay CEDEARs en esta categoría</EmptyTitle>
+            <EmptyDescription>
+              <Link href="/categorias" className="underline underline-offset-4">
+                Ver todas las categorías
+              </Link>
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      )
+    } else {
+      tableContent = (
+        <CedearsThemeTable
+          cedears={filtered}
+          hideUnderlying={canonicalSlug === "etfs"}
+        />
+      )
+    }
   } catch {
-    content = (
+    tableContent = (
       <Alert variant="destructive">
         <AlertTitle>Error al cargar los datos</AlertTitle>
         <AlertDescription>
@@ -149,37 +280,110 @@ export default async function CategoryPage({ params }: PageProps) {
     )
   }
 
+  const faqContext = {
+    count: filtered.length || baseCount,
+    sampleTickers: sampleTickers(filtered.length ? filtered : [], 5),
+    slug: canonicalSlug,
+  }
+  const intro = buildCategoryIntro(canonicalSlug, faqContext)
+  const faqs = buildCategoryFaqs(canonicalSlug, faqContext)
+  const breadcrumbLabel =
+    getCategoryDisplay(canonicalSlug).h1Theme.charAt(0).toUpperCase() +
+    getCategoryDisplay(canonicalSlug).h1Theme.slice(1)
+
   return (
     <>
-      <CategoryJsonLd tag={tag} count={baseCount} />
+      <CategoryJsonLd
+        slug={canonicalSlug}
+        pageName={h1}
+        count={filtered.length || baseCount}
+        cedears={filtered}
+        faqs={faqs}
+      />
       <header className="flex flex-col gap-4">
-        <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
-          <ol className="flex flex-wrap items-center gap-1.5">
+        <nav aria-label="Migas de pan" className="text-xs text-muted-foreground">
+          <ol className="flex flex-wrap items-center gap-1">
             <li>
-              <Link href="/" className="hover:text-foreground">
-                Listado
+              <Link href="/" className="inline-flex min-h-11 items-center hover:text-foreground">
+                Inicio
               </Link>
             </li>
-            <li aria-hidden>/</li>
+            <li aria-hidden className="px-0.5">
+              /
+            </li>
             <li>
-              <Link href="/categorias" className="hover:text-foreground">
+              <Link
+                href="/categorias"
+                className="inline-flex min-h-11 items-center hover:text-foreground"
+              >
                 Categorías
               </Link>
             </li>
-            <li aria-hidden>/</li>
-            <li className="font-medium text-foreground">{title}</li>
+            <li aria-hidden className="px-0.5">
+              /
+            </li>
+            <li>
+              <span
+                className="inline-flex min-h-11 items-center font-medium text-foreground"
+                aria-current="page"
+              >
+                {breadcrumbLabel}
+              </span>
+            </li>
           </ol>
         </nav>
         <h1 className="text-balance text-[length:var(--size-xl)] leading-[var(--line-xl)] font-semibold tracking-[var(--letter-spacing-xl)] md:text-[length:var(--size-xxl)] md:leading-[var(--line-xxl)]">
-          {title}
+          {h1}
         </h1>
-        <p className="text-muted-foreground">
-          Listado de CEDEARs etiquetados como {tag}, con precios, ratios y datos
-          actualizados en Argentina.
+        <CategoryLead slug={canonicalSlug} intro={intro} />
+        <p className="text-sm text-muted-foreground">
+          {baseCount} CEDEARs · Precios actualizados el {dateLabel}
         </p>
       </header>
 
-      {content}
+      <section className="flex flex-col gap-3" aria-labelledby="category-table-heading">
+        <h2
+          id="category-table-heading"
+          className="text-[length:var(--size-m)] leading-[var(--line-m)] font-semibold tracking-[var(--letter-spacing-m)]"
+        >
+          {themeSectionTitle}
+        </h2>
+        {tableContent}
+      </section>
+
+      {siblingSlugs.length > 0 ? (
+        <section className="flex flex-col gap-3" aria-labelledby="sibling-categories-heading">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h2
+              id="sibling-categories-heading"
+              className="text-[length:var(--size-m)] leading-[var(--line-m)] font-semibold tracking-[var(--letter-spacing-m)]"
+            >
+              Otras categorías
+            </h2>
+            <Link
+              href="/categorias"
+              className="inline-flex min-h-11 items-center text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+            >
+              Ver todas
+            </Link>
+          </div>
+          <ul className="flex flex-wrap gap-2">
+            {siblingSlugs.map((s) => (
+              <li key={s}>
+                <Button
+                  variant="outline"
+                  className="min-h-11 touch-manipulation rounded-[var(--radius-m)]"
+                  asChild
+                >
+                  <Link href={`/categoria/${s}`}>{siblingChipLabel(s)}</Link>
+                </Button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      {faqs.length > 0 ? <CedearFaqs faqs={faqs} /> : null}
 
       <SiteFooter>
         <Link href="/" className={footerLinkClassName}>
