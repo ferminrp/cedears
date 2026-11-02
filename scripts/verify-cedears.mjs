@@ -313,6 +313,24 @@ const SMOKE_ROUTES = [
   { path: "/sitemap.xml", expectStatus: 200 },
 ]
 
+async function assertUnknownCategoryNotFound(baseUrl) {
+  const path = "/categoria/no-existe-xyz"
+  const res = await fetchUrl(`${baseUrl}${path}`)
+  const body = Buffer.isBuffer(res.body)
+    ? res.body.toString("utf8")
+    : String(res.body ?? "")
+  const notFoundPage =
+    res.status === 404 || body.includes("Página no encontrada")
+  assert.ok(
+    notFoundPage,
+    `unknown category slug must 404 or show not-found page (status=${res.status})`,
+  )
+  assert.ok(
+    !body.includes("Error al cargar los datos"),
+    "unknown category slug must not show data load error alert",
+  )
+}
+
 async function smoke(baseUrl, sampleTicker, artifactDir) {
   const results = []
   for (const route of SMOKE_ROUTES) {
@@ -347,6 +365,8 @@ async function smoke(baseUrl, sampleTicker, artifactDir) {
     "utf8",
   )
 
+  await assertUnknownCategoryNotFound(baseUrl)
+
   await smokeCanonicals(baseUrl, sampleTicker, artifactDir)
 }
 
@@ -359,6 +379,98 @@ async function assertNoHorizontalOverflow(page, label) {
     overflow,
     false,
     `${label}: horizontal overflow (scrollWidth > clientWidth)`,
+  )
+}
+
+async function assertCategoryThemeTableGeometry(baseUrl, page, viewportLabel) {
+  const width = viewportLabel === "1440" ? 1440 : 390
+  await page.setViewportSize({
+    width,
+    height: viewportLabel === "1440" ? 900 : 844,
+  })
+  await page.goto(`${baseUrl}/categoria/tecnologia`, {
+    waitUntil: "networkidle",
+    timeout: 120_000,
+  })
+  await page.waitForSelector("#category-theme-search", { timeout: 120_000 })
+
+  const atTop = await page.evaluate(() => {
+    const wrap = document.querySelector("[data-category-theme-table-wrap]")
+    const thead = document.querySelector("[data-category-theme-table] thead")
+    const firstRow = document.querySelector(
+      "[data-category-theme-table] tbody tr:first-child",
+    )
+    const wrapRect = wrap?.getBoundingClientRect()
+    const theadRect = thead?.getBoundingClientRect()
+    const firstRect = firstRow?.getBoundingClientRect()
+    const gapAboveThead =
+      wrapRect && theadRect ? theadRect.top - wrapRect.top : Number.NaN
+    const headerAboveFirst =
+      theadRect && firstRect
+        ? theadRect.bottom <= firstRect.top + 1
+        : false
+    const wrapScroll =
+      wrap instanceof HTMLElement
+        ? wrap.scrollWidth <= wrap.clientWidth + 1
+        : true
+    return {
+      gapAboveThead,
+      headerAboveFirst,
+      hasTable: Boolean(wrap && thead),
+      wrapScroll,
+    }
+  })
+
+  assert.equal(atTop.hasTable, true, `${viewportLabel}: category table missing`)
+  assert.equal(
+    atTop.wrapScroll,
+    true,
+    `${viewportLabel}: category table wrap must not scroll horizontally`,
+  )
+  assert.ok(
+    atTop.gapAboveThead <= 2,
+    `${viewportLabel}: category gap above thead (${atTop.gapAboveThead}px)`,
+  )
+  assert.equal(
+    atTop.headerAboveFirst,
+    true,
+    `${viewportLabel}: category thead must sit above first tbody row at scroll 0`,
+  )
+
+  await page.evaluate(() => window.scrollTo(0, 1200))
+  await page.waitForTimeout(200)
+
+  const isDesktop = viewportLabel === "1440"
+  const scrolled = await page.evaluate((desktop) => {
+    const search = document.getElementById("category-theme-search-sticky")
+    const th = document.querySelector(
+      "[data-category-theme-table] thead th:not(.hidden)",
+    )
+    const searchRect = search?.getBoundingClientRect()
+    const thRect = th?.getBoundingClientRect()
+    if (desktop) {
+      return {
+        ok: thRect ? thRect.top <= 2 : false,
+        thTop: thRect?.top,
+        mode: "desktop",
+      }
+    }
+    const stuckBelowSearch =
+      searchRect && thRect
+        ? Math.abs(thRect.top - searchRect.bottom) <= 2
+        : false
+    return {
+      ok: stuckBelowSearch,
+      thTop: thRect?.top,
+      searchBottom: searchRect?.bottom,
+      mode: "mobile",
+    }
+  }, isDesktop)
+
+  assert.equal(
+    scrolled.ok,
+    true,
+    `${viewportLabel}: category sticky header failed (mode=${scrolled.mode}, th.top=${scrolled.thTop}, search.bottom=${scrolled.searchBottom ?? "n/a"})`,
   )
 }
 
@@ -802,6 +914,47 @@ async function captureScreenshots(baseUrl, artifactDir, setBrowser) {
     })
     await assertNoHorizontalOverflow(ratios375, "ratios 375px")
     await assertRatiosPageGeometry(baseUrl, ratios375, "375")
+
+    const category390 = await browser.newPage({
+      viewport: { width: 390, height: 844 },
+    })
+    await category390.goto(`${baseUrl}/categoria/tecnologia`, {
+      waitUntil: "networkidle",
+      timeout: 120_000,
+    })
+    await assertNoHorizontalOverflow(category390, "categoria 390px")
+    await assertCategoryThemeTableGeometry(baseUrl, category390, "390")
+    await category390.evaluate(() => window.scrollTo(0, 0))
+    await category390.screenshot({
+      path: join(artifactDir, "categoria-tecnologia-390.png"),
+      fullPage: false,
+    })
+    await category390.evaluate(() => window.scrollTo(0, 1200))
+    await category390.waitForTimeout(200)
+    await category390.screenshot({
+      path: join(artifactDir, "categoria-tecnologia-390-scrolled.png"),
+      fullPage: false,
+    })
+
+    const category1440 = await browser.newPage({
+      viewport: { width: 1440, height: 900 },
+    })
+    await category1440.goto(`${baseUrl}/categoria/tecnologia`, {
+      waitUntil: "networkidle",
+      timeout: 120_000,
+    })
+    await assertNoHorizontalOverflow(category1440, "categoria 1440px")
+    await assertCategoryThemeTableGeometry(baseUrl, category1440, "1440")
+    await category1440.screenshot({
+      path: join(artifactDir, "categoria-tecnologia-1440.png"),
+      fullPage: false,
+    })
+    await category1440.evaluate(() => window.scrollTo(0, 1200))
+    await category1440.waitForTimeout(200)
+    await category1440.screenshot({
+      path: join(artifactDir, "categoria-tecnologia-1440-scrolled.png"),
+      fullPage: false,
+    })
 
     await captureDividendosScreenshots(baseUrl, artifactDir, browser)
   } finally {

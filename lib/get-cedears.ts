@@ -1,6 +1,7 @@
 import { cache } from "react"
 import { unstable_cache } from "next/cache"
 import { type Cedear } from "@/lib/cedears"
+import { tryLoad } from "@/lib/try-load"
 
 export type CedearBase = {
   Cedears: string
@@ -16,7 +17,7 @@ export type CedearBase = {
 type LiveQuote = {
   symbol: string
   c: number
-  pct_change: number
+  pct_change: number | null
   v: number
 }
 
@@ -87,15 +88,15 @@ function parseLiveQuote(value: unknown): LiveQuote | null {
   if (typeof value.c !== "number" || !Number.isFinite(value.c)) {
     return null
   }
-  if (typeof value.pct_change !== "number" || !Number.isFinite(value.pct_change)) {
-    return null
-  }
+  const pctRaw = value.pct_change
+  const pct_change =
+    typeof pctRaw === "number" && Number.isFinite(pctRaw) ? pctRaw : null
   const volume =
     typeof value.v === "number" && Number.isFinite(value.v) ? value.v : 0
   return {
     symbol: value.symbol,
     c: value.c,
-    pct_change: value.pct_change,
+    pct_change,
     v: volume,
   }
 }
@@ -151,11 +152,13 @@ function mergeQuotes(
   return cedears.map((c) => {
     const ticker = normalizeSymbol(c.Cedears)
     const argQuote = argQuotes?.get(ticker)
+    const price = argQuote?.c ?? null
+    const pctChange = argQuote?.pct_change ?? null
 
     return {
       ...c,
-      price: argQuote?.c ?? null,
-      pctChange: argQuote?.pct_change ?? null,
+      price,
+      pctChange,
       volume: argQuote?.v ?? null,
       usPrice: quotePrice(usaQuotes, c.TickerOriginal),
       priceMep: quotePrice(argQuotes, `${ticker}D`),
@@ -321,6 +324,10 @@ export async function getCedearsLivePricesFetchedAt(): Promise<Date | null> {
   const iso = (await getCedearsPayloadCached()).livePricesFetchedAtIso
   const parsed = new Date(iso)
   return Number.isFinite(parsed.getTime()) ? parsed : null
+}
+
+export async function tryGetCedearsLivePricesFetchedAt(): Promise<Date | null> {
+  return tryLoad(getCedearsLivePricesFetchedAt)
 }
 
 export const getCedears = cache(async (): Promise<Cedear[]> => {
