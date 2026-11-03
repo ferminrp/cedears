@@ -7,6 +7,21 @@ import { useNavPending } from "@/components/nav-pending"
 import { cn } from "@/lib/utils"
 
 const SHOW_DELAY_MS = 150
+const NAV_IDLE_POLL_MS = 100
+
+const vinextClientNavStateKey = Symbol.for("vinext.clientNavigationState")
+
+type VinextClientNavState = {
+  navigationSnapshotActiveCount: number
+  pendingPathname: string | null
+}
+
+function isClientNavigationInProgress() {
+  if (typeof window === "undefined") return false
+  const state = (window as unknown as { [k: symbol]: VinextClientNavState | undefined })[vinextClientNavStateKey]
+  if (!state) return false
+  return state.navigationSnapshotActiveCount > 0 || state.pendingPathname !== null
+}
 
 export function NavigationProgress() {
   const pathname = usePathname() ?? "/"
@@ -30,7 +45,10 @@ export function NavigationProgress() {
     const onClick = (event: MouseEvent) => {
       if (!isAnchorNav(event)) return
       if (timerRef.current !== null) window.clearTimeout(timerRef.current)
-      timerRef.current = window.setTimeout(() => setVisible(true), SHOW_DELAY_MS)
+      timerRef.current = window.setTimeout(() => {
+        timerRef.current = null
+        setVisible(true)
+      }, SHOW_DELAY_MS)
     }
     document.addEventListener("click", onClick, true)
     return () => document.removeEventListener("click", onClick, true)
@@ -40,6 +58,16 @@ export function NavigationProgress() {
     if (pendingHref || timerRef.current !== null) return
     setVisible(false)
   }, [pendingHref])
+
+  useEffect(() => {
+    if (!visible) return
+    const sync = () => {
+      if (!isClientNavigationInProgress()) setVisible(false)
+    }
+    sync()
+    const id = window.setInterval(sync, NAV_IDLE_POLL_MS)
+    return () => window.clearInterval(id)
+  }, [visible])
 
   useEffect(() => {
     if (timerRef.current !== null) window.clearTimeout(timerRef.current)
