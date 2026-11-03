@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next"
-import { categoryPath, getUniqueTagSlugs } from "@/lib/cedear-tags"
+import { categoryPath, findTagBySlug, getUniqueTagSlugs, getUniqueTags } from "@/lib/cedear-tags"
 import { NON_CANONICAL_CATEGORY_SLUGS } from "@/lib/category-redirects"
 import { getCedearBases } from "@/lib/get-cedears"
 import {
@@ -110,6 +110,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const categoryEntries = getUniqueTagSlugs(bases)
     .filter(({ slug }) => !NON_CANONICAL_CATEGORY_SLUGS.has(slug))
+    .filter(({ slug }) => {
+      const tags = getUniqueTags(bases)
+      return findTagBySlug(tags, slug) !== null
+    })
     .map(({ tag }) => ({
       url: `${siteUrl}${categoryPath(tag)}`,
       lastModified: categoryLastModified(bases, tag),
