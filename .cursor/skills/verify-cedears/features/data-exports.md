@@ -7,6 +7,7 @@ Machine-readable CEDEAR data is exposed for agents and spreadsheets without usin
 - `export-csv` — `/cedears.csv` downloadable dataset.
 - `export-md` — `/cedears.md` markdown table.
 - `export-json` — `/cedears.json` base metadata array.
+- `export-dividendos-csv` — `/dividendos.csv` dividend calendar export (see [dividendos.md](./dividendos.md)).
 - `sitemap` — `/sitemap.xml` lists canonical URLs with per-entry `<lastmod>` (data feed, git mtime, or route helpers in `lib/sitemap-lastmod`).
 
 ## How to get to it (user POV)

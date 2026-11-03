@@ -1,12 +1,13 @@
 # CEDEAR detail
 
-Each CEDEAR has a detail page with breadcrumb navigation, SEO title and JSON-LD (WebPage, BreadcrumbList, FAQ), ARS/US/MEP/CCL pricing sections, historical chart, company profile, similar CEDEARs in the same category, news, and FAQs.
+Each CEDEAR has a detail page with breadcrumb navigation, SEO title and JSON-LD (WebPage, BreadcrumbList, FAQ), ARS/US/MEP/CCL pricing sections, historical chart, company profile, optional underlying dividend summary with link to `/dividendos`, similar CEDEARs in the same category, news, and FAQs.
 
 ## Sub-features
 
 - `detail-route` — `/cedear/[ticker]` returns 200 for a known ticker; unknown tickers 404.
 - `detail-breadcrumb` — visible trail Listado → [categoría] → ticker (`nav` `aria-label="Breadcrumb"`).
-- `detail-seo` — document `<title>` from `buildCedearDetailTitle`; `rel=canonical` to production `/cedear/{ticker}`.
+- `detail-seo` — document `<title>` from `buildCedearDetailTitle(cedear, paysDividends)` where `paysDividends` comes from `getUnderlyingPaysDividends` (metadata-only fetch); `rel=canonical` to production `/cedear/{ticker}`.
+- `detail-dividendos` — sección **Dividendos del subyacente** cuando Yahoo reporta pagos; enlace **Ver próximos dividendos** a `/dividendos`.
 - `detail-sections` — price sections and chart render for a liquid ticker.
 - `detail-similares` — **CEDEARs similares** block when the ticker has a primary category tag.
 - `detail-nav` — user can return to the list via breadcrumb or footer link.
