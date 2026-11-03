@@ -281,12 +281,13 @@ export default async function CategoryPage({ params }: PageProps) {
   let tableContent: ReactNode = null
   const dateLabelFallback = formatRatiosDataDate(new Date())
 
+  const fetchedAtPromise = tryGetCedearsLivePricesFetchedAt()
   try {
-    fetchedAt = await tryGetCedearsLivePricesFetchedAt()
+    const cedears = await getCedears()
+    fetchedAt = await fetchedAtPromise
     const quoteTime = fetchedAt ?? new Date()
     showPreviousCloseLabel = !isBymaRegularSessionOpen(quoteTime)
     const matchingTagSet = new Set(matchingTags)
-    const cedears = await getCedears()
     filtered = cedears
       .filter((c) => c.tags.some((t) => matchingTagSet.has(t)))
       .sort((a, b) => a.Cedears.localeCompare(b.Cedears))
@@ -314,6 +315,7 @@ export default async function CategoryPage({ params }: PageProps) {
       )
     }
   } catch {
+    fetchedAt = await fetchedAtPromise
     tableContent = (
       <Alert variant="destructive">
         <AlertTitle>Error al cargar los datos</AlertTitle>
