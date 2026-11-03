@@ -186,9 +186,19 @@ function CedearJsonLd({
   )
 }
 
+function normalizeCedearTicker(ticker: string): string {
+  return ticker.trim().toUpperCase()
+}
+
 export default async function CedearPage({ params }: PageProps) {
   const { ticker } = await params
-  const cedear = await getCedearByTicker(ticker)
+  const normalized = normalizeCedearTicker(ticker)
+  const cedearsPromise = getCedears()
+  const historyPromise = getCedearHistorical(normalized)
+
+  const cedears = await cedearsPromise
+  const cedear =
+    cedears.find((c) => normalizeCedearTicker(c.Cedears) === normalized) ?? null
 
   if (!cedear) {
     notFound()
@@ -196,14 +206,13 @@ export default async function CedearPage({ params }: PageProps) {
 
   const primaryTag = getPrimaryCedearTag(cedear)
 
-  const [history, faqs, profile, news, underlyingDividends, allCedears] =
+  const [history, faqs, profile, news, underlyingDividends] =
     await Promise.all([
-      getCedearHistorical(cedear.Cedears),
+      historyPromise,
       Promise.resolve(buildCedearFaqs(cedear)),
       getUnderlyingProfile(cedear.TickerOriginal),
       getCompanyNews(cedear.TickerOriginal),
       getUnderlyingDividends(cedearYahooSymbol(cedear)),
-      getCedears(),
     ])
 
   const paysDividends =
@@ -213,7 +222,7 @@ export default async function CedearPage({ params }: PageProps) {
   const referenceDateIso = formatDateInEastern(new Date())
   const pageTitle = buildCedearDetailTitle(cedear, paysDividends)
   const empresaHeading = cedearCompanyLabel(cedear)
-  const similarCedears = getSimilarCedears(cedear, allCedears)
+  const similarCedears = getSimilarCedears(cedear, cedears)
 
   return (
     <>
