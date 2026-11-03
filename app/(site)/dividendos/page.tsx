@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import { connection } from "next/server"
 import { DividendsTable } from "@/components/dividends-table"
 import { CedearFaqs } from "@/components/cedear-faqs"
 import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
@@ -124,6 +125,8 @@ export default async function DividendosPage({ searchParams }: PageProps) {
 
   let tableSection
   if (data.loadFailed) {
+    // Opt this render out of ISR so the error page is never cached.
+    await connection()
     tableSection = (
       <Empty className="rounded-[var(--radius-m)] border border-border">
         <EmptyHeader>

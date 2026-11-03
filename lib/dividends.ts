@@ -1,4 +1,5 @@
 import { cedearYahooSymbol } from "@/lib/cedear-yahoo"
+import { cacheDividendsTable } from "@/lib/dividends-cache"
 import { formatDateInEastern } from "@/lib/dividend-display"
 import {
   type CedearDividendRow,
@@ -8,7 +9,6 @@ import {
 } from "@/lib/dividends-shared"
 import { getCedears } from "@/lib/get-cedears"
 import { getUnderlyingDividends } from "@/lib/underlying-dividends"
-import { unstable_cache } from "next/cache"
 
 export type { CedearDividendRow, DividendsTableData } from "@/lib/dividends-shared"
 export {
@@ -126,8 +126,9 @@ export async function getDividendsTableDataUncached(): Promise<DividendsTableDat
   return { rows, asOfDate, loadFailed: loadFailed && rows.length === 0 }
 }
 
-export const getDividendsTableData = unstable_cache(
+// v1 holds a cached failure in prod KV; the new key starts clean.
+export const getDividendsTableData = cacheDividendsTable(
   getDividendsTableDataUncached,
-  ["dividends-table-v1"],
-  { revalidate: 86400 },
+  ["dividends-table-v2"],
+  86400,
 )
