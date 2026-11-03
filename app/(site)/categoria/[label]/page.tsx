@@ -1,9 +1,7 @@
 import type { Metadata } from "next"
-import { Suspense } from "react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { CedearFaqs } from "@/components/cedear-faqs"
-import { CategoryTableFallback } from "@/components/category-table-fallback"
 import { CategoryTableSection } from "@/components/category-table-section"
 import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -348,12 +346,10 @@ export default async function CategoryPage({ params }: PageProps) {
         >
           {themeSectionTitle}
         </h2>
-        <Suspense fallback={<CategoryTableFallback rowCount={basesInCategory.length || baseCount} />}>
-          <CategoryTableSection
-            matchingTags={matchingTags}
-            canonicalSlug={canonicalSlug}
-          />
-        </Suspense>
+        <CategoryTableSection
+          matchingTags={matchingTags}
+          canonicalSlug={canonicalSlug}
+        />
       </section>
 
       {siblingSlugs.length > 0 ? (
