@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useEffect, useState } from "react"
+import { Suspense, useEffect, useRef, useState } from "react"
 import { usePathname } from "next/navigation"
 
 import { NavigationProgress } from "@/components/navigation-progress"
@@ -14,6 +14,8 @@ export function SiteShell({
 }) {
   const pathname = usePathname() ?? "/"
   const [pendingHref, setPendingHref] = useState<string | null>(null)
+  const isInitialPathname = useRef(true)
+  const restoreFromHistory = useRef(false)
 
   useEffect(() => {
     if (!pendingHref) return
@@ -29,6 +31,23 @@ export function SiteShell({
   }, [pathname, pendingHref])
 
   useEffect(() => {
+    const onPopState = () => {
+      restoreFromHistory.current = true
+    }
+    window.addEventListener("popstate", onPopState)
+    return () => window.removeEventListener("popstate", onPopState)
+  }, [])
+
+  useEffect(() => {
+    if (isInitialPathname.current) {
+      isInitialPathname.current = false
+      return
+    }
+    if (restoreFromHistory.current) {
+      restoreFromHistory.current = false
+      return
+    }
+
     window.scrollTo({
       top: 0,
       left: 0,
