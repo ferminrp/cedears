@@ -5,7 +5,7 @@ export function CedearFaqs({
   faqs,
   headingClassName,
   embedded = false,
-  sectionId = "cedear-faqs-heading",
+  sectionId = "cedear-faqs",
   showHeading = true,
 }: {
   faqs: CedearFaq[]
