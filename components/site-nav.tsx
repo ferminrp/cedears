@@ -73,6 +73,7 @@ function NavLink({
   return (
     <Link
       href={href}
+      prefetch={true}
       aria-current={isActive ? "page" : undefined}
       aria-busy={isPendingTarget || undefined}
       onNavigate={() => {

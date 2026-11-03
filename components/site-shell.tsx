@@ -4,7 +4,6 @@ import { Suspense, useEffect, useState } from "react"
 import { usePathname } from "next/navigation"
 
 import { SiteNav } from "@/components/site-nav"
-import { SiteLoading } from "@/components/site-loading"
 import { NavPendingProvider } from "@/components/nav-pending"
 
 export function SiteShell({
@@ -25,7 +24,6 @@ export function SiteShell({
 
     if (!matches) return
 
-    // Path committed; hand off to Suspense for any remaining RSC stream.
     setPendingHref(null)
   }, [pathname, pendingHref])
 
@@ -35,11 +33,8 @@ export function SiteShell({
       setPendingHref={setPendingHref}
     >
       <SiteNav />
-      {pendingHref ? (
-        <SiteLoading />
-      ) : (
-        <Suspense fallback={<SiteLoading />}>{children}</Suspense>
-      )}
+      {/* Keep the current page visible while RSC loads; nav links show pending state. */}
+      <Suspense fallback={null}>{children}</Suspense>
     </NavPendingProvider>
   )
 }
