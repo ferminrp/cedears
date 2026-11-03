@@ -17,8 +17,16 @@ export function CedearFaqs({
 }) {
   const headingElementId = `${sectionId}-heading`
 
+  // Without its own heading the caller's <section aria-labelledby> already names
+  // this region; a nested labelled section would duplicate the landmark.
+  const Wrapper = showHeading ? "section" : "div"
+
   return (
-    <section aria-labelledby={headingElementId} id={sectionId} className="space-y-4">
+    <Wrapper
+      aria-labelledby={showHeading ? headingElementId : undefined}
+      id={sectionId}
+      className="space-y-4"
+    >
       {showHeading ? (
       <h2
         id={headingElementId}
@@ -56,6 +64,6 @@ export function CedearFaqs({
           </details>
         ))}
       </div>
-    </section>
+    </Wrapper>
   )
 }
