@@ -194,7 +194,7 @@ export default async function DividendosPage() {
 
       <p className="mt-10 text-sm text-muted-foreground">
         Ver también:{" "}
-        <Link href="/ratios" className="underline underline-offset-4">
+        <Link href="/ratios" prefetch={true} className="underline underline-offset-4">
           Ratios de CEDEARs
         </Link>
         .
