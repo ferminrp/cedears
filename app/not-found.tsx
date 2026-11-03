@@ -4,6 +4,7 @@ import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
 
 export const metadata: Metadata = {
   title: "Página no encontrada",
+  robots: null,
 }
 
 export default function NotFound() {
