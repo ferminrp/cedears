@@ -348,7 +348,7 @@ export default async function CategoryPage({ params }: PageProps) {
         >
           {themeSectionTitle}
         </h2>
-        <Suspense fallback={<CategoryTableFallback />}>
+        <Suspense fallback={<CategoryTableFallback rowCount={basesInCategory.length || baseCount} />}>
           <CategoryTableSection
             matchingTags={matchingTags}
             canonicalSlug={canonicalSlug}
