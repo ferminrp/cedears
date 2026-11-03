@@ -99,11 +99,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     displayTag,
   )
   const canonical = absoluteCanonical(`/categoria/${canonicalSlug}`)
+  const robots = categoryListingRobots(count)
 
   return {
     title,
     description,
-    robots: categoryListingRobots(count),
+    ...(robots && { robots }),
     alternates: { canonical },
     openGraph: buildPageOpenGraph({ title, description, url: canonical }),
   }

@@ -61,6 +61,17 @@ function redirectCategorySlug(request: NextRequest): NextResponse | null {
   return absoluteRedirect(request, `/categoria/${target}`)
 }
 
+// vinext streams generateMetadata into <body> when the User-Agent is empty, even with
+// htmlLimitedBots: /.*/, and the CDN cache does not vary on User-Agent. Give UA-less
+// requests a placeholder so every render puts metadata in the initial <head>.
+const MISSING_USER_AGENT = 'cedears-unknown-client'
+
+function blockingMetadataRequest(request: NextRequest): { request: { headers: Headers } } {
+  const headers = new Headers(request.headers)
+  if (!headers.get('user-agent')) headers.set('user-agent', MISSING_USER_AGENT)
+  return { request: { headers } }
+}
+
 const CEDEARS_NOT_FOUND_REWRITE = '/__cedear-ticker-not-found__'
 
 async function rewriteUnknownCedearTicker(
@@ -73,7 +84,7 @@ async function rewriteUnknownCedearTicker(
   if (await isKnownCedearTicker(ticker)) return null
   const url = request.nextUrl.clone()
   url.pathname = CEDEARS_NOT_FOUND_REWRITE
-  return NextResponse.rewrite(url)
+  return NextResponse.rewrite(url, blockingMetadataRequest(request))
 }
 
 export async function middleware(request: NextRequest) {
@@ -111,7 +122,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.rewrite(url)
   }
 
-  const response = NextResponse.next()
+  const response = NextResponse.next(blockingMetadataRequest(request))
   response.headers.append('Vary', 'Accept')
   response.headers.append(
     'Link',
