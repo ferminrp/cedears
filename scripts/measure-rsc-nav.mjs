@@ -66,7 +66,14 @@ async function measureClientNav(page, path) {
   await page.locator('nav[aria-label="Secciones"] a').filter({ hasText: /.+/ }).first().waitFor()
   const link = page.locator(`nav[aria-label="Secciones"] a[href="${path}"]`).first()
   await link.click()
-  await page.waitForURL(`**${path === "/" ? "" : path}**`, { timeout: 120_000 })
+  const navUrlMatch =
+    path === "/"
+      ? (url) => {
+          const p = new URL(url).pathname
+          return p === "/" || p === ""
+        }
+      : `**${path}**`
+  await page.waitForURL(navUrlMatch, { timeout: 120_000 })
   await page.locator("h1").first().waitFor({ state: "visible", timeout: 120_000 })
   const skeletonBusy = await page.locator('[aria-busy="true"]').count()
   return { navMs: Date.now() - start, skeletonBusyAtEnd: skeletonBusy }
@@ -111,9 +118,9 @@ async function main() {
   const navRoutes = ["/ratios", "/dividendos", "/categorias", "/portfolio", "/"]
   const navResults = {}
   for (const path of navRoutes) {
-    await page.goto(new URL(from, base).toString(), { waitUntil: "networkidle", timeout: 120_000 })
     const samples = []
     for (let i = 0; i < Math.min(3, runs); i++) {
+      await page.goto(new URL(from, base).toString(), { waitUntil: "networkidle", timeout: 120_000 })
       samples.push(await measureClientNav(page, path))
     }
     navResults[path] = {
