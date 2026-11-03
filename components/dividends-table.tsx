@@ -2,7 +2,6 @@
 
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
 import {
   ArrowDownIcon,
   ArrowUpDownIcon,
@@ -93,17 +92,15 @@ function SortButton({
 type DividendsTableProps = {
   rows: CedearDividendRow[]
   referenceDateIso: string
-  initialFrequency: string
+  /** Filter from ?frecuencia=, resolved on the server (middleware rewrite) so first paint is filtered. */
+  initialFrequency?: string
 }
 
 export function DividendsTable({
   rows,
   referenceDateIso,
-  initialFrequency,
+  initialFrequency = "todas",
 }: DividendsTableProps) {
-  const router = useRouter()
-  const pathname = usePathname()
-
   const rootRef = useRef<HTMLDivElement>(null)
   const searchStickyRef = useRef<HTMLDivElement>(null)
 
@@ -144,9 +141,14 @@ export function DividendsTable({
         params.set("frecuencia", value)
       }
       const qs = params.toString()
-      router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false })
+      // Client-only filter: update the URL without a server round trip.
+      window.history.replaceState(
+        window.history.state,
+        "",
+        qs ? `${window.location.pathname}?${qs}` : window.location.pathname,
+      )
     },
-    [pathname, router],
+    [],
   )
 
   const [sortKey, setSortKey] = useState<DividendSortKey>("exDate")
@@ -217,7 +219,11 @@ export function DividendsTable({
                 ? `No encontramos “${query.trim()}”.`
                 : "No hay CEDEARs que coincidan con este filtro."}
               {" "}
-              Probá con otro ticker o quitá el filtro de frecuencia.
+              {query.trim() && frequencyParam !== "todas"
+                ? "Probá con otro ticker o quitá los filtros."
+                : query.trim()
+                  ? "Probá con otro ticker."
+                  : "Probá con otra frecuencia."}
             </EmptyDescription>
           </EmptyHeader>
           {hasActiveFilter ? (
@@ -228,7 +234,7 @@ export function DividendsTable({
               className="min-h-11"
               onClick={clearFilters}
             >
-              Limpiar búsqueda
+              Limpiar filtros
             </Button>
           ) : null}
         </Empty>
