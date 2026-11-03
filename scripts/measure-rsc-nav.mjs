@@ -118,10 +118,6 @@ async function main() {
   const navRoutes = ["/ratios", "/dividendos", "/categorias", "/portfolio", "/"]
   const navResults = {}
   for (const path of navRoutes) {
-<<<<<<< HEAD
-=======
-    await page.goto(new URL(from, base).toString(), { waitUntil: "domcontentloaded", timeout: 120_000 })
->>>>>>> d239f3d (fix(qa): categoría con Suspense parcial, progress bar y CLS en dividendos)
     const samples = []
     for (let i = 0; i < Math.min(3, runs); i++) {
       await page.goto(new URL(from, base).toString(), { waitUntil: "networkidle", timeout: 120_000 })

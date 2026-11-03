@@ -260,8 +260,7 @@ export default async function CategoryPage({ params }: PageProps) {
     categoryIndex.map((c) => ({ slug: c.slug, count: c.count })),
   )
 
-  const fetchedAt = await tryGetCedearsLivePricesFetchedAt()
-  const dateLabelFallback = formatRatiosDataDate(new Date())
+  const dateLabel = formatRatiosDataDate(new Date())
 
   const displayTag = tag
   const h1 = categoryPageH1(canonicalSlug, displayTag)
@@ -278,10 +277,6 @@ export default async function CategoryPage({ params }: PageProps) {
   const breadcrumbLabel =
     categoryDisplay.h1Theme.charAt(0).toUpperCase() +
     categoryDisplay.h1Theme.slice(1)
-  const dateLabel = fetchedAt
-    ? formatRatiosDataDate(fetchedAt)
-    : dateLabelFallback
-
   const filteredForSchema: Cedear[] = basesInCategory.map((base) => ({
     ...base,
     price: null,

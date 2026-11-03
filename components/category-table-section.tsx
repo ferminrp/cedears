@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/empty"
 import { isBymaRegularSessionOpen } from "@/lib/byma-hours"
 import type { Cedear } from "@/lib/cedears"
-import { getCedears } from "@/lib/get-cedears"
+import { getCedears, getCedearsLivePricesFetchedAt } from "@/lib/get-cedears"
 
 type CategoryTableSectionProps = {
   matchingTags: string[]
@@ -21,8 +21,11 @@ export async function CategoryTableSection({
   canonicalSlug,
 }: CategoryTableSectionProps) {
   try {
-    const cedears = await getCedears()
-    const quoteTime = new Date()
+    const [cedears, fetchedAt] = await Promise.all([
+      getCedears(),
+      getCedearsLivePricesFetchedAt(),
+    ])
+    const quoteTime = fetchedAt ?? new Date()
     const showPreviousCloseLabel = !isBymaRegularSessionOpen(quoteTime)
     const matchingTagSet = new Set(matchingTags)
     const filtered: Cedear[] = cedears
