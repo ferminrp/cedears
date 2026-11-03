@@ -107,6 +107,18 @@ Default artifact directory: `.verify-artifacts/<run-id>/` or pass `--artifact-di
 | `home-search-desktop.png` | Search interaction filters the list (when data loaded) |
 | `ratios-desktop-1440.png` | `/ratios` desktop layout |
 | `ratios-mobile-390.png` | `/ratios` mobile layout |
+| `ratios-mobile-390-scrolled.png` | `/ratios` sticky header after scroll |
+| `categoria-tecnologia-390.png` | `/categoria/tecnologia` mobile layout |
+| `categoria-tecnologia-390-scrolled.png` | Category sticky search + thead after scroll (mobile) |
+| `categoria-tecnologia-1440.png` | Category theme table desktop |
+| `categoria-tecnologia-1440-scrolled.png` | Category sticky behavior desktop scroll |
+| `dividendos-desktop-1440.png` | `/dividendos` desktop (Yahoo-backed table) |
+| `dividendos-tablet-1024.png` | `/dividendos` at 1024px width |
+| `dividendos-tablet-768.png` | `/dividendos` at 768px width |
+| `dividendos-mobile-390.png` | `/dividendos` mobile layout + geometry checks |
+| `dividendos-mobile-375.png` | `/dividendos` at 375px width |
+| `dividendos-mobile-390-frecuencia.png` | `/dividendos?frecuencia=mensual` mobile |
+| `dividendos-mobile-390-sin-resultados.png` | Empty search result state on mobile |
 | `summary.json` | Run metadata and pass/fail |
 | `server.log` | Dev/workers stdout when the helper launched the server |
 

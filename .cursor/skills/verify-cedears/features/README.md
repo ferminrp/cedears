@@ -31,7 +31,9 @@ Each feature file uses H1, one intro paragraph, then these H2 sections in order:
 ## Features
 
 - [Home list and search](./home-list.md) — top-100 table, A–Z index, search/filters, export buttons.
+- [Categorías](./categorias.md) — índice `/categorias`, listas temáticas `/categoria/{slug}`, redirects legacy.
 - [CEDEAR detail](./cedear-detail.md) — per-ticker page, breadcrumb, similares, chart, FAQs.
+- [Dividendos](./dividendos.md) — calendario `/dividendos`, filtros, CSV, sticky mobile table.
 - [Data exports and feeds](./data-exports.md) — CSV, Markdown, JSON, sitemap.
 - [Portfolio](./portfolio.md) — local portfolio tracking view.
 - [Tools (DCA and rebalance)](./herramientas.md) — calculators under Herramientas.
