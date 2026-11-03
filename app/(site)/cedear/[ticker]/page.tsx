@@ -214,7 +214,6 @@ export default async function CedearPage({ params }: PageProps) {
       getCompanyNews(cedear.TickerOriginal),
       getUnderlyingDividends(cedearYahooSymbol(cedear)),
     ])
-  const allCedears = cedears
 
   const paysDividends =
     underlyingDividends !== null &&
