@@ -43,11 +43,13 @@ import {
   getCedears,
   tryGetCedearsLivePricesFetchedAt,
 } from "@/lib/get-cedears"
+import { isKnownCategorySlug } from "@/lib/category-slug-guard"
 import { formatRatiosDataDate } from "@/lib/ratios"
 import { buildPageOpenGraph, getSiteUrl } from "@/lib/site"
 import { cn } from "@/lib/utils"
 
 export const revalidate = 300
+export const dynamicParams = false
 
 type PageProps = {
   params: Promise<{ label: string }>
@@ -79,12 +81,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const tags = getUniqueTags(bases)
   const tag = findTagBySlug(tags, label)
 
-  if (!tag) {
-    return {
-      title: "Categoría no encontrada",
-      robots: { index: false, follow: false },
-    }
-  }
+  if (!tag) notFound()
 
   const matchingTags = findTagsBySlug(tags, label)
   const count = countMatchingBases(bases, matchingTags)
@@ -245,6 +242,7 @@ export default async function CategoryPage({ params }: PageProps) {
   try {
     bases = await getCedearBases()
   } catch {
+    if (!(await isKnownCategorySlug(label))) notFound()
     return (
       <>
         <Alert variant="destructive">
@@ -360,7 +358,7 @@ export default async function CategoryPage({ params }: PageProps) {
         <nav aria-label="Migas de pan" className="text-xs text-muted-foreground">
           <ol className="flex flex-wrap items-center gap-1">
             <li>
-              <Link href="/" className="inline-flex min-h-11 items-center hover:text-foreground">
+              <Link href="/" className="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-foreground">
                 Inicio
               </Link>
             </li>
@@ -370,7 +368,7 @@ export default async function CategoryPage({ params }: PageProps) {
             <li>
               <Link
                 href="/categorias"
-                className="inline-flex min-h-11 items-center hover:text-foreground"
+                className="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-foreground"
               >
                 Categorías
               </Link>

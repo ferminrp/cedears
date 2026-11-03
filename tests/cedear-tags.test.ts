@@ -5,6 +5,7 @@ import {
   countCedearsForCategorySlug,
   findTagBySlug,
   findTagsBySlug,
+  getUniqueTags,
   getUniqueTagSlugs,
   slugifyTag,
 } from "../lib/cedear-tags.ts"
@@ -103,5 +104,15 @@ describe("category sitemap slugs", () => {
     assert.ok(slugs.includes("tecnologia"))
     assert.ok(slugs.includes("salud"))
     assert.ok(slugs.includes("cripto-y-bitcoin"))
+  })
+
+  it("does not emit slugs with no matching tag", () => {
+    const tags = getUniqueTags(FIXTURE)
+    for (const { slug } of getUniqueTagSlugs(FIXTURE)) {
+      assert.ok(
+        findTagBySlug(tags, slug),
+        `slug ${slug} must resolve to a tag`,
+      )
+    }
   })
 })

@@ -82,7 +82,7 @@ function NavLink({
         onNavigate?.()
       }}
       className={cn(
-        "rounded-[var(--radius-s)] px-[var(--space-m)] py-[var(--space-xs)] text-[length:var(--size-s)] leading-[var(--line-s)] font-medium transition-colors duration-[var(--motion-duration)] ease-[var(--motion-easing)]",
+        "inline-flex min-h-11 items-center rounded-[var(--radius-s)] px-[var(--space-m)] py-[var(--space-xs)] text-[length:var(--size-s)] leading-[var(--line-s)] font-medium transition-colors duration-[var(--motion-duration)] ease-[var(--motion-easing)]",
         isActive || isPendingTarget
           ? "bg-navigation-active text-navigation-active-foreground"
           : "text-muted-foreground hover:bg-muted hover:text-foreground",
@@ -113,7 +113,7 @@ export function SiteNav() {
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger
             render={
-              <Button variant="outline" size="sm" className="gap-2">
+              <Button variant="outline" size="sm" className="min-h-11 gap-2">
                 <MenuIcon className="size-4" />
                 {activeLabel(pathname)}
               </Button>

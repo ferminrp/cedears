@@ -69,10 +69,13 @@ Env: VERIFY_BASE_URL, VERIFY_ARTIFACT_DIR, VERIFY_PORT, VERIFY_RUN_ID, VERIFY_CA
   return opts
 }
 
-function fetchUrl(url, { timeoutMs = 60_000 } = {}) {
+function fetchUrl(url, { timeoutMs = 60_000, method = "GET", headers = {}, body } = {}) {
   return new Promise((resolve, reject) => {
     const lib = url.startsWith("https") ? https : http
-    const req = lib.get(url, { timeout: timeoutMs }, (res) => {
+    const req = lib.request(
+      url,
+      { method, timeout: timeoutMs, headers },
+      (res) => {
       const chunks = []
       res.on("data", (c) => chunks.push(c))
       res.on("end", () => {
@@ -88,6 +91,8 @@ function fetchUrl(url, { timeoutMs = 60_000 } = {}) {
       req.destroy()
       reject(new Error(`Timeout fetching ${url}`))
     })
+    if (body !== undefined) req.write(body)
+    req.end()
   })
 }
 
@@ -319,16 +324,44 @@ async function assertUnknownCategoryNotFound(baseUrl) {
   const body = Buffer.isBuffer(res.body)
     ? res.body.toString("utf8")
     : String(res.body ?? "")
-  const notFoundPage =
-    res.status === 404 || body.includes("Página no encontrada")
+  assert.equal(
+    res.status,
+    404,
+    `unknown category slug must return HTTP 404 (status=${res.status})`,
+  )
   assert.ok(
-    notFoundPage,
-    `unknown category slug must 404 or show not-found page (status=${res.status})`,
+    body.includes("Página no encontrada"),
+    "unknown category slug must render not-found page",
   )
   assert.ok(
     !body.includes("Error al cargar los datos"),
     "unknown category slug must not show data load error alert",
   )
+}
+
+async function assertValidCategoryOk(baseUrl) {
+  const path = "/categoria/tecnologia"
+  const res = await fetchUrl(`${baseUrl}${path}`)
+  assert.equal(res.status, 200, `GET ${path}`)
+}
+
+async function assertMcpToolsList(baseUrl) {
+  const payload = JSON.stringify({
+    jsonrpc: "2.0",
+    id: "verify-smoke",
+    method: "tools/list",
+    params: {},
+  })
+  const res = await fetchUrl(`${baseUrl}/mcp`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: payload,
+  })
+  assert.equal(res.status, 200, "POST /mcp tools/list")
+  const body = JSON.parse(res.body.toString("utf8"))
+  const tools = body?.result?.tools ?? []
+  const names = tools.map((t) => t.name)
+  assert.ok(names.includes("list_cedears"), "MCP tools/list includes list_cedears")
 }
 
 async function smoke(baseUrl, sampleTicker, artifactDir) {
@@ -366,6 +399,8 @@ async function smoke(baseUrl, sampleTicker, artifactDir) {
   )
 
   await assertUnknownCategoryNotFound(baseUrl)
+  await assertValidCategoryOk(baseUrl)
+  await assertMcpToolsList(baseUrl)
 
   await smokeCanonicals(baseUrl, sampleTicker, artifactDir)
 }
@@ -852,6 +887,16 @@ async function captureScreenshots(baseUrl, artifactDir, setBrowser) {
       fullPage: false,
     })
 
+    const navDesktop = await browser.newPage({
+      viewport: { width: 768, height: 900 },
+    })
+    await navDesktop.goto(baseUrl, { waitUntil: "networkidle", timeout: 120_000 })
+    await assertNoHorizontalOverflow(navDesktop, "nav desktop 768px")
+    await navDesktop.screenshot({
+      path: join(artifactDir, "nav-desktop-768.png"),
+      clip: { x: 0, y: 0, width: 768, height: 120 },
+    })
+
     const narrow = await browser.newPage({
       viewport: { width: 390, height: 844 },
     })
@@ -860,6 +905,10 @@ async function captureScreenshots(baseUrl, artifactDir, setBrowser) {
     await narrow.screenshot({
       path: join(artifactDir, "home-390.png"),
       fullPage: false,
+    })
+    await narrow.screenshot({
+      path: join(artifactDir, "nav-mobile-390.png"),
+      clip: { x: 0, y: 0, width: 390, height: 72 },
     })
 
     const iphone = devices["iPhone 13"]
