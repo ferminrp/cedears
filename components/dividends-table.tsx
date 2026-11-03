@@ -107,9 +107,7 @@ export function DividendsTable({
   const searchStickyRef = useRef<HTMLDivElement>(null)
 
   const [query, setQuery] = useState("")
-  const [frequencyParam, setFrequencyParam] = useState(
-    () => searchParams.get("frecuencia")?.trim() || "todas",
-  )
+  const frequencyParam = searchParams.get("frecuencia")?.trim() || "todas"
 
   useLayoutEffect(() => {
     const searchEl = searchStickyRef.current
@@ -135,7 +133,6 @@ export function DividendsTable({
 
   const setFrequency = useCallback(
     (value: string) => {
-      setFrequencyParam(value)
       const params = new URLSearchParams(
         typeof window !== "undefined" ? window.location.search : "",
       )
