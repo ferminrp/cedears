@@ -176,7 +176,7 @@ export default async function DividendosPage({ searchParams }: PageProps) {
       <div className="flex flex-col gap-10">
         <section
           aria-labelledby="dividendos-table-heading"
-          className="flex flex-col gap-4"
+          className="flex min-h-[28rem] flex-col gap-4 sm:min-h-[26rem]"
         >
           <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
             <h2 id="dividendos-table-heading" className="text-base font-medium">

@@ -4,6 +4,12 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  experimental: {
+    staleTimes: {
+      dynamic: 30,
+      static: 300,
+    },
+  },
   serverExternalPackages: ['yahoo-finance2'],
   // Keep title/description/canonical in the initial <head> for crawlers (vinext streams
   // dynamic generateMetadata into the body otherwise).

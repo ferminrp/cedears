@@ -1,18 +1,11 @@
 import type { Metadata } from "next"
-import type { ReactNode } from "react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { CedearFaqs } from "@/components/cedear-faqs"
-import { CedearsThemeTable } from "@/components/cedears-theme-table"
+import { CategoryTableSection } from "@/components/category-table-section"
 import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { buttonVariants } from "@/components/ui/button"
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyTitle,
-} from "@/components/ui/empty"
 import { canonicalCategorySlug } from "@/lib/category-redirects"
 import {
   buildCategoryFaqs,
@@ -28,7 +21,6 @@ import {
   type CategoryIntroPart,
 } from "@/lib/category-content"
 import { absoluteCanonical } from "@/lib/canonical"
-import { isBymaRegularSessionOpen } from "@/lib/byma-hours"
 import type { Cedear } from "@/lib/cedears"
 import {
   findTagBySlug,
@@ -38,11 +30,7 @@ import {
   getUniqueTagSlugs,
 } from "@/lib/cedear-tags"
 import type { CedearFaq } from "@/lib/cedear-faqs"
-import {
-  getCedearBases,
-  getCedears,
-  tryGetCedearsLivePricesFetchedAt,
-} from "@/lib/get-cedears"
+import { getCedearBases, tryGetCedearsLivePricesFetchedAt } from "@/lib/get-cedears"
 import { isKnownCategorySlug } from "@/lib/category-slug-guard"
 import { formatRatiosDataDate } from "@/lib/ratios"
 import { buildPageOpenGraph, getSiteUrl } from "@/lib/site"
@@ -61,13 +49,6 @@ function countMatchingBases(
 ) {
   const tagSet = new Set(matchingTags)
   return bases.filter((c) => c.tags.some((t) => tagSet.has(t))).length
-}
-
-function sampleTickers(cedears: Cedear[], limit = 5): string[] {
-  return [...cedears]
-    .sort((a, b) => a.Cedears.localeCompare(b.Cedears))
-    .slice(0, limit)
-    .map((c) => c.Cedears)
 }
 
 export async function generateStaticParams() {
@@ -267,71 +248,25 @@ export default async function CategoryPage({ params }: PageProps) {
 
   const matchingTags = findTagsBySlug(tags, label)
   const baseCount = countMatchingBases(bases, matchingTags)
+  const matchingTagSet = new Set(matchingTags)
+  const basesInCategory = bases
+    .filter((c) => c.tags.some((t) => matchingTagSet.has(t)))
+    .sort((a, b) => a.Cedears.localeCompare(b.Cedears))
   const categoryIndex = getCategoryIndex(bases)
   const siblingSlugs = getSiblingCategorySlugs(
     canonicalSlug,
     categoryIndex.map((c) => ({ slug: c.slug, count: c.count })),
   )
 
-  let filtered: Cedear[] = []
-  let fetchedAt: Date | null = null
-  let showPreviousCloseLabel = false
-  let tableContent: ReactNode = null
-  const dateLabelFallback = formatRatiosDataDate(new Date())
-
-  const fetchedAtPromise = tryGetCedearsLivePricesFetchedAt()
-  try {
-    const cedears = await getCedears()
-    fetchedAt = await fetchedAtPromise
-    const quoteTime = fetchedAt ?? new Date()
-    showPreviousCloseLabel = !isBymaRegularSessionOpen(quoteTime)
-    const matchingTagSet = new Set(matchingTags)
-    filtered = cedears
-      .filter((c) => c.tags.some((t) => matchingTagSet.has(t)))
-      .sort((a, b) => a.Cedears.localeCompare(b.Cedears))
-
-    if (filtered.length === 0) {
-      tableContent = (
-        <Empty className="rounded-[var(--radius-m)] border border-border">
-          <EmptyHeader>
-            <EmptyTitle>Todavía no hay CEDEARs en esta categoría</EmptyTitle>
-            <EmptyDescription>
-              <Link href="/categorias" className="underline underline-offset-4">
-                Ver todas las categorías
-              </Link>
-            </EmptyDescription>
-          </EmptyHeader>
-        </Empty>
-      )
-    } else {
-      tableContent = (
-        <CedearsThemeTable
-          cedears={filtered}
-          hideUnderlying={canonicalSlug === "etfs"}
-          showPreviousCloseLabel={showPreviousCloseLabel}
-        />
-      )
-    }
-  } catch {
-    fetchedAt = await fetchedAtPromise
-    tableContent = (
-      <Alert variant="destructive">
-        <AlertTitle>Error al cargar los datos</AlertTitle>
-        <AlertDescription>
-          No se pudo obtener la lista de CEDEARs. Intentá recargar la página en unos
-          minutos.
-        </AlertDescription>
-      </Alert>
-    )
-  }
+  const dateLabel = formatRatiosDataDate(new Date())
 
   const displayTag = tag
   const h1 = categoryPageH1(canonicalSlug, displayTag)
   const themeSectionTitle = `Todos los CEDEARs de ${getCategoryDisplay(canonicalSlug, displayTag).themeLower}`
 
   const faqContext = {
-    count: filtered.length || baseCount,
-    sampleTickers: sampleTickers(filtered.length ? filtered : [], 5),
+    count: basesInCategory.length || baseCount,
+    sampleTickers: basesInCategory.slice(0, 5).map((c) => c.Cedears),
     slug: canonicalSlug,
   }
   const introParts = buildCategoryIntroParts(canonicalSlug, faqContext, displayTag)
@@ -340,17 +275,23 @@ export default async function CategoryPage({ params }: PageProps) {
   const breadcrumbLabel =
     categoryDisplay.h1Theme.charAt(0).toUpperCase() +
     categoryDisplay.h1Theme.slice(1)
-  const dateLabel = fetchedAt
-    ? formatRatiosDataDate(fetchedAt)
-    : dateLabelFallback
+  const filteredForSchema: Cedear[] = basesInCategory.map((base) => ({
+    ...base,
+    price: null,
+    pctChange: null,
+    volume: null,
+    usPrice: null,
+    priceMep: null,
+    priceCcl: null,
+  }))
 
   return (
     <>
       <CategoryJsonLd
         slug={canonicalSlug}
         pageName={h1}
-        count={filtered.length || baseCount}
-        cedears={filtered}
+        count={basesInCategory.length || baseCount}
+        cedears={filteredForSchema}
         faqs={faqs}
         tagLabel={displayTag}
       />
@@ -395,14 +336,20 @@ export default async function CategoryPage({ params }: PageProps) {
         </p>
       </header>
 
-      <section className="flex flex-col gap-3" aria-labelledby="category-table-heading">
+      <section
+        className="flex min-h-[22rem] flex-col gap-3 md:min-h-[20rem]"
+        aria-labelledby="category-table-heading"
+      >
         <h2
           id="category-table-heading"
           className="text-[length:var(--size-m)] leading-[var(--line-m)] font-semibold tracking-[var(--letter-spacing-m)]"
         >
           {themeSectionTitle}
         </h2>
-        {tableContent}
+        <CategoryTableSection
+          matchingTags={matchingTags}
+          canonicalSlug={canonicalSlug}
+        />
       </section>
 
       {siblingSlugs.length > 0 ? (
