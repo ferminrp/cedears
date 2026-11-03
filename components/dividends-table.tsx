@@ -2,7 +2,7 @@
 
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import {
   ArrowDownIcon,
   ArrowUpDownIcon,
@@ -93,22 +93,23 @@ function SortButton({
 type DividendsTableProps = {
   rows: CedearDividendRow[]
   referenceDateIso: string
-  initialFrequency: string
 }
 
 export function DividendsTable({
   rows,
   referenceDateIso,
-  initialFrequency,
 }: DividendsTableProps) {
   const router = useRouter()
   const pathname = usePathname()
+  const searchParams = useSearchParams()
 
   const rootRef = useRef<HTMLDivElement>(null)
   const searchStickyRef = useRef<HTMLDivElement>(null)
 
   const [query, setQuery] = useState("")
-  const [frequencyParam, setFrequencyParam] = useState(initialFrequency)
+  const [frequencyParam, setFrequencyParam] = useState(
+    () => searchParams.get("frecuencia")?.trim() || "todas",
+  )
 
   useLayoutEffect(() => {
     const searchEl = searchStickyRef.current
