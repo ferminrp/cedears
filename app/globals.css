@@ -615,3 +615,12 @@
     @apply font-mono text-foreground underline-offset-4 hover:underline;
   }
 }
+
+@keyframes nav-progress {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(400%);
+  }
+}

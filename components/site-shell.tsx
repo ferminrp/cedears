@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from "react"
 import { usePathname } from "next/navigation"
 
+import { NavigationProgress } from "@/components/navigation-progress"
 import { SiteNav } from "@/components/site-nav"
 import { NavPendingProvider } from "@/components/nav-pending"
 
@@ -27,14 +28,24 @@ export function SiteShell({
     setPendingHref(null)
   }, [pathname, pendingHref])
 
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "instant" in document.documentElement.style ? "instant" : "auto",
+    })
+  }, [pathname])
+
   return (
     <NavPendingProvider
       pendingHref={pendingHref}
       setPendingHref={setPendingHref}
     >
+      <NavigationProgress />
       <SiteNav />
-      {/* Keep the current page visible while RSC loads; nav links show pending state. */}
-      <Suspense fallback={null}>{children}</Suspense>
+      <div aria-busy={pendingHref ? true : undefined}>
+        <Suspense fallback={null}>{children}</Suspense>
+      </div>
     </NavPendingProvider>
   )
 }

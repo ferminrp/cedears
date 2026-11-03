@@ -99,6 +99,7 @@ function NavLink({
 export function SiteNav() {
   const pathname = usePathname() ?? "/"
   const [open, setOpen] = useState(false)
+  const { pendingHref } = useNavPending()
 
   return (
     <>
@@ -114,7 +115,12 @@ export function SiteNav() {
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger
             render={
-              <Button variant="outline" size="sm" className="min-h-11 gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="min-h-11 gap-2"
+                aria-busy={pendingHref ? true : undefined}
+              >
                 <MenuIcon className="size-4" />
                 {activeLabel(pathname)}
               </Button>

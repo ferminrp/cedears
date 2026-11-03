@@ -85,7 +85,7 @@ async function main() {
   const context = await browser.newContext()
   const page = await context.newPage()
 
-  await page.goto(new URL(from, base).toString(), { waitUntil: "networkidle", timeout: 120_000 })
+  await page.goto(new URL(from, base).toString(), { waitUntil: "domcontentloaded", timeout: 120_000 })
 
   let stateTree = ""
   page.on("request", (req) => {
@@ -114,10 +114,14 @@ async function main() {
     }
   }
 
-  await page.goto(new URL(from, base).toString(), { waitUntil: "networkidle", timeout: 120_000 })
+  await page.goto(new URL(from, base).toString(), { waitUntil: "domcontentloaded", timeout: 120_000 })
   const navRoutes = ["/ratios", "/dividendos", "/categorias", "/portfolio", "/"]
   const navResults = {}
   for (const path of navRoutes) {
+<<<<<<< HEAD
+=======
+    await page.goto(new URL(from, base).toString(), { waitUntil: "domcontentloaded", timeout: 120_000 })
+>>>>>>> d239f3d (fix(qa): categoría con Suspense parcial, progress bar y CLS en dividendos)
     const samples = []
     for (let i = 0; i < Math.min(3, runs); i++) {
       await page.goto(new URL(from, base).toString(), { waitUntil: "networkidle", timeout: 120_000 })
@@ -128,9 +132,101 @@ async function main() {
     }
   }
 
+  const cls390 = await measureClsRatiosToDividendos(base, Math.min(3, runs))
+  const categoryTableLoading = await measureCategoryTableShell(base, Math.min(3, runs))
+
   await browser.close()
 
-  console.log(JSON.stringify({ base, runs, rscResults, navResults, stateTreeCaptured: Boolean(stateTree) }, null, 2))
+  console.log(
+    JSON.stringify(
+      {
+        base,
+        runs,
+        rscResults,
+        navResults,
+        cls390,
+        categoryTableLoading,
+        stateTreeCaptured: Boolean(stateTree),
+      },
+      null,
+      2,
+    ),
+  )
+}
+
+async function clickNavLink(page, href) {
+  const viewport = page.viewportSize()
+  const useMobileNav = !viewport || viewport.width < 768
+
+  if (!useMobileNav) {
+    await page.locator(`nav[aria-label="Secciones"] a[href="${href}"]`).first().click()
+    return
+  }
+
+  await page.locator(".md\\:hidden [data-slot=\"sheet-trigger\"]").first().click()
+  await page.getByRole("dialog").getByRole("link", { name: "Dividendos" }).click()
+}
+
+async function measureClsRatiosToDividendos(base, runs) {
+  const browser = await chromium.launch({ headless: true })
+  const samples = []
+  for (let i = 0; i < runs; i++) {
+    const context = await browser.newContext({ viewport: { width: 390, height: 844 } })
+    const page = await context.newPage()
+    await page.addInitScript(() => {
+      window.__cedearsCls = 0
+      new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          if (!entry.hadRecentInput) {
+            window.__cedearsCls += entry.value
+          }
+        }
+      }).observe({ type: "layout-shift", buffered: true })
+    })
+    await page.goto(new URL("/ratios", base).toString(), { waitUntil: "domcontentloaded", timeout: 120_000 })
+    await page.evaluate(() => window.scrollTo(0, 900))
+    await page.evaluate((targetHref) => {
+      const links = [...document.querySelectorAll(`a[href="${targetHref}"]`)]
+      links.at(-1)?.click()
+    }, "/dividendos")
+    await page.waitForURL("**/dividendos**", { timeout: 120_000 })
+    await page.locator("h1").first().waitFor({ state: "visible", timeout: 120_000 })
+    await page.waitForTimeout(400)
+    const cls = await page.evaluate(() => window.__cedearsCls ?? 0)
+    samples.push(cls)
+    await context.close()
+  }
+  await browser.close()
+  return { route: "/ratios → /dividendos", viewport: "390×844", clsMedian: median(samples), samples }
+}
+
+async function measureCategoryTableShell(base, runs) {
+  const browser = await chromium.launch({ headless: true })
+  const samples = []
+  for (let i = 0; i < runs; i++) {
+    const page = await browser.newPage()
+    await page.goto(new URL("/categorias", base).toString(), { waitUntil: "domcontentloaded", timeout: 120_000 })
+    const t0 = Date.now()
+    await page.locator('a[href="/categoria/tecnologia"]').first().click()
+    await page.waitForURL("**/categoria/tecnologia**", { timeout: 120_000 })
+    await page.locator("h1").first().waitFor({ state: "visible", timeout: 120_000 })
+    const headerMs = Date.now() - t0
+    const tableReadyMs = await page
+      .waitForSelector("[data-category-table-loading]", { state: "detached", timeout: 120_000 })
+      .then(() => Date.now() - t0)
+      .catch(async () => {
+        await page.locator("table").first().waitFor({ state: "visible", timeout: 120_000 }).catch(() => null)
+        return Date.now() - t0
+      })
+    samples.push({ headerMs, tableReadyMs })
+    await page.close()
+  }
+  await browser.close()
+  return {
+    route: "/categoria/tecnologia",
+    headerMedianMs: median(samples.map((s) => s.headerMs)),
+    tableReadyMedianMs: median(samples.map((s) => s.tableReadyMs)),
+  }
 }
 
 main().catch((err) => {
