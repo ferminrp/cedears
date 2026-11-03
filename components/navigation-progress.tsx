@@ -8,6 +8,11 @@ import { cn } from "@/lib/utils"
 
 const SHOW_DELAY_MS = 150
 const NAV_IDLE_POLL_MS = 100
+// vinext reports the navigation idle ~100-150 ms before React commits the new
+// page, so idle alone would drop the bar while the old page is still on screen.
+// A commit dismisses the bar through the pathname effect; this grace only
+// catches navigations that never commit (file downloads, aborted fetches).
+const NAV_IDLE_GRACE_MS = 600
 
 const vinextClientNavStateKey = Symbol.for("vinext.clientNavigationState")
 
@@ -61,8 +66,14 @@ export function NavigationProgress() {
 
   useEffect(() => {
     if (!visible) return
+    let idleSince: number | null = null
     const sync = () => {
-      if (!isClientNavigationInProgress()) setVisible(false)
+      if (isClientNavigationInProgress()) {
+        idleSince = null
+        return
+      }
+      idleSince ??= performance.now()
+      if (performance.now() - idleSince >= NAV_IDLE_GRACE_MS) setVisible(false)
     }
     sync()
     const id = window.setInterval(sync, NAV_IDLE_POLL_MS)

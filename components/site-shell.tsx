@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useEffect, useRef, useState } from "react"
+import { Fragment, useEffect, useRef, useState } from "react"
 import { usePathname } from "next/navigation"
 
 import { NavigationProgress } from "@/components/navigation-progress"
@@ -63,15 +63,13 @@ export function SiteShell({
       <NavigationProgress />
       <SiteNav />
       <div aria-busy={pendingHref ? true : undefined}>
-        {/* Keyed by route so React mounts fresh DOM instead of reusing the previous
-            page's nodes (reused nodes pushed below the fold count as layout shift),
-            and the fallback reserves a viewport of height while the new route streams. */}
-        <Suspense
-          key={pathname}
-          fallback={<div aria-hidden className="min-h-svh" />}
-        >
-          {children}
-        </Suspense>
+        {/* No Suspense here on purpose. vinext commits navigations in a transition,
+            so the old page stays on screen until the new one is ready. A shell
+            boundary either flashed an empty fallback (keyed) or left slow
+            /dividendos navigations pending forever (unkeyed). The key makes the
+            new page mount fresh DOM instead of reusing the old page's nodes,
+            which counted as layout shift. */}
+        <Fragment key={pathname}>{children}</Fragment>
       </div>
     </NavPendingProvider>
   )
