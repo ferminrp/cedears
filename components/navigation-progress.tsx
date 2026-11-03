@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { usePathname } from "next/navigation"
 
 import { useNavPending } from "@/components/nav-pending"
@@ -22,21 +22,32 @@ export function NavigationProgress() {
     return () => mq.removeEventListener("change", update)
   }, [])
 
-  useEffect(() => {
-    if (!pendingHref) {
-      setVisible(false)
-      return
-    }
+  // The delay is measured from the click itself, not from a React commit:
+  // any same-origin <a> (nav, category cards, ticker rows) starts the timer.
+  const timerRef = useRef<number | null>(null)
 
-    const timer = window.setTimeout(() => setVisible(true), SHOW_DELAY_MS)
-    return () => window.clearTimeout(timer)
+  useEffect(() => {
+    const onClick = (event: MouseEvent) => {
+      if (!isAnchorNav(event)) return
+      if (timerRef.current !== null) window.clearTimeout(timerRef.current)
+      timerRef.current = window.setTimeout(() => setVisible(true), SHOW_DELAY_MS)
+    }
+    document.addEventListener("click", onClick, true)
+    return () => document.removeEventListener("click", onClick, true)
+  }, [])
+
+  useEffect(() => {
+    if (pendingHref || timerRef.current !== null) return
+    setVisible(false)
   }, [pendingHref])
 
   useEffect(() => {
+    if (timerRef.current !== null) window.clearTimeout(timerRef.current)
+    timerRef.current = null
     setVisible(false)
   }, [pathname])
 
-  if (!pendingHref || !visible) return null
+  if (!visible) return null
 
   return (
     <div
@@ -53,4 +64,14 @@ export function NavigationProgress() {
       />
     </div>
   )
+}
+
+function isAnchorNav(event: MouseEvent) {
+  if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return false
+  const anchor = (event.target as Element | null)?.closest?.("a[href]") as HTMLAnchorElement | null
+  if (!anchor || anchor.hasAttribute("download")) return false
+  if (anchor.target && anchor.target !== "_self") return false
+  const url = new URL(anchor.href, window.location.href)
+  if (url.origin !== window.location.origin) return false
+  return url.pathname !== window.location.pathname
 }

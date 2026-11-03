@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link, { useLinkStatus } from "next/link"
 import { usePathname } from "next/navigation"
 import { MenuIcon } from "lucide-react"
@@ -100,6 +100,11 @@ export function SiteNav() {
   const pathname = usePathname() ?? "/"
   const [open, setOpen] = useState(false)
   const { pendingHref } = useNavPending()
+
+  // Backstop: any navigation (incl. back/forward) closes the mobile menu.
+  useEffect(() => {
+    setOpen(false)
+  }, [pathname])
 
   return (
     <>
