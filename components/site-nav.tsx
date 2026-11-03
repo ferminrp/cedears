@@ -113,7 +113,7 @@ export function SiteNav() {
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger
             render={
-              <Button variant="outline" size="sm" className="gap-2">
+              <Button variant="outline" size="sm" className="min-h-11 gap-2">
                 <MenuIcon className="size-4" />
                 {activeLabel(pathname)}
               </Button>

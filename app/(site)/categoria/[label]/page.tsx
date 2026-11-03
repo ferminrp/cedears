@@ -358,7 +358,7 @@ export default async function CategoryPage({ params }: PageProps) {
         <nav aria-label="Migas de pan" className="text-xs text-muted-foreground">
           <ol className="flex flex-wrap items-center gap-1">
             <li>
-              <Link href="/" className="inline-flex min-h-11 items-center hover:text-foreground">
+              <Link href="/" className="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-foreground">
                 Inicio
               </Link>
             </li>
@@ -368,7 +368,7 @@ export default async function CategoryPage({ params }: PageProps) {
             <li>
               <Link
                 href="/categorias"
-                className="inline-flex min-h-11 items-center hover:text-foreground"
+                className="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-foreground"
               >
                 Categorías
               </Link>
