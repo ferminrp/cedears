@@ -363,16 +363,25 @@ export function NuevosCedearsList({
         </p>
       ) : null}
 
-      <button
-        type="button"
-        onClick={() => setShowArchive((value) => !value)}
-        className="inline-flex min-h-11 items-center self-start text-sm font-medium text-foreground underline-offset-4 hover:underline"
-        aria-expanded={showArchive}
-      >
-        {showArchive
-          ? "Ocultar altas anteriores"
-          : `Ver altas anteriores${archiveLabel}`}
-      </button>
+      {archiveCount === 0 ? (
+        <Link
+          href="/"
+          className="inline-flex min-h-11 items-center self-start text-sm font-medium text-foreground underline-offset-4 hover:underline"
+        >
+          Ver el listado completo
+        </Link>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setShowArchive((value) => !value)}
+          className="inline-flex min-h-11 items-center self-start text-sm font-medium text-foreground underline-offset-4 hover:underline"
+          aria-expanded={showArchive}
+        >
+          {showArchive
+            ? "Ocultar altas anteriores"
+            : `Ver altas anteriores${archiveLabel}`}
+        </button>
+      )}
     </div>
   )
 }
