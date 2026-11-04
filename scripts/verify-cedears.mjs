@@ -302,6 +302,7 @@ const SMOKE_ROUTES = [
   { path: "/", expectStatus: 200 },
   { path: "/portfolio", expectStatus: 200 },
   { path: "/categorias", expectStatus: 200 },
+  { path: "/nuevos-cedears", expectStatus: 200 },
   { path: "/herramientas", expectStatus: 200 },
   { path: "/herramientas/dca", expectStatus: 200 },
   { path: "/herramientas/rebalanceo", expectStatus: 200 },
