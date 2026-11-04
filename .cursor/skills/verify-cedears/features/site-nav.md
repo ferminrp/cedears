@@ -4,7 +4,7 @@ The header exposes primary routes under `nav` **Secciones** (desktop bar and mob
 
 ## Sub-features
 
-- `nav-links` — Listado, Portfolio, Categorías, Ratios, Herramientas, ALyCs, Dólar MEP, Dólar cable, Earnings, Dividendos (`components/site-nav.tsx`).
+- `nav-links` — Listado, Nuevos, Portfolio, Categorías, Ratios, Herramientas, ALyCs, Dólar MEP, Dólar cable, Earnings, Dividendos (`components/site-nav.tsx`).
 - `nav-touch-targets` — Desktop links use `min-h-11` (44px); mobile **Menú** trigger matches the same minimum height.
 - `nav-prefetch` — Internal `Link` entries use `prefetch={true}`.
 - `nav-pending-ui` — Active link uses `aria-current="page"`; clicked target gets `aria-busy` and optional **Cargando** sr-only via `useLinkStatus`.

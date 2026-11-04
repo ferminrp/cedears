@@ -94,6 +94,10 @@ export default async function CategoriasPage() {
       {content}
 
       <SiteFooter>
+        <Link href="/nuevos-cedears" className={footerLinkClassName}>
+          Nuevos CEDEARs
+        </Link>
+        {" · "}
         <Link href="/" className={footerLinkClassName}>
           Volver al listado completo
         </Link>

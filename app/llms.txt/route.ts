@@ -22,6 +22,7 @@ export async function GET() {
     '',
     `- [Inicio](${siteUrl}/): buscador y tabla filtrable de CEDEARs`,
     `- [Categorías](${siteUrl}/categorias): CEDEARs agrupados por tags`,
+    `- [Nuevos CEDEARs](${siteUrl}/nuevos-cedears): últimos tickers detectados en el listado público (fecha aproximada por historial git)`,
     `- [Dólar MEP](${siteUrl}/dolar-mep): tipo de cambio implícito MEP por CEDEAR`,
     `- [Dólar cable](${siteUrl}/dolar-cable): tipo de cambio implícito CCL por CEDEAR`,
     `- [Earnings](${siteUrl}/earnings): calendario de resultados de subyacentes`,
