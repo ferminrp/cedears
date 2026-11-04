@@ -88,7 +88,7 @@ export default function NuevosCedearsPage() {
 
   return (
     <>
-      <NuevosCedearsJsonLd tickers={model.rows} />
+      <NuevosCedearsJsonLd tickers={model.qualifiedRows} />
       <header className="flex flex-col gap-3">
         <nav
           aria-label="Migas de pan"
@@ -123,8 +123,8 @@ export default function NuevosCedearsPage() {
           {NUEVOS_CEDEARS_LEAD}
         </p>
         <p className="min-h-4 text-xs tabular-nums text-foreground/70">
-          {model.count12Months}{" "}
-          {model.count12Months === 1 ? "alta" : "altas"} en los últimos 12
+          {model.count6Months}{" "}
+          {model.count6Months === 1 ? "alta" : "altas"} en los últimos 6
           meses · Actualizado{" "}
           <time dateTime={model.updatedIsoDay}>
             {formatDetectedSince(model.updatedIsoDay)}
@@ -134,7 +134,8 @@ export default function NuevosCedearsPage() {
 
       <NuevosCedearsList
         groups={model.groups}
-        needsSearch={model.needsSearch}
+        expandedGroups={model.expandedGroups}
+        hiddenCount={model.hiddenCount}
         referenceTime={referenceTime}
       />
 
@@ -161,7 +162,7 @@ export default function NuevosCedearsPage() {
           href="https://github.com/ferminrp/google-sheets-argento"
           target="_blank"
           rel="noopener noreferrer"
-          className={footerLinkClassName}
+          className={`${footerLinkClassName} inline-flex min-h-11 items-center`}
         >
           google-sheets-argento
         </a>

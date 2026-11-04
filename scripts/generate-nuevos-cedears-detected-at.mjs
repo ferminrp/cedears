@@ -127,7 +127,7 @@ async function main() {
     sourcePath: SOURCE_PATH,
     generatedAt: new Date().toISOString(),
     note:
-      "Fechas aproximadas: primera aparición del ticker en el historial git del listado público google-sheets-argento. No reemplaza una fecha oficial de alta en BYMA o CNV.",
+      "Fechas aproximadas: primera aparición del ticker en el historial git del listado público google-sheets-argento. Días con más de 15 tickers nuevos se tratan como backfill y se excluyen en la página salvo confirmación BYMA. No reemplaza una fecha oficial de alta en BYMA o CNV.",
     entries,
   }
 

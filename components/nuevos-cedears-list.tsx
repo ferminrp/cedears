@@ -1,18 +1,15 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import Link from "next/link"
-import { SearchIcon } from "lucide-react"
 import {
   type NuevoCedearRow,
   type NuevosCedearMonthGroup,
-  filterNuevosCedearsQuery,
   formatDetectedSince,
   formatNuevosRatio,
   isNuevoCedearBadge,
 } from "@/lib/nuevos-cedears"
 import { logoUrl } from "@/lib/logo"
-import { Input } from "@/components/ui/input"
 import {
   Empty,
   EmptyDescription,
@@ -28,8 +25,16 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-const stickyHeadClassName =
-  "bg-background md:sticky md:top-0 md:z-[5]"
+const stickyHeadClassName = "bg-background md:sticky md:top-0 md:z-[5]"
+
+const tableColGroup = (
+  <colgroup>
+    <col className="w-[16%]" />
+    <col />
+    <col className="w-[9rem]" />
+    <col className="w-[5rem]" />
+  </colgroup>
+)
 
 function NuevoBadge() {
   return (
@@ -39,15 +44,36 @@ function NuevoBadge() {
   )
 }
 
-function TickerLogo({ tickerOriginal }: { tickerOriginal: string }) {
+function TickerLogo({
+  ticker,
+  tickerOriginal,
+}: {
+  ticker: string
+  tickerOriginal: string
+}) {
+  const [failed, setFailed] = useState(false)
+  const src = logoUrl(tickerOriginal)
+
+  if (failed || !src) {
+    return (
+      <span
+        aria-hidden
+        className="flex size-5 shrink-0 items-center justify-center rounded-sm bg-muted text-[10px] font-semibold uppercase text-foreground"
+      >
+        {ticker.charAt(0)}
+      </span>
+    )
+  }
+
   return (
     <img
-      src={logoUrl(tickerOriginal)}
+      src={src}
       alt=""
       width={20}
       height={20}
       className="size-5 shrink-0 rounded-sm bg-muted object-contain"
       loading="lazy"
+      onError={() => setFailed(true)}
     />
   )
 }
@@ -72,7 +98,10 @@ function MobileRows({
               className="grid min-h-16 grid-cols-[1fr_auto] gap-x-3 gap-y-0.5 px-3.5 py-3 text-inherit no-underline hover:bg-muted/50 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring"
             >
               <span className="col-start-1 flex items-center gap-2">
-                <TickerLogo tickerOriginal={row.tickerOriginal} />
+                <TickerLogo
+                  ticker={row.ticker}
+                  tickerOriginal={row.tickerOriginal}
+                />
                 <span className="font-mono text-sm font-medium">{row.ticker}</span>
                 {showBadge ? <NuevoBadge /> : null}
               </span>
@@ -123,8 +152,9 @@ function DesktopTable({
   return (
     <Table
       scrollContainer={false}
-      className="hidden w-full table-auto md:table"
+      className="hidden w-full table-fixed md:table"
     >
+      {tableColGroup}
       <TableHeader>
         <TableRow className="hover:bg-transparent">
           <TableHead scope="col" className={stickyHeadClassName}>
@@ -161,14 +191,17 @@ function DesktopTable({
                   href={`/cedear/${row.ticker}`}
                   className="row-link flex min-h-[3.25rem] items-center gap-2 px-4 after:absolute after:inset-0 focus-visible:outline-none"
                 >
-                  <TickerLogo tickerOriginal={row.tickerOriginal} />
+                  <TickerLogo
+                    ticker={row.ticker}
+                    tickerOriginal={row.tickerOriginal}
+                  />
                   <span className="font-mono text-sm font-medium">
                     {row.ticker}
                   </span>
                   {showBadge ? <NuevoBadge /> : null}
                 </Link>
               </TableCell>
-              <TableCell className="max-w-md truncate text-sm text-muted-foreground">
+              <TableCell className="truncate text-sm text-muted-foreground">
                 {row.name}
               </TableCell>
               <TableCell className="text-right text-sm tabular-nums">
@@ -206,7 +239,7 @@ function MonthSection({
       {showHeading ? (
         <h2
           id={group.id}
-          className={`mb-2.5 flex flex-wrap items-baseline gap-2 text-[length:var(--size-m)] font-semibold leading-[var(--line-m)]${isFirstGroup ? "" : " mt-7"}`}
+          className={`mb-2.5 flex flex-wrap items-baseline gap-2 text-[length:var(--size-l)] font-semibold leading-[var(--line-l)] tracking-[var(--letter-spacing-l)]${isFirstGroup ? "" : " mt-7"}`}
         >
           {group.heading}
           <span className="text-xs font-normal text-foreground/70">
@@ -222,43 +255,26 @@ function MonthSection({
 
 export function NuevosCedearsList({
   groups,
-  needsSearch,
+  expandedGroups,
+  hiddenCount,
   referenceTime,
 }: {
   groups: NuevosCedearMonthGroup[]
-  needsSearch: boolean
+  expandedGroups: NuevosCedearMonthGroup[]
+  hiddenCount: number
   referenceTime: number
 }) {
-  const [query, setQuery] = useState("")
-  const allRows = useMemo(
-    () => groups.flatMap((group) => group.rows),
-    [groups],
-  )
-  const filteredRows = useMemo(
-    () => filterNuevosCedearsQuery(allRows, query),
-    [allRows, query],
-  )
-  const filteredGroups = useMemo(() => {
-    if (!query.trim()) return groups
-    if (groups.length === 1 && !groups[0].heading) {
-      return [{ ...groups[0], rows: filteredRows }]
-    }
-    const allowed = new Set(filteredRows.map((row) => row.ticker))
-    return groups
-      .map((group) => ({
-        ...group,
-        rows: group.rows.filter((row) => allowed.has(row.ticker)),
-      }))
-      .filter((group) => group.rows.length > 0)
-  }, [filteredRows, groups, query])
+  const [expanded, setExpanded] = useState(false)
+  const activeGroups = expanded ? expandedGroups : groups
+  const totalRows = expandedGroups.flatMap((group) => group.rows).length
 
-  if (allRows.length === 0) {
+  if (totalRows === 0) {
     return (
       <Empty className="mt-6 rounded-[var(--radius-m)] border border-border">
         <EmptyHeader>
           <EmptyTitle>Todavía no hay altas nuevas</EmptyTitle>
           <EmptyDescription>
-            No se listaron CEDEARs nuevos en los últimos 12 meses.
+            No se listaron CEDEARs nuevos en los últimos 6 meses.
           </EmptyDescription>
         </EmptyHeader>
         <Link
@@ -271,49 +287,29 @@ export function NuevosCedearsList({
     )
   }
 
-  const showHeadings = groups.some((group) => group.heading)
+  const showHeadings = activeGroups.some((group) => group.heading)
 
   return (
     <div className="mt-6 flex flex-col gap-2">
-      {needsSearch ? (
-        <div className="sticky top-0 z-10 -mx-[var(--space-s)] bg-background px-[var(--space-s)] pb-3 pt-1 md:static md:mx-0 md:px-0 md:pb-0">
-          <div className="relative">
-            <SearchIcon
-              className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
-              aria-hidden
-            />
-            <Input
-              type="search"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Buscar por ticker o empresa"
-              aria-label="Buscar en nuevos CEDEARs"
-              className="min-h-11 pl-9"
-            />
-          </div>
-        </div>
-      ) : null}
+      {activeGroups.map((group, index) => (
+        <MonthSection
+          key={group.id}
+          group={group}
+          referenceTime={referenceTime}
+          showHeading={showHeadings && Boolean(group.heading)}
+          isFirstGroup={index === 0}
+        />
+      ))}
 
-      {filteredGroups.length === 0 ? (
-        <Empty className="rounded-[var(--radius-m)] border border-border">
-          <EmptyHeader>
-            <EmptyTitle>Sin resultados</EmptyTitle>
-            <EmptyDescription>
-              Probá con otro ticker o nombre de empresa.
-            </EmptyDescription>
-          </EmptyHeader>
-        </Empty>
-      ) : (
-        filteredGroups.map((group, index) => (
-          <MonthSection
-            key={group.id}
-            group={group}
-            referenceTime={referenceTime}
-            showHeading={showHeadings && Boolean(group.heading)}
-            isFirstGroup={index === 0}
-          />
-        ))
-      )}
+      {!expanded && hiddenCount > 0 ? (
+        <button
+          type="button"
+          onClick={() => setExpanded(true)}
+          className="inline-flex min-h-11 items-center self-start text-sm font-medium text-foreground underline-offset-4 hover:underline"
+        >
+          Ver anteriores ({hiddenCount} más)
+        </button>
+      ) : null}
     </div>
   )
 }
