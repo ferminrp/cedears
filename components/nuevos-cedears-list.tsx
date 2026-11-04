@@ -69,7 +69,7 @@ function MobileRows({
           <li key={row.ticker}>
             <Link
               href={`/cedear/${row.ticker}`}
-              className="grid min-h-16 grid-cols-[1fr_auto] gap-x-3 gap-y-0.5 px-3.5 py-3 text-inherit no-underline hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring"
+              className="grid min-h-16 grid-cols-[1fr_auto] gap-x-3 gap-y-0.5 px-3.5 py-3 text-inherit no-underline hover:bg-muted/50 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring"
             >
               <span className="col-start-1 flex items-center gap-2">
                 <TickerLogo tickerOriginal={row.tickerOriginal} />
@@ -154,12 +154,12 @@ function DesktopTable({
           return (
             <TableRow
               key={row.ticker}
-              className="relative hover:bg-muted/50 has-[.row-link:focus-visible]:outline-2 has-[.row-link:focus-visible]:outline-offset-[-2px] has-[.row-link:focus-visible]:outline-ring"
+              className="relative hover:bg-muted/50 has-[.row-link:focus-visible]:outline-solid has-[.row-link:focus-visible]:outline-2 has-[.row-link:focus-visible]:outline-offset-[-2px] has-[.row-link:focus-visible]:outline-ring"
             >
               <TableCell scope="row" className="p-0">
                 <Link
                   href={`/cedear/${row.ticker}`}
-                  className="row-link relative flex min-h-[3.25rem] items-center gap-2 px-4 after:absolute after:inset-0 focus-visible:outline-none"
+                  className="row-link flex min-h-[3.25rem] items-center gap-2 px-4 after:absolute after:inset-0 focus-visible:outline-none"
                 >
                   <TickerLogo tickerOriginal={row.tickerOriginal} />
                   <span className="font-mono text-sm font-medium">
@@ -194,17 +194,19 @@ function MonthSection({
   group,
   referenceTime,
   showHeading,
+  isFirstGroup,
 }: {
   group: NuevosCedearMonthGroup
   referenceTime: number
   showHeading: boolean
+  isFirstGroup: boolean
 }) {
   return (
     <section aria-labelledby={showHeading ? group.id : undefined}>
       {showHeading ? (
         <h2
           id={group.id}
-          className="mb-2.5 mt-7 flex flex-wrap items-baseline gap-2 text-[length:var(--size-m)] font-semibold leading-[var(--line-m)] first:mt-0"
+          className={`mb-2.5 flex flex-wrap items-baseline gap-2 text-[length:var(--size-m)] font-semibold leading-[var(--line-m)]${isFirstGroup ? "" : " mt-7"}`}
         >
           {group.heading}
           <span className="text-xs font-normal text-foreground/70">
@@ -302,12 +304,13 @@ export function NuevosCedearsList({
           </EmptyHeader>
         </Empty>
       ) : (
-        filteredGroups.map((group) => (
+        filteredGroups.map((group, index) => (
           <MonthSection
             key={group.id}
             group={group}
             referenceTime={referenceTime}
             showHeading={showHeadings && Boolean(group.heading)}
+            isFirstGroup={index === 0}
           />
         ))
       )}
