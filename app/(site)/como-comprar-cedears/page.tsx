@@ -140,7 +140,7 @@ export default function ComoComprarCedearsPage() {
     <>
       <ComoComprarJsonLd />
       <header className="flex flex-col gap-3">
-        <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
+        <nav aria-label="Breadcrumb" className="text-sm text-foreground/70">
           <ol className="flex flex-wrap items-center gap-1.5 break-words">
             <li>
               <Link href="/" className="hover:text-foreground">
@@ -170,7 +170,7 @@ export default function ComoComprarCedearsPage() {
                   key={row.label}
                   className="flex flex-col gap-0.5 border-b border-border pb-3 last:border-0 last:pb-0 sm:flex-row sm:justify-between sm:gap-4"
                 >
-                  <dt className="text-muted-foreground">{row.label}</dt>
+                  <dt className="text-foreground/70">{row.label}</dt>
                   <dd className="font-medium text-foreground sm:text-right">{row.value}</dd>
                 </div>
               ))}
@@ -274,7 +274,10 @@ export default function ComoComprarCedearsPage() {
       </p>
 
       <SiteFooter>
-        <Link href="/" className={footerLinkClassName}>
+        <Link
+          href="/"
+          className={cn(footerLinkClassName, "inline-flex min-h-11 items-center")}
+        >
           Volver al listado completo
         </Link>
         .
