@@ -51,7 +51,7 @@ export const NUEVOS_CEDEARS_LEAD =
   "Los últimos CEDEARs que empezaron a cotizar en BYMA, del más reciente al más antiguo. Tocá uno para ver su ficha, ratio y precio."
 
 export const NUEVOS_CEDEARS_ALTA_INTRO =
-  "Una alta es cuando BYMA suma un CEDEAR nuevo al mercado local: desde entonces podés operarlo en pesos y el ratio de conversión queda fijado para ese ticker."
+  "Una alta es cuando BYMA suma un CEDEAR nuevo al mercado local: desde entonces podés operarlo en pesos y se publica su ratio de conversión inicial."
 
 export const NUEVOS_CEDEARS_INFERRED_NOTE =
   "Las fechas de alta son inferidas: marcan la primera aparición de cada ticker en el historial del listado público google-sheets-argento. No reemplazan un comunicado oficial de BYMA."
