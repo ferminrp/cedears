@@ -50,9 +50,12 @@ export const NUEVOS_CEDEARS_DESCRIPTION =
 export const NUEVOS_CEDEARS_LEAD =
   "Los últimos CEDEARs que empezaron a cotizar en BYMA, del más reciente al más antiguo. Tocá uno para ver su ficha, ratio y precio."
 
+export const BULK_INFERENCE_DAY_THRESHOLD = 15
+export const NUEVOS_LIST_WINDOW_MONTHS = 6
+export const NUEVOS_VISIBLE_MAX = 30
+
 const GROUP_BY_MONTH_THRESHOLD = 8
 const NUEVO_BADGE_DAYS = 7
-const STICKY_SEARCH_THRESHOLD = 60
 
 export function getNuevosCedearsDataset(): NuevosCedearsDataset {
   return detectedAtBundle as NuevosCedearsDataset
@@ -88,12 +91,58 @@ export function cutoffIsoDayMonthsAgo(
   return d.toISOString().slice(0, 10)
 }
 
-export function filterNuevosLast12Months(
+export function buildTickerCountsByDay(
+  rows: NuevoCedearRow[],
+): Map<string, number> {
+  const counts = new Map<string, number>()
+  for (const row of rows) {
+    counts.set(row.detectedSince, (counts.get(row.detectedSince) ?? 0) + 1)
+  }
+  return counts
+}
+
+export function isBulkInferenceDay(
+  isoDay: string,
+  countsByDay: Map<string, number>,
+): boolean {
+  return (countsByDay.get(isoDay) ?? 0) > BULK_INFERENCE_DAY_THRESHOLD
+}
+
+/** Drops days with >15 tickers (backfill), unless BYMA confirms (none wired yet). */
+export function excludeBulkInferenceDays(
+  rows: NuevoCedearRow[],
+  allEntries = getNuevosCedearsRows(),
+): NuevoCedearRow[] {
+  const countsByDay = buildTickerCountsByDay(allEntries)
+  return rows.filter(
+    (row) => !isBulkInferenceDay(row.detectedSince, countsByDay),
+  )
+}
+
+export function filterNuevosInWindow(
   rows: NuevoCedearRow[],
   referenceDate = new Date(),
+  months = NUEVOS_LIST_WINDOW_MONTHS,
 ): NuevoCedearRow[] {
-  const cutoff = cutoffIsoDayMonthsAgo(12, referenceDate)
+  const cutoff = cutoffIsoDayMonthsAgo(months, referenceDate)
   return rows.filter((row) => row.detectedSince >= cutoff)
+}
+
+export function buildQualifiedNuevosRows(
+  referenceDate = new Date(),
+): NuevoCedearRow[] {
+  const all = getNuevosCedearsRows()
+  return excludeBulkInferenceDays(filterNuevosInWindow(all, referenceDate), all)
+}
+
+export function splitNuevosVisibleRows(
+  rows: NuevoCedearRow[],
+  max = NUEVOS_VISIBLE_MAX,
+): { visible: NuevoCedearRow[]; hidden: NuevoCedearRow[] } {
+  return {
+    visible: rows.slice(0, max),
+    hidden: rows.slice(max),
+  }
 }
 
 export function isNuevoCedearBadge(
@@ -162,30 +211,12 @@ export function buildNuevosCedearsGroups(
   return groupNuevosCedearsByMonth(rows)
 }
 
-export function nuevosCedearsNeedsStickySearch(rowCount: number): boolean {
-  return rowCount > STICKY_SEARCH_THRESHOLD
-}
-
-export function filterNuevosCedearsQuery(
-  rows: NuevoCedearRow[],
-  query: string,
-): NuevoCedearRow[] {
-  const normalized = query.trim().toLowerCase()
-  if (!normalized) return rows
-  return rows.filter((row) => {
-    return (
-      row.ticker.toLowerCase().includes(normalized) ||
-      row.name.toLowerCase().includes(normalized)
-    )
-  })
-}
-
 export function nuevosCedearsUpdatedIsoDay(): string {
   return getNuevosCedearsDataset().generatedAt.slice(0, 10)
 }
 
 export function nuevosCedearsSitemapLastModified(): Date {
-  const rows = filterNuevosLast12Months(getNuevosCedearsRows())
+  const rows = buildQualifiedNuevosRows()
   const latestEntry = rows[0]?.detectedSince
   if (!latestEntry) {
     return new Date(getNuevosCedearsDataset().generatedAt)
@@ -195,13 +226,17 @@ export function nuevosCedearsSitemapLastModified(): Date {
 }
 
 export function buildNuevosCedearsPageModel(referenceDate = new Date()) {
-  const rows = filterNuevosLast12Months(getNuevosCedearsRows(), referenceDate)
+  const qualified = buildQualifiedNuevosRows(referenceDate)
+  const { visible, hidden } = splitNuevosVisibleRows(qualified)
+
   return {
-    rows,
-    groups: buildNuevosCedearsGroups(rows),
-    count12Months: rows.length,
+    qualifiedRows: qualified,
+    rows: visible,
+    hiddenCount: hidden.length,
+    groups: buildNuevosCedearsGroups(visible),
+    expandedGroups: buildNuevosCedearsGroups(qualified),
+    count6Months: qualified.length,
     updatedIsoDay: nuevosCedearsUpdatedIsoDay(),
-    needsSearch: nuevosCedearsNeedsStickySearch(rows.length),
     referenceDate,
   }
 }
