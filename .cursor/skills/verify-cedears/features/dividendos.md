@@ -6,7 +6,7 @@ Calendario de CEDEARs que pagan dividendos en `/dividendos`, con yield, frecuenc
 
 - `dividendos-table` — tabla ordenable con datos Yahoo del subyacente (`getDividendsTableData`).
 - `dividendos-search` — `#dividendos-search` con label **Buscar CEDEAR** (componente `CedearTableSearch`, sticky en mobile).
-- `dividendos-frequency` — filtros de frecuencia (ToggleGroup); query `?frecuencia=` desindexa (`robots: noindex`) cuando hay filtro activo.
+- `dividendos-frequency` — filtros de frecuencia (ToggleGroup); query `?frecuencia=` recibe `X-Robots-Tag: noindex, follow` vía middleware cuando hay filtro activo (canonical sigue en `/dividendos`).
 - `dividendos-csv` — `/dividendos.csv` dataset descargable (smoke HTTP).
 - `dividendos-layout` — sin overflow horizontal; encabezado de tabla sticky debajo del buscador en mobile (regresión cubierta en #75).
 
