@@ -4,7 +4,7 @@ The header exposes primary routes under `nav` **Secciones** on desktop (`md+`). 
 
 ## Sub-features
 
-- `nav-links-desktop` — Listado, Portfolio, Categorías, Ratios, Herramientas, ALyCs, Dólar MEP, Dólar cable, Earnings, Dividendos (`components/site-nav.tsx`, `hidden md:flex`).
+- `nav-links-desktop` — Listado, **Nuevos**, Portfolio, Categorías, Ratios, Herramientas, ALyCs, Dólar MEP, Dólar cable, Earnings, Dividendos (`components/site-nav.tsx`, `hidden md:flex`).
 - `nav-tab-bar-mobile` — Five tabs at the bottom: Listado (also active on `/cedear/*`), Portfolio, Dólar (`/dolar-mep` + `/dolar-cable`), Calcular (`/herramientas` + `/ratios`), **Más** button opening a bottom sheet (`aria-label="Secciones principales"`).
 - `nav-mas-sheet` — Sheet title **Más**; nested `nav` **Más secciones** with grouped links (Explorar, Operar, Datos y app). **Instalar la app** row when the browser exposes an install path.
 - `nav-bottom-offset` — `--bottom-nav-height` is `0px` on `md+`; on mobile it includes the tab bar and `safe-area-inset-bottom`. Main padding, Sonner toasts, detail **Agregar al portfolio** bar, and portfolio sheets stack above it.
