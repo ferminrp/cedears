@@ -4,6 +4,7 @@ import {
   BULK_INFERENCE_DAY_THRESHOLD,
   NUEVOS_CEDEARS_METADATA_TITLE,
   NUEVOS_CEDEARS_PAGE_H1,
+  buildOlderQualifiedNuevosRows,
   buildQualifiedNuevosRows,
   buildNuevosCedearsPageModel,
   buildTickerCountsByDay,
@@ -80,12 +81,19 @@ describe("nuevos-cedears", () => {
     assert.equal(formatNuevosRatio("10").display, "10:1")
   })
 
-  it("buildNuevosCedearsPageModel does not enable search", () => {
+  it("buildNuevosCedearsPageModel caps recent rows and exposes archive", () => {
     const model = buildNuevosCedearsPageModel(
       new Date("2026-11-04T12:00:00.000Z"),
     )
-    assert.ok(model.count6Months < 60)
     assert.ok(model.count6Months > 0)
-    assert.equal("needsSearch" in model, false)
+    assert.ok(model.count6Months <= 30)
+    assert.equal(model.rows.length, model.count6Months)
+    assert.ok(Array.isArray(model.olderGroups))
+  })
+
+  it("older qualified rows sit before the six-month cutoff", () => {
+    const ref = new Date("2026-11-04T12:00:00.000Z")
+    const older = buildOlderQualifiedNuevosRows(ref)
+    assert.ok(older.every((row) => row.detectedSince < "2026-05-04"))
   })
 })

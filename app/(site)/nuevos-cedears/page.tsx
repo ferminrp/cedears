@@ -1,10 +1,14 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import { CedearFaqs } from "@/components/cedear-faqs"
 import { NuevosCedearsList } from "@/components/nuevos-cedears-list"
 import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
 import { absoluteCanonical } from "@/lib/canonical"
 import {
+  NUEVOS_CEDEARS_ALTA_INTRO,
   NUEVOS_CEDEARS_DESCRIPTION,
+  NUEVOS_CEDEARS_FAQ,
+  NUEVOS_CEDEARS_INFERRED_NOTE,
   NUEVOS_CEDEARS_LEAD,
   NUEVOS_CEDEARS_METADATA_TITLE,
   NUEVOS_CEDEARS_PAGE_H1,
@@ -71,6 +75,17 @@ function NuevosCedearsJsonLd({
           url: `${siteUrl}/cedear/${row.ticker}`,
         })),
       },
+      {
+        "@type": "FAQPage",
+        mainEntity: NUEVOS_CEDEARS_FAQ.map((item) => ({
+          "@type": "Question",
+          name: item.question,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: item.answer,
+          },
+        })),
+      },
     ],
   }
 
@@ -122,6 +137,23 @@ export default function NuevosCedearsPage() {
         <p className="max-w-[60ch] text-pretty text-muted-foreground">
           {NUEVOS_CEDEARS_LEAD}
         </p>
+        <p className="max-w-[60ch] text-pretty text-sm leading-relaxed text-muted-foreground">
+          {NUEVOS_CEDEARS_ALTA_INTRO}{" "}
+          <Link
+            href="/como-comprar-cedears"
+            className="text-foreground underline underline-offset-4"
+          >
+            Cómo comprar CEDEARs
+          </Link>{" "}
+          y la{" "}
+          <Link
+            href="/ratios"
+            className="text-foreground underline underline-offset-4"
+          >
+            tabla de ratios
+          </Link>
+          .
+        </p>
         <p className="min-h-4 text-xs tabular-nums text-foreground/70">
           {model.count6Months}{" "}
           {model.count6Months === 1 ? "alta" : "altas"} en los últimos 6
@@ -132,15 +164,23 @@ export default function NuevosCedearsPage() {
         </p>
       </header>
 
+      <p className="mt-4 max-w-[60ch] text-xs leading-relaxed text-foreground/70">
+        {NUEVOS_CEDEARS_INFERRED_NOTE}
+      </p>
+
       <NuevosCedearsList
         groups={model.groups}
         expandedGroups={model.expandedGroups}
-        hiddenCount={model.hiddenCount}
+        olderGroups={model.olderGroups}
+        archiveCount={model.archiveCount}
         referenceTime={referenceTime}
       />
 
-      <p className="mt-6 text-xs text-foreground/70">
-        Fuente: BYMA (fecha de alta inferida del historial del listado público).{" "}
+      <div className="mt-10">
+        <CedearFaqs faqs={[...NUEVOS_CEDEARS_FAQ]} />
+      </div>
+
+      <p className="mt-8 text-xs text-foreground/70">
         <Link
           href="/categorias"
           className="inline-flex min-h-11 items-center font-medium text-foreground underline-offset-4 hover:underline"

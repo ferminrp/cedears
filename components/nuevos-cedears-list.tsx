@@ -10,6 +10,7 @@ import {
   isNuevoCedearBadge,
 } from "@/lib/nuevos-cedears"
 import { logoUrl } from "@/lib/logo"
+import { cn } from "@/lib/utils"
 import {
   Empty,
   EmptyDescription,
@@ -44,6 +45,17 @@ function NuevoBadge() {
   )
 }
 
+function TickerLogoInitial({ ticker }: { ticker: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      className="flex size-5 shrink-0 items-center justify-center rounded-sm bg-muted text-[10px] font-semibold uppercase text-foreground"
+    >
+      {ticker.charAt(0)}
+    </span>
+  )
+}
+
 function TickerLogo({
   ticker,
   tickerOriginal,
@@ -51,30 +63,45 @@ function TickerLogo({
   ticker: string
   tickerOriginal: string
 }) {
-  const [failed, setFailed] = useState(false)
+  const [imageVisible, setImageVisible] = useState(false)
   const src = logoUrl(tickerOriginal)
 
-  if (failed || !src) {
-    return (
-      <span
-        aria-hidden
-        className="flex size-5 shrink-0 items-center justify-center rounded-sm bg-muted text-[10px] font-semibold uppercase text-foreground"
-      >
-        {ticker.charAt(0)}
-      </span>
-    )
+  if (!src) {
+    return <TickerLogoInitial ticker={ticker} />
+  }
+
+  const syncImageState = (img: HTMLImageElement) => {
+    if (img.naturalWidth > 0) {
+      setImageVisible(true)
+    } else {
+      setImageVisible(false)
+    }
   }
 
   return (
-    <img
-      src={src}
-      alt=""
-      width={20}
-      height={20}
-      className="size-5 shrink-0 rounded-sm bg-muted object-contain"
-      loading="lazy"
-      onError={() => setFailed(true)}
-    />
+    <span className="relative inline-flex size-5 shrink-0">
+      <TickerLogoInitial ticker={ticker} />
+      <img
+        ref={(node) => {
+          if (!node) return
+          if (node.complete) {
+            syncImageState(node)
+          }
+        }}
+        src={src}
+        alt=""
+        width={20}
+        height={20}
+        className={cn(
+          "absolute inset-0 size-5 rounded-sm bg-muted object-contain",
+          imageVisible ? "opacity-100" : "opacity-0",
+        )}
+        loading="lazy"
+        decoding="async"
+        onLoad={(event) => syncImageState(event.currentTarget)}
+        onError={() => setImageVisible(false)}
+      />
+    </span>
   )
 }
 
@@ -253,24 +280,42 @@ function MonthSection({
   )
 }
 
+function renderGroupSections(
+  groups: NuevosCedearMonthGroup[],
+  referenceTime: number,
+  options?: { sectionPrefix?: string; firstSectionOffset?: boolean },
+) {
+  const showHeadings = groups.some((group) => group.heading)
+  return groups.map((group, index) => (
+    <MonthSection
+      key={`${options?.sectionPrefix ?? "recent"}-${group.id}`}
+      group={group}
+      referenceTime={referenceTime}
+      showHeading={showHeadings && Boolean(group.heading)}
+      isFirstGroup={options?.firstSectionOffset ? false : index === 0}
+    />
+  ))
+}
+
 export function NuevosCedearsList({
   groups,
   expandedGroups,
-  hiddenCount,
+  olderGroups,
+  archiveCount,
   referenceTime,
 }: {
   groups: NuevosCedearMonthGroup[]
   expandedGroups: NuevosCedearMonthGroup[]
-  hiddenCount: number
+  olderGroups: NuevosCedearMonthGroup[]
+  archiveCount: number
   referenceTime: number
 }) {
-  const [expanded, setExpanded] = useState(false)
-  const activeGroups = expanded ? expandedGroups : groups
-  const totalRows = expandedGroups.flatMap((group) => group.rows).length
+  const [showArchive, setShowArchive] = useState(false)
+  const recentCount = expandedGroups.flatMap((group) => group.rows).length
 
-  if (totalRows === 0) {
+  if (recentCount === 0 && olderGroups.length === 0) {
     return (
-      <Empty className="mt-6 rounded-[var(--radius-m)] border border-border">
+      <Empty className="mt-4 rounded-[var(--radius-m)] border border-border">
         <EmptyHeader>
           <EmptyTitle>Todavía no hay altas nuevas</EmptyTitle>
           <EmptyDescription>
@@ -287,29 +332,46 @@ export function NuevosCedearsList({
     )
   }
 
-  const showHeadings = activeGroups.some((group) => group.heading)
+  const archiveLabel =
+    archiveCount > 0 ? ` (${archiveCount} más)` : ""
 
   return (
-    <div className="mt-6 flex flex-col gap-2">
-      {activeGroups.map((group, index) => (
-        <MonthSection
-          key={group.id}
-          group={group}
-          referenceTime={referenceTime}
-          showHeading={showHeadings && Boolean(group.heading)}
-          isFirstGroup={index === 0}
-        />
-      ))}
+    <div className="mt-4 flex flex-col gap-2">
+      {showArchive
+        ? renderGroupSections(expandedGroups, referenceTime)
+        : renderGroupSections(groups, referenceTime)}
 
-      {!expanded && hiddenCount > 0 ? (
-        <button
-          type="button"
-          onClick={() => setExpanded(true)}
-          className="inline-flex min-h-11 items-center self-start text-sm font-medium text-foreground underline-offset-4 hover:underline"
-        >
-          Ver anteriores ({hiddenCount} más)
-        </button>
+      {showArchive && olderGroups.length > 0 ? (
+        <section aria-labelledby="nuevos-cedears-older-heading" className="mt-4">
+          <h2
+            id="nuevos-cedears-older-heading"
+            className="mb-2.5 text-[length:var(--size-l)] font-semibold leading-[var(--line-l)] tracking-[var(--letter-spacing-l)]"
+          >
+            Altas de más de 6 meses
+          </h2>
+          {renderGroupSections(olderGroups, referenceTime, {
+            sectionPrefix: "older",
+            firstSectionOffset: true,
+          })}
+        </section>
       ) : null}
+
+      {showArchive && olderGroups.length === 0 && archiveCount === 0 ? (
+        <p className="text-sm text-foreground/70">
+          No hay altas anteriores fuera de la ventana de 6 meses.
+        </p>
+      ) : null}
+
+      <button
+        type="button"
+        onClick={() => setShowArchive((value) => !value)}
+        className="inline-flex min-h-11 items-center self-start text-sm font-medium text-foreground underline-offset-4 hover:underline"
+        aria-expanded={showArchive}
+      >
+        {showArchive
+          ? "Ocultar altas anteriores"
+          : `Ver altas anteriores${archiveLabel}`}
+      </button>
     </div>
   )
 }

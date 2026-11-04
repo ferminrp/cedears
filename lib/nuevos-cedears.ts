@@ -50,6 +50,33 @@ export const NUEVOS_CEDEARS_DESCRIPTION =
 export const NUEVOS_CEDEARS_LEAD =
   "Los últimos CEDEARs que empezaron a cotizar en BYMA, del más reciente al más antiguo. Tocá uno para ver su ficha, ratio y precio."
 
+export const NUEVOS_CEDEARS_ALTA_INTRO =
+  "Una alta es cuando BYMA suma un CEDEAR nuevo al mercado local: desde entonces podés operarlo en pesos y el ratio de conversión queda fijado para ese ticker."
+
+export const NUEVOS_CEDEARS_INFERRED_NOTE =
+  "Las fechas de alta son inferidas: marcan la primera aparición de cada ticker en el historial del listado público google-sheets-argento. No reemplazan un comunicado oficial de BYMA."
+
+export const NUEVOS_CEDEARS_FAQ: ReadonlyArray<{
+  question: string
+  answer: string
+}> = [
+  {
+    question: "¿Cada cuánto se listan CEDEARs nuevos en BYMA?",
+    answer:
+      "No hay un calendario fijo. BYMA publica altas cuando el emisor y el depositario completan el proceso; suelen ser pocas por mes y a veces llegan en tandas temáticas (ETFs, commodities, etc.).",
+  },
+  {
+    question: "¿De dónde salen las fechas de esta página?",
+    answer:
+      "Las inferimos del historial de actualizaciones del listado público google-sheets-argento (primera vez que aparece cada ticker). Si necesitás la fecha oficial, consultá los comunicados de BYMA.",
+  },
+  {
+    question: "¿El ratio puede cambiar después del alta?",
+    answer:
+      "El ratio de un CEDEAR es estable: indica cuántos certificados equivalen a una acción del subyacente. Si BYMA anuncia un ajuste, se refleja en el listado; esta tabla muestra el ratio vigente del dataset.",
+  },
+]
+
 export const BULK_INFERENCE_DAY_THRESHOLD = 15
 export const NUEVOS_LIST_WINDOW_MONTHS = 6
 export const NUEVOS_VISIBLE_MAX = 30
@@ -133,6 +160,15 @@ export function buildQualifiedNuevosRows(
 ): NuevoCedearRow[] {
   const all = getNuevosCedearsRows()
   return excludeBulkInferenceDays(filterNuevosInWindow(all, referenceDate), all)
+}
+
+export function buildOlderQualifiedNuevosRows(
+  referenceDate = new Date(),
+): NuevoCedearRow[] {
+  const all = getNuevosCedearsRows()
+  const allQualified = excludeBulkInferenceDays(all, all)
+  const cutoff = cutoffIsoDayMonthsAgo(NUEVOS_LIST_WINDOW_MONTHS, referenceDate)
+  return allQualified.filter((row) => row.detectedSince < cutoff)
 }
 
 export function splitNuevosVisibleRows(
@@ -227,6 +263,7 @@ export function nuevosCedearsSitemapLastModified(): Date {
 
 export function buildNuevosCedearsPageModel(referenceDate = new Date()) {
   const qualified = buildQualifiedNuevosRows(referenceDate)
+  const olderQualified = buildOlderQualifiedNuevosRows(referenceDate)
   const { visible, hidden } = splitNuevosVisibleRows(qualified)
   const expandedGroups = buildNuevosCedearsGroups(qualified)
   const countLabelByGroupId = new Map(
@@ -239,10 +276,14 @@ export function buildNuevosCedearsPageModel(referenceDate = new Date()) {
 
   return {
     qualifiedRows: qualified,
+    olderRows: olderQualified,
     rows: visible,
     hiddenCount: hidden.length,
+    olderCount: olderQualified.length,
+    archiveCount: hidden.length + olderQualified.length,
     groups,
     expandedGroups,
+    olderGroups: buildNuevosCedearsGroups(olderQualified),
     count6Months: qualified.length,
     updatedIsoDay: nuevosCedearsUpdatedIsoDay(),
     referenceDate,
