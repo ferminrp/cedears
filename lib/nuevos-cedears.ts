@@ -228,13 +228,21 @@ export function nuevosCedearsSitemapLastModified(): Date {
 export function buildNuevosCedearsPageModel(referenceDate = new Date()) {
   const qualified = buildQualifiedNuevosRows(referenceDate)
   const { visible, hidden } = splitNuevosVisibleRows(qualified)
+  const expandedGroups = buildNuevosCedearsGroups(qualified)
+  const countLabelByGroupId = new Map(
+    expandedGroups.map((group) => [group.id, group.countLabel]),
+  )
+  const groups = buildNuevosCedearsGroups(visible).map((group) => ({
+    ...group,
+    countLabel: countLabelByGroupId.get(group.id) ?? group.countLabel,
+  }))
 
   return {
     qualifiedRows: qualified,
     rows: visible,
     hiddenCount: hidden.length,
-    groups: buildNuevosCedearsGroups(visible),
-    expandedGroups: buildNuevosCedearsGroups(qualified),
+    groups,
+    expandedGroups,
     count6Months: qualified.length,
     updatedIsoDay: nuevosCedearsUpdatedIsoDay(),
     referenceDate,
