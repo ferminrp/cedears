@@ -28,7 +28,7 @@ Preconditions:
 - **Tabla.** Esperar `#category-theme-search`. `getByRole('searchbox')` con label accesible **Buscar en esta categoría**. Tabla en `[data-category-theme-table]` con encabezados sticky bajo el buscador en viewports angostos (harness `assertCategoryThemeTableGeometry`).
 - **Hermana.** `getByRole('heading', { name: 'Otras categorías' })` visible cuando hay slugs hermanos.
 - **Redirect (HTTP).** `GET /categoria/tech` → 301/308 hacia URL que contiene `/categoria/tecnologia` (middleware `CATEGORY_SLUG_REDIRECTS`).
-- **Desconocida.** `GET /categoria/no-existe-xyz` → 404 o copy **Página no encontrada**, sin alerta de carga de datos (smoke del harness).
+- **Desconocida.** `GET /categoria/no-existe-xyz` → **HTTP 404** con copy **Página no encontrada**, sin alerta de carga de datos (smoke del harness; no soft 200).
 
 ## Gotchas
 

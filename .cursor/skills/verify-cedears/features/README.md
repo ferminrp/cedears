@@ -30,6 +30,7 @@ Each feature file uses H1, one intro paragraph, then these H2 sections in order:
 
 ## Features
 
+- [Site navigation](./site-nav.md) — Secciones bar, prefetch, progress bar, no full-page loading shell on route change.
 - [Home list and search](./home-list.md) — top-100 table, A–Z index, search/filters, export buttons.
 - [Categorías](./categorias.md) — índice `/categorias`, listas temáticas `/categoria/{slug}`, redirects legacy.
 - [CEDEAR detail](./cedear-detail.md) — per-ticker page, breadcrumb, similares, chart, FAQs.
