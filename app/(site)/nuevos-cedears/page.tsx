@@ -143,7 +143,7 @@ export default function NuevosCedearsPage() {
             href="/alycs"
             className="text-foreground underline underline-offset-4"
           >
-            Cómo comprar CEDEARs
+            dónde comprarlos (ALyCs)
           </Link>{" "}
           y la{" "}
           <Link
