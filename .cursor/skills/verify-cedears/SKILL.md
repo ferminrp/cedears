@@ -75,7 +75,7 @@ node scripts/verify-cedears.mjs --mode workers --port 8787 --artifact-dir /opt/c
 - Search: `getByRole('searchbox', { name: 'Buscar CEDEARs' })`
 - Market filter: `getByRole('combobox', { name: 'Filtrar por mercado' })`
 - Cedear row link: `getByRole('link', { name: /Ver detalle de / })`
-- Main nav: `getByRole('navigation', { name: 'Secciones' })`
+- Main nav: `getByRole('navigation', { name: 'Secciones' })` — see [features/site-nav.md](./features/site-nav.md) for client navigation and progress bar behavior.
 
 **Unit tests (logic only, no browser):**
 
@@ -98,11 +98,13 @@ Default artifact directory: `.verify-artifacts/<run-id>/` or pass `--artifact-di
 | Artifact | Proves |
 | --- | --- |
 | `doctor.txt` | Instance healthy, JSON feed reachable |
-| `smoke.json` | Key routes return expected status |
+| `smoke.json` | Key routes return expected status (includes unknown category HTTP 404, `/categoria/tecnologia` 200, MCP `tools/list`) |
 | `canonical-smoke.json` | Absolute `rel=canonical` in initial `<head>` for home, categorías, sample CEDEAR, tecnología — expected URLs use production origin `https://cedears.com` (+ path), not the local `VERIFY_BASE_URL` |
 | `home-desktop.png` | Home renders on desktop |
 | `home-1440.png` | Home at 1440×900 without horizontal overflow |
 | `home-390.png` | Home at 390×844 without horizontal overflow |
+| `nav-desktop-768.png` | Header bar clip at 768px width (touch targets / layout) |
+| `nav-mobile-390.png` | Header clip at 390px width |
 | `home-mobile.png` | Home renders on mobile (iPhone 13 profile) |
 | `home-search-desktop.png` | Search interaction filters the list (when data loaded) |
 | `ratios-desktop-1440.png` | `/ratios` desktop layout |

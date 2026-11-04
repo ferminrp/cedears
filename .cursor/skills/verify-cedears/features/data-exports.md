@@ -8,7 +8,8 @@ Machine-readable CEDEAR data is exposed for agents and spreadsheets without usin
 - `export-md` — `/cedears.md` markdown table.
 - `export-json` — `/cedears.json` base metadata array.
 - `export-dividendos-csv` — `/dividendos.csv` dividend calendar export (see [dividendos.md](./dividendos.md)).
-- `sitemap` — `/sitemap.xml` lists canonical URLs with per-entry `<lastmod>` (data feed, git mtime, or route helpers in `lib/sitemap-lastmod`).
+- `sitemap` — `/sitemap.xml` lists canonical URLs with per-entry `<lastmod>` (data feed, git mtime, or route helpers in `lib/sitemap-lastmod`). Unknown category slugs are omitted (only resolvable tags).
+- `mcp-tools-list` — `POST /mcp` JSON-RPC `tools/list` returns 200 with tool `list_cedears` (harness smoke).
 
 ## How to get to it (user POV)
 
@@ -25,8 +26,9 @@ Preconditions:
 - **Markdown.** `GET /cedears.md` → 200, body contains markdown table pipes `|`.
 - **JSON.** `GET /cedears.json` → 200, parse as array length ≥ 1 when GitHub source is up.
 - **Sitemap.** `GET /sitemap.xml` → 200, XML contains `<url>` entries and `<lastmod>` on indexable routes. `/portfolio` is not listed; `/ratios.csv` is not listed (CSV is linked from `/ratios` only).
+- **MCP.** `POST /mcp` with body `{"jsonrpc":"2.0","id":"verify","method":"tools/list","params":{}}` → 200; `result.tools` includes `list_cedears`.
 
-The helper script `scripts/verify-cedears.mjs` records these in `smoke.json`.
+The helper script `scripts/verify-cedears.mjs` records these in `smoke.json` (including unknown category 404 and valid `/categoria/tecnologia` 200).
 
 ## Gotchas
 
