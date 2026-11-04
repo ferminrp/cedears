@@ -140,7 +140,7 @@ export default function NuevosCedearsPage() {
         <p className="max-w-[60ch] text-pretty text-sm leading-relaxed text-muted-foreground">
           {NUEVOS_CEDEARS_ALTA_INTRO}{" "}
           <Link
-            href="/como-comprar-cedears"
+            href="/alycs"
             className="text-foreground underline underline-offset-4"
           >
             Cómo comprar CEDEARs

@@ -312,8 +312,9 @@ export function NuevosCedearsList({
 }) {
   const [showArchive, setShowArchive] = useState(false)
   const recentCount = expandedGroups.flatMap((group) => group.rows).length
+  const hasOlderRows = olderGroups.some((group) => group.rows.length > 0)
 
-  if (recentCount === 0 && olderGroups.length === 0) {
+  if (recentCount === 0 && archiveCount === 0) {
     return (
       <Empty className="mt-4 rounded-[var(--radius-m)] border border-border">
         <EmptyHeader>
@@ -341,7 +342,7 @@ export function NuevosCedearsList({
         ? renderGroupSections(expandedGroups, referenceTime)
         : renderGroupSections(groups, referenceTime)}
 
-      {showArchive && olderGroups.length > 0 ? (
+      {showArchive && hasOlderRows ? (
         <section aria-labelledby="nuevos-cedears-older-heading" className="mt-4">
           <h2
             id="nuevos-cedears-older-heading"
@@ -356,7 +357,7 @@ export function NuevosCedearsList({
         </section>
       ) : null}
 
-      {showArchive && olderGroups.length === 0 && archiveCount === 0 ? (
+      {showArchive && !hasOlderRows && archiveCount === 0 ? (
         <p className="text-sm text-foreground/70">
           No hay altas anteriores fuera de la ventana de 6 meses.
         </p>
