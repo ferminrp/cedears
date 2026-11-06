@@ -18,6 +18,10 @@ export function SiteFooter({ children }: { children: ReactNode }) {
         >
           colaborá en GitHub
         </a>
+        {" "}· Usalo desde tu IA con el{" "}
+        <a href="/mcp" className={linkClassName}>
+          MCP de CEDEARs
+        </a>
         .
       </p>
     </footer>

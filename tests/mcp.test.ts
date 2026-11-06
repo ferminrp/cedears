@@ -1,7 +1,7 @@
 import assert from "node:assert/strict"
 import { describe, it } from "node:test"
 import { type Cedear } from "../lib/cedears.ts"
-import { mcpGetIntent } from "../lib/mcp/accept.ts"
+import { mcpGetIntent, prefersMcpDocsHtml } from "../lib/mcp/accept.ts"
 import { handleJsonRpcBody } from "../lib/mcp/handler.ts"
 import { CORS_HEADERS, handleMcpGet, handleMcpOptions, mcpDescriptor } from "../lib/mcp/http.ts"
 import { type McpDeps } from "../lib/mcp/tools.ts"
@@ -228,4 +228,17 @@ describe("mcp HTTP shell", () => {
     assert.equal(d.csv, "https://cedears.com/cedears.csv")
     assert.equal(d.ui, "https://cedears.com")
   })
+})
+
+it("prefersMcpDocsHtml: browsers get docs, MCP clients keep JSON/SSE", () => {
+  assert.equal(prefersMcpDocsHtml(null), false)
+  assert.equal(prefersMcpDocsHtml("application/json"), false)
+  assert.equal(prefersMcpDocsHtml("*/*"), false)
+  assert.equal(prefersMcpDocsHtml("text/event-stream"), false)
+  assert.equal(prefersMcpDocsHtml("application/json, text/event-stream"), false)
+  assert.equal(prefersMcpDocsHtml("text/html, text/event-stream"), false)
+  assert.equal(
+    prefersMcpDocsHtml("text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"),
+    true,
+  )
 })
