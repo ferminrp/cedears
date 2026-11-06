@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next"
 import { categoryPath, findTagBySlug, getUniqueTagSlugs, getUniqueTags } from "@/lib/cedear-tags"
 import { NON_CANONICAL_CATEGORY_SLUGS } from "@/lib/category-redirects"
 import { getCedearBases } from "@/lib/get-cedears"
+import { nuevosCedearsSitemapLastModified } from "@/lib/nuevos-cedears"
 import {
   categoryLastModified,
   cedearLastModified,
@@ -81,6 +82,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: staticRouteLastModified("/categorias"),
       changeFrequency: "daily",
       priority: 0.85,
+    },
+    {
+      url: `${siteUrl}/nuevos-cedears`,
+      lastModified: nuevosCedearsSitemapLastModified(),
+      changeFrequency: "weekly",
+      priority: 0.8,
     },
     {
       url: `${siteUrl}/herramientas`,

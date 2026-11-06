@@ -163,6 +163,13 @@ export default async function Page() {
           <Link href="/ratios" className="text-foreground underline underline-offset-4">
             Ver tabla de ratios y calculadora
           </Link>
+          .{" "}
+          <Link
+            href="/nuevos-cedears"
+            className="text-foreground underline underline-offset-4"
+          >
+            Nuevos CEDEARs en BYMA
+          </Link>
           .
         </p>
       </section>
@@ -186,6 +193,10 @@ export default async function Page() {
         >
           data912
         </a>
+        .{" "}
+        <Link href="/nuevos-cedears" className={footerLinkClassName}>
+          Nuevos CEDEARs
+        </Link>
         .
       </SiteFooter>
     </>

@@ -10,6 +10,7 @@
     "lint": "eslint .",
     "test": "node --experimental-strip-types --import ./tests/register-ts.mjs --test tests/*.test.ts",
     "verify": "node scripts/verify-cedears.mjs",
+    "generate:nuevos-cedears": "node scripts/generate-nuevos-cedears-detected-at.mjs",
     "cf:build": "NEXT_PUBLIC_SITE_URL=https://cedears.com vinext build",
     "cf:deploy": "node --experimental-strip-types --import ./tests/register-ts.mjs scripts/indexnow/cf-deploy.ts",
     "indexnow:submit-all": "node --experimental-strip-types --import ./tests/register-ts.mjs scripts/indexnow/submit-all.ts",
