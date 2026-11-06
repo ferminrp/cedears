@@ -78,6 +78,14 @@ async function rewriteUnknownCategorySlug(
   return NextResponse.rewrite(url)
 }
 
+function dividendosFilteredRobotsTag(request: NextRequest): string | null {
+  const { pathname } = request.nextUrl
+  if (pathname !== '/dividendos' && pathname !== '/dividendos/') return null
+  const frecuencia = request.nextUrl.searchParams.get('frecuencia')
+  if (!frecuencia?.trim()) return null
+  return 'noindex, follow'
+}
+
 async function rewriteUnknownCedearTicker(
   request: NextRequest,
 ): Promise<NextResponse | null> {
@@ -135,6 +143,10 @@ export async function middleware(request: NextRequest) {
     'Link',
     '</.well-known/api-catalog>; rel="api-catalog", </cedears.json>; rel="item"; type="application/json", </cedears.csv>; rel="item"; type="text/csv", </mcp>; rel="item"; type="application/json", </llms.txt>; rel="service-doc"; type="text/plain", </cedears.md>; rel="service-doc"; type="text/markdown"',
   )
+  const robotsTag = dividendosFilteredRobotsTag(request)
+  if (robotsTag) {
+    response.headers.set('X-Robots-Tag', robotsTag)
+  }
   return response
 }
 

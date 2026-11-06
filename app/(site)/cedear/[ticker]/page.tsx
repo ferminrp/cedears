@@ -280,7 +280,7 @@ export default async function CedearPage({ params }: PageProps) {
             Sí, existe CEDEAR de {cedear.TickerOriginal} en Argentina. Operás
             bajo el ticker {cedear.Cedears} en BYMA, con ratio {cedear.Ratio}:1
             respecto a la acción en {cedear.Market}.{" "}
-            <Link href="/ratios" className="underline underline-offset-4">
+            <Link href="/ratios" prefetch={true} className="underline underline-offset-4">
               Ratios y calculadora
             </Link>
             {paysDividends ? (

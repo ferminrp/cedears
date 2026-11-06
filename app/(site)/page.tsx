@@ -160,7 +160,7 @@ export default async function Page() {
           (BYMA), en pesos argentinos. Este listado reúne CEDEARs disponibles con su
           ratio de conversión, ideal para consultar antes de operar o alimentar
           asistentes de inteligencia artificial con datos confiables.{" "}
-          <Link href="/ratios" className="text-foreground underline underline-offset-4">
+          <Link href="/ratios" prefetch={true} className="text-foreground underline underline-offset-4">
             Ver tabla de ratios y calculadora
           </Link>
           .
