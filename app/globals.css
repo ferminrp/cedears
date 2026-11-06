@@ -57,7 +57,9 @@
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
-  --color-success: var(--success);
+  --color-success: var(--positive-text);
+  --color-positive-text: var(--positive-text);
+  --color-negative-text: var(--negative-text);
   --color-warning: var(--warning);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
@@ -282,6 +284,8 @@
   --warning-transparent: #ffea0033;
   --error: #fc032d;
   --error-transparent: #fc032d33;
+  --positive-text: #007a5c;
+  --negative-text: #d4001f;
   --shadow-none: none;
   --shadow-s: 0px 2px 4px 0px #00000000;
   --shadow-m: 0px 2px 6px 0px #0000000d, 0px 8px 24px 0px #00000013;
@@ -290,7 +294,7 @@
   --cte-surface: #fbfbfc;
   --cte-surface-muted: #f3f4f6;
   --cte-text: #000000;
-  --cte-text-muted: #787e84;
+  --cte-text-muted: #6a7075;
   --cte-border: #e5e7eb33;
   --cte-accent: #fc032d;
   --cte-accent-text: #fbfbfc;
@@ -402,6 +406,8 @@
   --cte-accent-text: #1c2026;
   --cte-danger: #fc032d;
   --cte-focus: #fc032d;
+  --positive-text: var(--success);
+  --negative-text: var(--error);
 
   --background: var(--cte-canvas);
   --foreground: var(--cte-text);
@@ -500,6 +506,8 @@
     --cte-accent-text: #1c2026;
     --cte-danger: #fc032d;
     --cte-focus: #fc032d;
+    --positive-text: var(--success);
+    --negative-text: var(--error);
 
     --background: var(--cte-canvas);
     --foreground: var(--cte-text);
@@ -622,5 +630,11 @@
   }
   100% {
     transform: translateX(400%);
+  }
+}
+
+@layer utilities {
+  .text-destructive {
+    color: var(--negative-text);
   }
 }
