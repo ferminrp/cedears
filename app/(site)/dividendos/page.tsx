@@ -47,7 +47,7 @@ export async function generateMetadata({
     alternates: {
       canonical: absoluteCanonical("/dividendos"),
     },
-    robots: filtered ? { index: false, follow: true } : undefined,
+    ...(filtered && { robots: { index: false, follow: true } }),
     openGraph: buildPageOpenGraph({
       title: DIVIDENDOS_PAGE_TITLE,
       description: DIVIDENDOS_META_DESCRIPTION,

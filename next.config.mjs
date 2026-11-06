@@ -12,7 +12,8 @@ const nextConfig = {
   },
   serverExternalPackages: ['yahoo-finance2'],
   // Keep title/description/canonical in the initial <head> for crawlers (vinext streams
-  // dynamic generateMetadata into the body otherwise).
+  // dynamic generateMetadata into the body otherwise). patches/vinext*.patch makes this
+  // also cover requests with no User-Agent, which vinext otherwise always streams.
   htmlLimitedBots: /.*/,
 }
 

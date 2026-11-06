@@ -2,6 +2,7 @@
   "name": "my-project",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@10.34.9",
   "scripts": {
     "dev": "vinext dev --port 3000",
     "build": "vinext build",
@@ -58,7 +59,10 @@
       "workerd",
       "sharp",
       "msw"
-    ]
+    ],
+    "patchedDependencies": {
+      "vinext@1.0.0-beta.3": "patches/vinext@1.0.0-beta.3.patch"
+    }
   },
   "type": "module"
 }
