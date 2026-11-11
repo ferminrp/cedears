@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { ChevronDownIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -11,14 +11,109 @@ export type GuideTocItem = {
   label: string
 }
 
+const GUIDE_SCROLL_GAP_PX = 12
+const MOBILE_MEDIA = "(max-width: 1023px)"
+
+function isMobileGuideLayout() {
+  return typeof window !== "undefined" && window.matchMedia(MOBILE_MEDIA).matches
+}
+
+function measureGuideScrollOffset(): number {
+  let offset = GUIDE_SCROLL_GAP_PX
+
+  if (isMobileGuideLayout()) {
+    const chromeAnchors = [
+      document.querySelector<HTMLElement>("[aria-controls='guide-toc-panel-mobile']"),
+      document.querySelector<HTMLElement>(".md\\:hidden button"),
+    ]
+
+    for (const el of chromeAnchors) {
+      if (!el) continue
+      const { bottom } = el.getBoundingClientRect()
+      if (bottom > 0) {
+        offset = Math.max(offset, bottom + GUIDE_SCROLL_GAP_PX)
+      }
+    }
+  } else {
+    offset = 32
+  }
+
+  return Math.round(offset)
+}
+
+function syncSectionScrollMargins(sectionIds: string[]) {
+  const offset = measureGuideScrollOffset()
+  const margin = `${offset}px`
+  document.documentElement.style.scrollPaddingTop = margin
+
+  for (const id of sectionIds) {
+    const el = document.getElementById(id)
+    if (el) {
+      el.style.scrollMarginTop = margin
+    }
+  }
+
+  return offset
+}
+
+function pickActiveSectionId(sectionEls: HTMLElement[], scrollOffset: number) {
+  if (sectionEls.length === 0) return null
+
+  const viewportTop = scrollOffset
+  const viewportBottom = window.innerHeight
+
+  let bestId: string | null = null
+  let bestVisible = 0
+  let bestTop = Number.POSITIVE_INFINITY
+
+  for (const section of sectionEls) {
+    const { top, bottom } = section.getBoundingClientRect()
+    const visible = Math.min(bottom, viewportBottom) - Math.max(top, viewportTop)
+    if (visible <= 0) continue
+
+    if (visible > bestVisible || (visible === bestVisible && top < bestTop)) {
+      bestVisible = visible
+      bestTop = top
+      bestId = section.id
+    }
+  }
+
+  if (bestId) return bestId
+
+  let fallback = sectionEls[0].id
+  const line = window.scrollY + scrollOffset + 1
+  for (const section of sectionEls) {
+    const top = section.getBoundingClientRect().top + window.scrollY
+    if (top <= line) fallback = section.id
+    else break
+  }
+
+  return fallback
+}
+
+function scrollToGuideSection(id: string) {
+  const el = document.getElementById(id)
+  if (!el) return
+
+  const offset = measureGuideScrollOffset()
+  const top = el.getBoundingClientRect().top + window.scrollY - offset
+
+  window.scrollTo({
+    top: Math.max(0, top),
+    behavior: "instant" in document.documentElement.style ? "instant" : "auto",
+  })
+
+  history.replaceState(null, "", `#${id}`)
+}
+
 function TocLinks({
   items,
   activeId,
-  onNavigate,
+  onItemActivate,
 }: {
   items: GuideTocItem[]
   activeId: string | null
-  onNavigate?: () => void
+  onItemActivate: (id: string) => void
 }) {
   return (
     <ul className="flex flex-col gap-1">
@@ -29,7 +124,10 @@ function TocLinks({
             <a
               href={`#${item.id}`}
               aria-current={isActive ? "location" : undefined}
-              onClick={onNavigate}
+              onClick={(event) => {
+                event.preventDefault()
+                onItemActivate(item.id)
+              }}
               className={cn(
                 "inline-flex min-h-11 w-full items-center rounded-[var(--radius-s)] px-2 text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline",
                 isActive && "bg-muted font-medium text-foreground no-underline",
@@ -47,36 +145,91 @@ function TocLinks({
 export function GuideToc({ items }: { items: GuideTocItem[] }) {
   const [open, setOpen] = useState(false)
   const [activeId, setActiveId] = useState<string | null>(items[0]?.id ?? null)
+  const sectionElsRef = useRef<HTMLElement[]>([])
+  const pendingScrollIdRef = useRef<string | null>(null)
+
+  const itemIds = items.map((item) => item.id)
+
+  const refreshActiveFromScroll = useCallback(() => {
+    const sections = sectionElsRef.current
+    if (sections.length === 0) return
+
+    const offset = syncSectionScrollMargins(itemIds)
+    const next = pickActiveSectionId(sections, offset)
+    if (next) {
+      setActiveId(next)
+    }
+  }, [itemIds])
 
   useEffect(() => {
     const sections = items
       .map((item) => document.getElementById(item.id))
       .filter((node): node is HTMLElement => node !== null)
 
+    sectionElsRef.current = sections
     if (sections.length === 0) return
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const intersecting = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)
+    refreshActiveFromScroll()
 
-        if (intersecting[0]?.target.id) {
-          setActiveId(intersecting[0].target.id)
-        }
-      },
-      {
-        rootMargin: "-20% 0px -55% 0px",
-        threshold: [0, 0.1, 0.25, 0.5, 0.75, 1],
-      },
-    )
-
-    for (const section of sections) {
-      observer.observe(section)
+    let frame = 0
+    const onScrollOrResize = () => {
+      if (frame) return
+      frame = window.requestAnimationFrame(() => {
+        frame = 0
+        refreshActiveFromScroll()
+      })
     }
 
-    return () => observer.disconnect()
-  }, [items])
+    window.addEventListener("scroll", onScrollOrResize, { passive: true })
+    window.addEventListener("resize", onScrollOrResize)
+
+    return () => {
+      window.removeEventListener("scroll", onScrollOrResize)
+      window.removeEventListener("resize", onScrollOrResize)
+      if (frame) window.cancelAnimationFrame(frame)
+      document.documentElement.style.scrollPaddingTop = ""
+      for (const section of sections) {
+        section.style.scrollMarginTop = ""
+      }
+    }
+  }, [items, refreshActiveFromScroll])
+
+  useEffect(() => {
+    if (open) return
+
+    const id = pendingScrollIdRef.current
+    if (id) {
+      pendingScrollIdRef.current = null
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          scrollToGuideSection(id)
+          setActiveId(id)
+          refreshActiveFromScroll()
+        })
+      })
+      return
+    }
+
+    refreshActiveFromScroll()
+  }, [open, refreshActiveFromScroll])
+
+  const activateSection = useCallback(
+    (id: string, { mobile }: { mobile: boolean }) => {
+      setActiveId(id)
+
+      if (mobile && open) {
+        pendingScrollIdRef.current = id
+        setActiveId(id)
+        setOpen(false)
+        return
+      }
+
+      scrollToGuideSection(id)
+      setActiveId(id)
+      requestAnimationFrame(refreshActiveFromScroll)
+    },
+    [open, refreshActiveFromScroll],
+  )
 
   return (
     <>
@@ -104,7 +257,7 @@ export function GuideToc({ items }: { items: GuideTocItem[] }) {
             <TocLinks
               items={items}
               activeId={activeId}
-              onNavigate={() => setOpen(false)}
+              onItemActivate={(id) => activateSection(id, { mobile: true })}
             />
           </nav>
         ) : null}
@@ -115,7 +268,11 @@ export function GuideToc({ items }: { items: GuideTocItem[] }) {
         className="hidden shrink-0 lg:sticky lg:top-[var(--space-xxl)] lg:block lg:w-[220px] lg:self-start"
       >
         <p className="mb-3 text-sm font-medium text-foreground">Índice</p>
-        <TocLinks items={items} activeId={activeId} />
+        <TocLinks
+          items={items}
+          activeId={activeId}
+          onItemActivate={(id) => activateSection(id, { mobile: false })}
+        />
       </nav>
     </>
   )
