@@ -1,15 +1,50 @@
 import type { CedearFaq } from "@/lib/cedear-faqs"
+import { cn } from "@/lib/utils"
 
-export function CedearFaqs({ faqs }: { faqs: CedearFaq[] }) {
+export function CedearFaqs({
+  faqs,
+  headingClassName,
+  embedded = false,
+  sectionId = "cedear-faqs",
+  showHeading = true,
+}: {
+  faqs: CedearFaq[]
+  headingClassName?: string
+  embedded?: boolean
+  sectionId?: string
+  /** false when the caller renders the H2 (id `${sectionId}-heading`) outside a card. */
+  showHeading?: boolean
+}) {
+  const headingElementId = `${sectionId}-heading`
+
+  // Without its own heading the caller's <section aria-labelledby> already names
+  // this region; a nested labelled section would duplicate the landmark.
+  const Wrapper = showHeading ? "section" : "div"
+
   return (
-    <section aria-labelledby="cedear-faqs-heading" className="space-y-4">
+    <Wrapper
+      aria-labelledby={showHeading ? headingElementId : undefined}
+      id={sectionId}
+      className="space-y-4"
+    >
+      {showHeading ? (
       <h2
-        id="cedear-faqs-heading"
-        className="text-[length:var(--size-l)] leading-[var(--line-l)] font-semibold tracking-[var(--letter-spacing-l)]"
+        id={headingElementId}
+        className={cn(
+          "text-[length:var(--size-l)] leading-[var(--line-l)] font-semibold tracking-[var(--letter-spacing-l)]",
+          headingClassName,
+        )}
       >
         Preguntas frecuentes
       </h2>
-      <div className="divide-y overflow-hidden rounded-[var(--radius-m)] border border-border bg-card">
+      ) : null}
+      <div
+        className={cn(
+          embedded
+            ? "divide-y border-0 bg-transparent"
+            : "divide-y overflow-hidden rounded-[var(--radius-m)] border border-border bg-card",
+        )}
+      >
         {faqs.map((faq) => (
           <details key={faq.question} className="group px-4 py-1">
             <summary className="cursor-pointer list-none py-3 text-sm font-medium marker:content-none [&::-webkit-details-marker]:hidden">
@@ -24,11 +59,11 @@ export function CedearFaqs({ faqs }: { faqs: CedearFaq[] }) {
               </span>
             </summary>
             <p className="pb-4 text-sm leading-relaxed text-muted-foreground">
-              {faq.answer}
+              {faq.answerNode ?? faq.answer}
             </p>
           </details>
         ))}
       </div>
-    </section>
+    </Wrapper>
   )
 }
