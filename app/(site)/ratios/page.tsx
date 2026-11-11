@@ -135,14 +135,14 @@ export default async function RatiosPage() {
               >
                 Todos los ratios
               </h2>
-              <Link
+              <a
                 id="ratios-download-csv"
                 href="/ratios.csv"
                 download
                 className="inline-flex min-h-11 items-center text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
               >
                 Descargar CSV
-              </Link>
+              </a>
             </div>
             <RatiosTable cedears={cedears} />
           </section>

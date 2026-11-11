@@ -27,34 +27,22 @@ import { BanknoteIcon } from "lucide-react"
 
 export const revalidate = 86400
 
-type PageProps = {
-  searchParams: Promise<{ frecuencia?: string }>
-}
-
-export async function generateMetadata({
-  searchParams,
-}: PageProps): Promise<Metadata> {
-  const params = await searchParams
-  const filtered = Boolean(params.frecuencia?.trim())
-
-  return {
+export const metadata: Metadata = {
+  title: DIVIDENDOS_PAGE_TITLE,
+  description: DIVIDENDOS_META_DESCRIPTION,
+  keywords: [
+    "dividendos cedears",
+    "cedears que pagan dividendos",
+    "calendario dividendos cedears",
+  ],
+  alternates: {
+    canonical: absoluteCanonical("/dividendos"),
+  },
+  openGraph: buildPageOpenGraph({
     title: DIVIDENDOS_PAGE_TITLE,
     description: DIVIDENDOS_META_DESCRIPTION,
-    keywords: [
-      "dividendos cedears",
-      "cedears que pagan dividendos",
-      "calendario dividendos cedears",
-    ],
-    alternates: {
-      canonical: absoluteCanonical("/dividendos"),
-    },
-    robots: filtered ? { index: false, follow: true } : undefined,
-    openGraph: buildPageOpenGraph({
-      title: DIVIDENDOS_PAGE_TITLE,
-      description: DIVIDENDOS_META_DESCRIPTION,
-      url: "/dividendos",
-    }),
-  }
+    url: "/dividendos",
+  }),
 }
 
 function DividendosJsonLd({
@@ -117,9 +105,7 @@ function DividendosJsonLd({
   )
 }
 
-export default async function DividendosPage({ searchParams }: PageProps) {
-  const params = await searchParams
-  const initialFrequency = params.frecuencia?.trim() || "todas"
+export default async function DividendosPage() {
   const data = await getDividendsTableData()
   const updatedLabel = formatDividendosUpdatedDate(data.asOfDate)
 
@@ -157,7 +143,6 @@ export default async function DividendosPage({ searchParams }: PageProps) {
       <DividendsTable
         rows={data.rows}
         referenceDateIso={data.asOfDate}
-        initialFrequency={initialFrequency}
       />
     )
   }
@@ -185,13 +170,13 @@ export default async function DividendosPage({ searchParams }: PageProps) {
             <h2 id="dividendos-table-heading" className="text-base font-medium">
               Próximos dividendos
             </h2>
-            <Link
+            <a
               href="/dividendos.csv"
               download
               className="inline-flex min-h-11 items-center text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
             >
               Descargar CSV
-            </Link>
+            </a>
           </div>
           {tableSection}
         </section>
@@ -212,7 +197,7 @@ export default async function DividendosPage({ searchParams }: PageProps) {
 
       <p className="mt-10 text-sm text-muted-foreground">
         Ver también:{" "}
-        <Link href="/ratios" className="underline underline-offset-4">
+        <Link href="/ratios" prefetch={true} className="underline underline-offset-4">
           Ratios de CEDEARs
         </Link>
         .
