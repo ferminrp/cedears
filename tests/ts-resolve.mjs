@@ -17,6 +17,10 @@ function tryFile(base) {
 }
 
 export async function resolve(specifier, context, nextResolve) {
+  if (specifier === "next/cache") {
+    return nextResolve("vinext/shims/cache", context)
+  }
+
   if (specifier.startsWith("@/")) {
     const abs = tryFile(join(REPO_ROOT, specifier.slice(2)))
     if (abs) {
