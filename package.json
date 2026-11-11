@@ -9,6 +9,7 @@
     "deploy": "NEXT_PUBLIC_SITE_URL=https://cedears.com vinext-cloudflare deploy --config dist/server/wrangler.json",
     "lint": "eslint .",
     "test": "node --experimental-strip-types --import ./tests/register-ts.mjs --test tests/*.test.ts",
+    "test:guide-toc": "node tests/guide-toc.playwright.mjs",
     "verify": "node scripts/verify-cedears.mjs",
     "cf:build": "NEXT_PUBLIC_SITE_URL=https://cedears.com vinext build",
     "cf:deploy": "node --experimental-strip-types --import ./tests/register-ts.mjs scripts/indexnow/cf-deploy.ts",

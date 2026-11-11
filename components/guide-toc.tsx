@@ -1,6 +1,12 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
 import type { MouseEvent } from "react"
 import { ChevronDownIcon } from "lucide-react"
 
@@ -35,7 +41,7 @@ function isModifiedLinkClick(event: MouseEvent<HTMLAnchorElement>) {
   )
 }
 
-function applySectionScrollMargins(sectionIds: string[]) {
+function applySectionScrollMargins(sectionIds: readonly string[]) {
   const margin = `${GUIDE_SECTION_SCROLL_MARGIN_PX}px`
   for (const id of sectionIds) {
     const el = document.getElementById(id)
@@ -130,10 +136,18 @@ export function GuideToc({ items }: { items: GuideTocItem[] }) {
   const [activeId, setActiveId] = useState<string | null>(items[0]?.id ?? null)
   const sectionElsRef = useRef<HTMLElement[]>([])
   const lockedIdRef = useRef<string | null>(null)
+  const userUnlockedRef = useRef(false)
+  const itemIdsRef = useRef<readonly string[]>([])
 
-  const itemIds = items.map((item) => item.id)
+  const itemIdsKey = useMemo(
+    () => items.map((item) => item.id).join("|"),
+    [items],
+  )
+
+  itemIdsRef.current = itemIdsKey ? itemIdsKey.split("|") : []
 
   const lockActiveId = useCallback((id: string) => {
+    userUnlockedRef.current = false
     lockedIdRef.current = id
     setActiveId(id)
   }, [])
@@ -159,36 +173,61 @@ export function GuideToc({ items }: { items: GuideTocItem[] }) {
 
   const syncActiveFromHash = useCallback(() => {
     const hash = window.location.hash.slice(1)
-    if (hash && itemIds.includes(hash)) {
+
+    if (!hash) {
+      userUnlockedRef.current = false
+      releaseActiveLock()
+      refreshActiveFromScroll()
+      return
+    }
+
+    if (userUnlockedRef.current) {
+      refreshActiveFromScroll()
+      return
+    }
+
+    if (itemIdsRef.current.includes(hash)) {
       lockActiveId(hash)
       return
     }
+
     refreshActiveFromScroll()
-  }, [itemIds, lockActiveId, refreshActiveFromScroll])
+  }, [lockActiveId, refreshActiveFromScroll, releaseActiveLock])
+
+  const syncActiveFromHashRef = useRef(syncActiveFromHash)
+  syncActiveFromHashRef.current = syncActiveFromHash
+
+  const refreshActiveFromScrollRef = useRef(refreshActiveFromScroll)
+  refreshActiveFromScrollRef.current = refreshActiveFromScroll
+
+  const releaseActiveLockRef = useRef(releaseActiveLock)
+  releaseActiveLockRef.current = releaseActiveLock
 
   useEffect(() => {
-    const sections = items
-      .map((item) => document.getElementById(item.id))
+    const ids = itemIdsKey ? itemIdsKey.split("|") : []
+    const sections = ids
+      .map((id) => document.getElementById(id))
       .filter((node): node is HTMLElement => node !== null)
 
     sectionElsRef.current = sections
     if (sections.length === 0) return
 
-    applySectionScrollMargins(itemIds)
-    syncActiveFromHash()
+    applySectionScrollMargins(ids)
+    syncActiveFromHashRef.current()
 
     let frame = 0
     const scheduleRefresh = () => {
       if (frame) return
       frame = window.requestAnimationFrame(() => {
         frame = 0
-        refreshActiveFromScroll()
+        refreshActiveFromScrollRef.current()
       })
     }
 
     const onUserScrollIntent = () => {
       if (!lockedIdRef.current) return
-      releaseActiveLock()
+      userUnlockedRef.current = true
+      releaseActiveLockRef.current()
       scheduleRefresh()
     }
 
@@ -196,8 +235,8 @@ export function GuideToc({ items }: { items: GuideTocItem[] }) {
       scheduleRefresh()
     }
 
-    const onHashChange = () => {
-      syncActiveFromHash()
+    const onHistoryChange = () => {
+      syncActiveFromHashRef.current()
     }
 
     const onKeyDown = (event: KeyboardEvent) => {
@@ -207,7 +246,8 @@ export function GuideToc({ items }: { items: GuideTocItem[] }) {
 
     window.addEventListener("scroll", onScroll, { passive: true })
     window.addEventListener("resize", scheduleRefresh)
-    window.addEventListener("hashchange", onHashChange)
+    window.addEventListener("hashchange", onHistoryChange)
+    window.addEventListener("popstate", onHistoryChange)
     window.addEventListener("wheel", onUserScrollIntent, { passive: true })
     window.addEventListener("touchmove", onUserScrollIntent, { passive: true })
     window.addEventListener("keydown", onKeyDown)
@@ -215,20 +255,15 @@ export function GuideToc({ items }: { items: GuideTocItem[] }) {
     return () => {
       window.removeEventListener("scroll", onScroll)
       window.removeEventListener("resize", scheduleRefresh)
-      window.removeEventListener("hashchange", onHashChange)
+      window.removeEventListener("hashchange", onHistoryChange)
+      window.removeEventListener("popstate", onHistoryChange)
       window.removeEventListener("wheel", onUserScrollIntent)
       window.removeEventListener("touchmove", onUserScrollIntent)
       window.removeEventListener("keydown", onKeyDown)
       if (frame) window.cancelAnimationFrame(frame)
       clearSectionScrollMargins(sections)
     }
-  }, [
-    items,
-    itemIds,
-    refreshActiveFromScroll,
-    releaseActiveLock,
-    syncActiveFromHash,
-  ])
+  }, [itemIdsKey])
 
   const handleTocLinkClick = useCallback(
     (id: string, _event: MouseEvent<HTMLAnchorElement>) => {
