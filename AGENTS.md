@@ -1,5 +1,9 @@
 # AGENTS.md
 
+## Skills de UI y motion
+
+Skills de UI y motion (emilkowalski/skills, en `.cursor/skills/`): usá emil-design-eng y animate/choreograph/gestures cuando construyas o cambies UI o animaciones; break-ui y review-animations antes de abrir un PR con cambios visuales.
+
 ## Cursor Cloud specific instructions
 
 This is a single frontend app named "cedears" on **vinext** (Vite), React 19, and Tailwind CSS v4, deployed to Cloudflare Workers. It has no backend or database. The one page fetches a public JSON of Argentine CEDEARs from `raw.githubusercontent.com` (see `lib/get-cedears.ts`) and renders a searchable/filterable table with Markdown/CSV export. Rendering the data therefore requires outbound network access to GitHub; if that fetch fails the page shows an "Error al cargar los datos" alert instead of the table.
