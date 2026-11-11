@@ -5,22 +5,15 @@ import { prefersMcpDocsHtml } from '@/lib/mcp/accept'
 import { CATEGORY_SLUG_REDIRECTS } from '@/lib/category-redirects'
 import { isKnownCategorySlug } from '@/lib/category-slug-guard'
 import { isKnownCedearTicker } from '@/lib/cedear-ticker-guard'
+import { requestHost } from '@/lib/request-host'
+import { trustedApexOrigin } from '@/lib/www-redirect'
 
-function requestHost(request: NextRequest): string {
-  return (
-    request.headers.get('x-forwarded-host') ??
-    request.headers.get('host') ??
-    request.nextUrl.host
-  )
-    .split(',')[0]
-    .trim()
+function siteOrigin(_request: NextRequest): string {
+  return trustedApexOrigin()
 }
 
-function siteOrigin(request: NextRequest): string {
-  const configured = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '')
-  if (configured) return configured
-  const host = requestHost(request).replace(/^www\./, '')
-  return `https://${host}`
+function requestHostFromNext(request: NextRequest): string {
+  return requestHost(request.headers, request.nextUrl)
 }
 
 function permanentRedirect(url: URL): NextResponse {
@@ -40,7 +33,7 @@ function redirectToHttps(request: NextRequest): NextResponse | null {
 }
 
 function redirectWwwToApex(request: NextRequest): NextResponse | null {
-  const host = requestHost(request)
+  const host = requestHostFromNext(request)
   if (!host.startsWith('www.')) return null
   return absoluteRedirect(request, request.nextUrl.pathname)
 }
