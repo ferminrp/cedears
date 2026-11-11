@@ -41,6 +41,8 @@
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^6.0.4",
     "@vitejs/plugin-rsc": "^0.5.29",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
     "playwright": "1.51.1",
     "postcss": "^8.5",
     "tailwindcss": "^4.3.3",
