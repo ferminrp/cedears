@@ -36,6 +36,7 @@ Each feature file uses H1, one intro paragraph, then these H2 sections in order:
 - [CEDEAR detail](./cedear-detail.md) — per-ticker page, breadcrumb, similares, chart, FAQs.
 - [Dividendos](./dividendos.md) — calendario `/dividendos`, filtros, CSV, sticky mobile table.
 - [Data exports and feeds](./data-exports.md) — CSV, Markdown, JSON, sitemap.
+- [MCP connection guide](./mcp-docs.md) — `/mcp` HTML docs vs JSON-RPC on the same URL.
 - [Portfolio](./portfolio.md) — local portfolio tracking view.
 - [Tools (DCA and rebalance)](./herramientas.md) — calculators under Herramientas.
 - [Ratios](./ratios.md) — conversion table, calculator, and CSV at `/ratios`.
