@@ -381,6 +381,20 @@ function requestUrl(url, { method = "GET", headers = {}, body, timeoutMs = 60_00
   })
 }
 
+async function assertDividendosFilteredRobots(baseUrl) {
+  const filtered = await requestUrl(`${baseUrl}/dividendos?frecuencia=mensual`)
+  assert.equal(
+    filtered.headers["x-robots-tag"],
+    "noindex, follow",
+    "/dividendos?frecuencia= must send X-Robots-Tag noindex, follow",
+  )
+  const plain = await requestUrl(`${baseUrl}/dividendos`, { timeoutMs: 600_000 })
+  assert.ok(
+    !plain.headers["x-robots-tag"],
+  "/dividendos without frecuencia must not send X-Robots-Tag",
+  )
+}
+
 async function smokeMcp(baseUrl) {
   const html = await requestUrl(`${baseUrl}/mcp`, { headers: { Accept: "text/html" } })
   assert.equal(html.status, 200, "GET /mcp (html)")
@@ -408,6 +422,11 @@ async function smokeMcp(baseUrl) {
   for (const path of ["/ratios", "/dividendos", "/mcp"]) {
     assert.ok(sitemap.body.includes(`${path}</loc>`), `sitemap includes ${path}`)
   }
+  const cdn = (sitemap.headers["cdn-cache-control"] ?? "").toLowerCase()
+  assert.ok(
+    cdn.includes("max-age=3600") && cdn.includes("stale-while-revalidate=86400"),
+    `sitemap CDN-Cache-Control must set 1h TTL (got ${cdn || "(missing)"})`,
+  )
 }
 
 async function smoke(baseUrl, sampleTicker, artifactDir) {
@@ -450,6 +469,7 @@ async function smoke(baseUrl, sampleTicker, artifactDir) {
 
   await smokeCanonicals(baseUrl, sampleTicker, artifactDir)
   await smokeMcp(baseUrl)
+  await assertDividendosFilteredRobots(baseUrl)
 }
 
 async function assertNoHorizontalOverflow(page, label) {
@@ -938,6 +958,14 @@ async function captureScreenshots(baseUrl, artifactDir, setBrowser) {
     const search = desktop.getByRole("searchbox", { name: "Buscar CEDEARs" })
     if (await search.count()) {
       await search.first().focus()
+      const outlineWidth = await search.first().evaluate((el) =>
+        window.getComputedStyle(el).outlineWidth,
+      )
+      assert.notEqual(
+        outlineWidth,
+        "0px",
+        "home search must show focus-visible outline (a11y)",
+      )
       await search.first().fill("AAPL")
       await desktop.waitForTimeout(2000)
       await desktop.screenshot({

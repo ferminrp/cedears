@@ -6,7 +6,7 @@ Tabla de ratios, calculadora CEDEARs ↔ acciones y export CSV en `/ratios`.
 
 - `ratios-table` — listado ordenable (ticker, empresa, ratio, precio ARS).
 - `ratio-calculator` — conversión y precio teórico al CCL promedio.
-- `ratios-csv` — descarga `/ratios.csv`.
+- `ratios-csv` — descarga `/ratios.csv` vía `<a download>` (no prefetch RSC del CSV; ver [site-nav.md](./site-nav.md)).
 
 ## How to get to it (user POV)
 

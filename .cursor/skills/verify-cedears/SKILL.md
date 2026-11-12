@@ -83,6 +83,8 @@ node scripts/verify-cedears.mjs --mode workers --port 8787 --artifact-dir /opt/c
 pnpm test
 ```
 
+Covers `lib/` tools plus registry and MCP contract tests: `tests/server-json.test.ts` (root `server.json` vs MCP Registry schema), `tests/mcp.test.ts` (`prefersMcpDocsHtml`), `tests/dividends-cache.test.ts` (failed dividend loads are not cached).
+
 **Build check (no server):**
 
 ```bash
@@ -98,7 +100,7 @@ Default artifact directory: `.verify-artifacts/<run-id>/` or pass `--artifact-di
 | Artifact | Proves |
 | --- | --- |
 | `doctor.txt` | Instance healthy, JSON feed reachable |
-| `smoke.json` | Key routes return expected status (includes unknown category HTTP 404, `/categoria/tecnologia` 200, MCP `tools/list`) |
+| `smoke.json` | Key routes return expected status (unknown category 404, `/categoria/tecnologia` 200, `POST /mcp` `tools/list`, `smokeMcp` Accept negotiation, sitemap `CDN-Cache-Control`, filtered `/dividendos` robots) |
 | `canonical-smoke.json` | Absolute `rel=canonical` in initial `<head>` for home, categorías, sample CEDEAR, tecnología — expected URLs use production origin `https://cedears.com` (+ path), not the local `VERIFY_BASE_URL` |
 | `home-desktop.png` | Home renders on desktop |
 | `home-1440.png` | Home at 1440×900 without horizontal overflow |
@@ -121,6 +123,10 @@ Default artifact directory: `.verify-artifacts/<run-id>/` or pass `--artifact-di
 | `dividendos-mobile-375.png` | `/dividendos` at 375px width |
 | `dividendos-mobile-390-frecuencia.png` | `/dividendos?frecuencia=mensual` mobile |
 | `dividendos-mobile-390-sin-resultados.png` | Empty search result state on mobile |
+| `mcp-390.png` | MCP docs at 390px (overflow + touch targets) |
+| `mcp-768.png` | MCP docs at 768px |
+| `mcp-1024.png` | MCP docs at 1024px |
+| `mcp-1440.png` | MCP docs at 1440px |
 | `summary.json` | Run metadata and pass/fail |
 | `server.log` | Dev/workers stdout when the helper launched the server |
 
