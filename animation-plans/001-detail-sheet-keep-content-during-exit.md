@@ -1,6 +1,6 @@
 # 001 — Keep the detail sheet's content rendered while it closes
 
-- **Status**: TODO
+- **Status**: DONE
 - **Commit**: 864a784
 - **Severity**: MEDIUM
 - **Category**: Missed opportunities (preventing a jarring change) / Interruptibility

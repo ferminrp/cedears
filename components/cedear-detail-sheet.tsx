@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import type { Cedear } from "@/lib/cedears"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { CedearCompanyProfileLoader } from "@/components/cedear-company-profile"
@@ -24,9 +25,19 @@ export function CedearDetailSheet({
   onOpenChange: (open: boolean) => void
 }) {
   const isDesktop = useMediaQuery("(min-width: 768px)")
+  // Keep the last opened CEDEAR rendered while the sheet plays its exit.
+  const [lastCedear, setLastCedear] = useState<Cedear | null>(cedear)
+  if (cedear && cedear !== lastCedear) setLastCedear(cedear)
+  const shown = cedear ?? lastCedear
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
+    <Sheet
+      open={open}
+      onOpenChange={onOpenChange}
+      onOpenChangeComplete={(nextOpen) => {
+        if (!nextOpen) setLastCedear(null)
+      }}
+    >
       <SheetContent
         side={isDesktop ? "right" : "bottom"}
         className={
@@ -35,12 +46,12 @@ export function CedearDetailSheet({
             : "max-h-[85vh] gap-0 overflow-hidden rounded-t-xl"
         }
       >
-        {cedear ? (
+        {shown ? (
           <>
             <SheetHeader className="shrink-0 border-b pr-10">
               <div className="flex items-start gap-3">
                 <img
-                  src={logoUrl(cedear.TickerOriginal)}
+                  src={logoUrl(shown.TickerOriginal)}
                   alt=""
                   width={40}
                   height={40}
@@ -48,23 +59,23 @@ export function CedearDetailSheet({
                 />
                 <div className="min-w-0">
                   <SheetTitle className="font-mono text-lg tracking-tight">
-                    {cedear.Cedears}
+                    {shown.Cedears}
                   </SheetTitle>
-                  <SheetDescription>{cedear.Name}</SheetDescription>
+                  <SheetDescription>{shown.Name}</SheetDescription>
                 </div>
               </div>
             </SheetHeader>
 
             <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
-              <CedearDetailView cedear={cedear} />
+              <CedearDetailView cedear={shown} />
               <div className="mt-6 border-t border-border/60 pt-6">
                 <CedearCompanyProfileLoader
-                  tickerOriginal={cedear.TickerOriginal}
+                  tickerOriginal={shown.TickerOriginal}
                   compact
                 />
               </div>
               <Link
-                href={`/cedear/${cedear.Cedears}`}
+                href={`/cedear/${shown.Cedears}`}
                 className="mt-6 inline-flex text-sm font-medium text-foreground underline underline-offset-4"
               >
                 Ver página completa →

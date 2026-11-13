@@ -22,7 +22,7 @@ Recon stamp: `864a784` (branch `claude/admiring-albattani-mlusgg`).
 
 | # | Title | Severity | Status | Depends on | Files touched |
 | --- | --- | --- | --- | --- | --- |
-| 001 | Keep the detail sheet's content rendered while it closes | MEDIUM | TODO | — | `components/cedear-detail-sheet.tsx` |
+| 001 | Keep the detail sheet's content rendered while it closes | MEDIUM | DONE | — | `components/cedear-detail-sheet.tsx` |
 | 002 | Make the press state actually transition (Button) and add it to CopyButton | MEDIUM | TODO | — | `components/ui/button.tsx`, `components/copy-button.tsx` |
 | 003 | Animate native `<details>` open/close (FAQs and MCP example) | LOW | TODO | — | `app/globals.css`, `components/cedear-faqs.tsx`, `app/(site)/mcp-docs/page.tsx` |
 | 004 | Fade in the company profile when it replaces its skeleton | LOW | TODO | — | `components/cedear-company-profile.tsx` |
