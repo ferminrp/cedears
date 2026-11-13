@@ -164,5 +164,9 @@ export function CedearCompanyProfileLoader({
 
   if (!profile) return null
 
-  return <CedearCompanyProfile profile={profile} compact={compact} />
+  return (
+    <div className="animate-in fade-in-0 duration-[var(--motion-duration)] ease-[var(--motion-easing)]">
+      <CedearCompanyProfile profile={profile} compact={compact} />
+    </div>
+  )
 }

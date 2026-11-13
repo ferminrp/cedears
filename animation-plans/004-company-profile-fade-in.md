@@ -1,6 +1,6 @@
 # 004 — Fade in the company profile when it replaces its skeleton
 
-- **Status**: TODO
+- **Status**: DONE
 - **Commit**: 864a784
 - **Severity**: LOW
 - **Category**: Missed opportunities (preventing a jarring change)
