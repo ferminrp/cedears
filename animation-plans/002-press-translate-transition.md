@@ -1,6 +1,6 @@
 # 002 — Make the press state actually transition (Button) and add it to CopyButton
 
-- **Status**: TODO
+- **Status**: DONE
 - **Commit**: 864a784
 - **Severity**: MEDIUM
 - **Category**: Easing & duration / Cohesion & tokens (feedback)
