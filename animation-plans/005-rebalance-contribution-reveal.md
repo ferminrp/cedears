@@ -1,6 +1,6 @@
 # 005 — Reveal the "¿Cuánto querés invertir?" block instead of popping it in
 
-- **Status**: TODO
+- **Status**: DONE
 - **Commit**: 864a784
 - **Severity**: LOW
 - **Category**: Missed opportunities (preventing a jarring change)

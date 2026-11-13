@@ -485,47 +485,57 @@ export function RebalanceCalculator({
               })}
             </div>
 
-            {isAccumulate && (
-              <div className="flex flex-col gap-2">
-                <label htmlFor="rebalance-contribution" className="text-sm font-medium">
-                  ¿Cuánto querés invertir?
-                </label>
-                <div className="relative w-full sm:max-w-xs">
-                  <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 font-mono text-muted-foreground">
-                    $
-                  </span>
-                  <Input
-                    id="rebalance-contribution"
-                    type="number"
-                    inputMode="decimal"
-                    min={0}
-                    step="any"
-                    value={contribution > 0 ? contribution : ""}
-                    onChange={(e) =>
-                      setContribution(e.target.value === "" ? 0 : Number(e.target.value))
-                    }
-                    className="pl-7 font-mono"
-                    aria-label="Monto a invertir en ARS"
-                  />
-                </div>
-                {showRequired && (
-                  <p className="text-sm text-muted-foreground">
-                    Para llegar exactamente al objetivo sin vender necesitás aportar{" "}
-                    <span className="font-mono font-medium text-foreground">
-                      {formatArs(required)}
-                    </span>
-                    .{" "}
-                    <button
-                      type="button"
-                      className="underline underline-offset-4 hover:text-foreground"
-                      onClick={() => setContribution(Math.ceil(required ?? 0))}
-                    >
-                      Usar este monto
-                    </button>
-                  </p>
-                )}
+            <div
+              className={cn(
+                "grid transition-[grid-template-rows,margin-top,opacity] duration-[var(--motion-large-duration)] ease-[var(--motion-large-easing)] motion-reduce:transition-[opacity]",
+                isAccumulate
+                  ? "grid-rows-[1fr] opacity-100"
+                  : "-mt-3 grid-rows-[0fr] opacity-0",
+              )}
+              inert={!isAccumulate}
+            >
+              <div className="-m-1 min-h-0 overflow-hidden p-1">
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="rebalance-contribution" className="text-sm font-medium">
+                      ¿Cuánto querés invertir?
+                    </label>
+                    <div className="relative w-full sm:max-w-xs">
+                      <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 font-mono text-muted-foreground">
+                        $
+                      </span>
+                      <Input
+                        id="rebalance-contribution"
+                        type="number"
+                        inputMode="decimal"
+                        min={0}
+                        step="any"
+                        value={contribution > 0 ? contribution : ""}
+                        onChange={(e) =>
+                          setContribution(e.target.value === "" ? 0 : Number(e.target.value))
+                        }
+                        className="pl-7 font-mono"
+                        aria-label="Monto a invertir en ARS"
+                      />
+                    </div>
+                    {showRequired && (
+                      <p className="text-sm text-muted-foreground">
+                        Para llegar exactamente al objetivo sin vender necesitás aportar{" "}
+                        <span className="font-mono font-medium text-foreground">
+                          {formatArs(required)}
+                        </span>
+                        .{" "}
+                        <button
+                          type="button"
+                          className="underline underline-offset-4 hover:text-foreground"
+                          onClick={() => setContribution(Math.ceil(required ?? 0))}
+                        >
+                          Usar este monto
+                        </button>
+                      </p>
+                    )}
+                  </div>
               </div>
-            )}
+            </div>
           </section>
 
           <section className="grid gap-6 rounded-[var(--radius-m)] border border-border bg-card p-4 sm:grid-cols-2">
