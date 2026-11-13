@@ -1,6 +1,6 @@
 # 003 — Animate native `<details>` open/close (FAQs and MCP example)
 
-- **Status**: TODO
+- **Status**: DONE
 - **Commit**: 864a784
 - **Severity**: LOW
 - **Category**: Missed opportunities (state indication)

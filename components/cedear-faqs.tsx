@@ -52,7 +52,7 @@ export function CedearFaqs({
                 {faq.question}
                 <span
                   aria-hidden
-                  className="mt-0.5 shrink-0 text-muted-foreground transition-transform group-open:rotate-180"
+                  className="mt-0.5 shrink-0 text-muted-foreground transition-transform duration-[var(--motion-large-duration)] ease-[var(--motion-large-easing)] group-open:rotate-180 motion-reduce:transition-none"
                 >
                   ▾
                 </span>

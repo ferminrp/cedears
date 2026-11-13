@@ -564,6 +564,33 @@
     outline: var(--focus-ring-outline);
     outline-offset: 2px;
   }
+  /* Native disclosure: animate height + opacity where supported; older browsers keep the instant toggle. */
+  details {
+    interpolate-size: allow-keywords;
+  }
+  details::details-content {
+    block-size: 0;
+    opacity: 0;
+    overflow-y: clip;
+    transition:
+      block-size var(--motion-large-duration) var(--motion-large-easing),
+      opacity var(--motion-large-duration) var(--motion-large-easing),
+      content-visibility var(--motion-large-duration) allow-discrete;
+  }
+  details[open]::details-content {
+    block-size: auto;
+    opacity: 1;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    details::details-content {
+      transition:
+        opacity var(--motion-large-duration) var(--motion-large-easing),
+        content-visibility var(--motion-large-duration) allow-discrete;
+    }
+    details:not([open])::details-content {
+      block-size: auto;
+    }
+  }
 }
 
 /* Compact SSR markup for home CEDEAR table (same visuals, shorter HTML). */

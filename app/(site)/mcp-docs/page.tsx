@@ -141,7 +141,7 @@ export default async function McpDocsPage() {
               {capture ? (
                 <details className="group min-w-0">
                   <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 text-sm font-medium marker:content-none [&::-webkit-details-marker]:hidden">
-                    <span aria-hidden className="transition-transform group-open:rotate-90 motion-reduce:transition-none">▸</span>
+                    <span aria-hidden className="transition-transform duration-[var(--motion-large-duration)] ease-[var(--motion-large-easing)] group-open:rotate-90 motion-reduce:transition-none">▸</span>
                     Ver respuesta de ejemplo
                   </summary>
                   <p className="mb-2 text-xs text-muted-foreground">

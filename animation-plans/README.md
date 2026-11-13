@@ -24,7 +24,7 @@ Recon stamp: `864a784` (branch `claude/admiring-albattani-mlusgg`).
 | --- | --- | --- | --- | --- | --- |
 | 001 | Keep the detail sheet's content rendered while it closes | MEDIUM | DONE | — | `components/cedear-detail-sheet.tsx` |
 | 002 | Make the press state actually transition (Button) and add it to CopyButton | MEDIUM | DONE | — | `components/ui/button.tsx`, `components/copy-button.tsx` |
-| 003 | Animate native `<details>` open/close (FAQs and MCP example) | LOW | TODO | — | `app/globals.css`, `components/cedear-faqs.tsx`, `app/(site)/mcp-docs/page.tsx` |
+| 003 | Animate native `<details>` open/close (FAQs and MCP example) | LOW | DONE | — | `app/globals.css`, `components/cedear-faqs.tsx`, `app/(site)/mcp-docs/page.tsx` |
 | 004 | Fade in the company profile when it replaces its skeleton | LOW | TODO | — | `components/cedear-company-profile.tsx` |
 | 005 | Reveal the "¿Cuánto querés invertir?" block instead of popping it in | LOW | TODO | — | `components/rebalance-calculator.tsx` |
 | 006 | Drag-to-dismiss on the mobile detail sheet | LOW | TODO — **needs a real device and an explicit go-ahead; not for automatic execution** | 001 | `components/ui/drawer.tsx` (new), `components/cedear-detail-sheet.tsx` |
