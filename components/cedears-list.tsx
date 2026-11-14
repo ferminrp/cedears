@@ -159,8 +159,9 @@ export function CedearsList({
 }: CedearsListProps) {
   const [cedears, setCedears] = useState(initialCedears)
   const [query, setQuery] = useState("")
-  const [market, setMarket] = useState(ALL_MARKETS)
-  const [tag, setTag] = useState(ALL_TAGS)
+  // Base UI Select's onValueChange can pass `null` (selected item removed).
+  const [market, setMarket] = useState<string | null>(ALL_MARKETS)
+  const [tag, setTag] = useState<string | null>(ALL_TAGS)
   const [pctSort, setPctSort] = useState<PctSort>(DEFAULT_SORT)
   const [pinned, setPinned] = useState<string[]>([])
   const [selectedTicker, setSelectedTicker] = useState<string | null>(null)
@@ -263,7 +264,7 @@ export function CedearsList({
     const q = query.trim().toLowerCase()
     return cedears.filter((c) => {
       const matchesMarket = market === ALL_MARKETS || c.Market === market
-      const matchesTag = tag === ALL_TAGS || c.tags.includes(tag)
+      const matchesTag = tag === ALL_TAGS || (tag !== null && c.tags.includes(tag))
       const matchesQuery =
         q === "" ||
         c.Cedears.toLowerCase().includes(q) ||

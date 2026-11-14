@@ -1,3 +1,4 @@
+import type { QuoteSummaryResult } from "yahoo-finance2/modules/quoteSummary"
 import { yahooFinance } from "@/lib/yahoo-finance"
 
 export type UnderlyingCompanyProfile = {
@@ -17,7 +18,7 @@ function normalizeTicker(ticker: string): string {
 
 function parseProfile(
   ticker: string,
-  summary: Awaited<ReturnType<typeof yahooFinance.quoteSummary>>,
+  summary: QuoteSummaryResult,
 ): UnderlyingCompanyProfile | null {
   const profile = summary.assetProfile ?? summary.summaryProfile
   if (!profile) return null
