@@ -14,6 +14,7 @@ function sample(ticker: string, volume: number | null): Cedear {
     Market: 'NYSE',
     Ratio: '1',
     TickerOriginal: ticker,
+    yahooSymbol: null,
     tags: [],
     price: 100,
     pctChange: 1,

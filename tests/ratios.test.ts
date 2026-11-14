@@ -18,6 +18,7 @@ const sample: Cedear = {
   Market: "NASDAQ",
   Ratio: "10",
   TickerOriginal: "AAPL",
+  yahooSymbol: null,
   tags: [],
   price: 15000,
   pctChange: 1,

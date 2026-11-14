@@ -13,6 +13,7 @@ function fixtureAal(): Cedear {
     Market: "NASDAQ",
     Ratio: "2",
     TickerOriginal: "AAL",
+    yahooSymbol: null,
     tags: ["Viajes & Turismo"],
     price: 10700,
     pctChange: -2.72,
@@ -30,6 +31,7 @@ function fixtureAaba(): Cedear {
     Market: "NASDAQ",
     Ratio: "3",
     TickerOriginal: "AABA",
+    yahooSymbol: null,
     tags: [],
     price: null,
     pctChange: null,
@@ -114,7 +116,8 @@ describe("mcp JSON-RPC", () => {
 
   it("tools/list includes list_cedears, get_cedear, earnings", async () => {
     const body = await rpc("tools/list")
-    const names = body.result.tools.map((t: { name: string }) => t.name)
+    const result = body.result as { tools: { name: string }[] }
+    const names = result.tools.map((t: { name: string }) => t.name)
     assert.deepEqual(names, ["list_cedears", "get_cedear", "earnings"])
   })
 
@@ -124,7 +127,15 @@ describe("mcp JSON-RPC", () => {
       arguments: { query: "AAL" },
     })
     assert.equal(body.error, undefined)
-    const payload = body.result.structuredContent
+    const payload = (
+      body.result as {
+        structuredContent: {
+          total: number
+          rows: Record<string, unknown>[]
+          columns: string[]
+        }
+      }
+    ).structuredContent
     assert.equal(payload.total, 1)
     assert.equal(payload.rows[0].Ticker, "AAL")
     assert.equal(payload.rows[0]["Precio ARS"], 10700)
@@ -139,7 +150,11 @@ describe("mcp JSON-RPC", () => {
       arguments: { ticker: "aal" },
     })
     assert.equal(body.error, undefined)
-    const payload = body.result.structuredContent
+    const payload = (
+      body.result as {
+        structuredContent: { found: boolean; row: Record<string, unknown> }
+      }
+    ).structuredContent
     assert.equal(payload.found, true)
     assert.equal(payload.row.Ticker, "AAL")
     assert.equal(payload.row.Empresa, "American Airlines Group Inc")
@@ -152,7 +167,11 @@ describe("mcp JSON-RPC", () => {
       arguments: { day: "2026-09-02" },
     })
     assert.equal(inside.error, undefined)
-    const payload = inside.result.structuredContent
+    const payload = (
+      inside.result as {
+        structuredContent: { days: { date: string }[]; window: { start: string } }
+      }
+    ).structuredContent
     assert.equal(payload.days[0].date, "2026-09-02")
     assert.equal(payload.window.start, "2026-09-02")
 

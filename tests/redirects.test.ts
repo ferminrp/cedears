@@ -21,6 +21,7 @@ describe("cedear ticker set", () => {
         Market: "NASDAQ",
         Ratio: "10",
         TickerOriginal: "AAPL",
+        yahooSymbol: null,
         tags: [],
       },
     ])
@@ -57,6 +58,7 @@ describe("sitemap lastmod", () => {
       Market: "NASDAQ",
       Ratio: "10",
       TickerOriginal: "AAPL",
+      yahooSymbol: null,
       tags: [],
       yfinanceFetchedAt: "2026-07-21T10:55:44Z",
     })
