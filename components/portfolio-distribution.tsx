@@ -27,7 +27,7 @@ export function PortfolioDistribution({
         <span className="text-sm font-medium">Distribución</span>
         <ChevronDownIcon
           className={cn(
-            "size-4 shrink-0 text-muted-foreground transition-transform duration-200",
+            "size-4 shrink-0 text-muted-foreground transition-transform duration-[var(--motion-large-duration)] ease-[var(--motion-large-easing)]",
             expanded && "rotate-180",
           )}
           aria-hidden
@@ -60,7 +60,7 @@ export function PortfolioDistribution({
 
           <div
             className={cn(
-              "grid transition-[grid-template-rows] duration-200 ease-out",
+              "grid transition-[grid-template-rows] duration-[var(--motion-large-duration)] ease-[var(--motion-large-easing)]",
               expanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
             )}
           >
