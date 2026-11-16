@@ -60,6 +60,9 @@ export function SiteShell({
       pendingHref={pendingHref}
       setPendingHref={setPendingHref}
     >
+      <a href="#main" className="skip-link">
+        Saltar al contenido
+      </a>
       <NavigationProgress />
       <SiteNav />
       <div aria-busy={pendingHref ? true : undefined}>

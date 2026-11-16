@@ -14,5 +14,12 @@
       "type": "streamable-http",
       "url": "https://cedears.com/mcp"
     }
+  ],
+  "icons": [
+    {
+      "src": "https://cedears.com/mcp-icon-512.png",
+      "mimeType": "image/png",
+      "sizes": ["512x512"]
+    }
   ]
 }

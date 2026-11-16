@@ -637,4 +637,36 @@
   .text-destructive {
     color: var(--negative-text);
   }
+
+  .skip-link {
+    position: fixed;
+    left: var(--space-l);
+    top: var(--space-l);
+    z-index: 100;
+    padding: var(--space-s) var(--space-l);
+    border-radius: var(--radius-s);
+    background: var(--background);
+    color: var(--foreground);
+    font-size: var(--size-s);
+    font-weight: 500;
+    line-height: var(--line-s);
+    box-shadow: var(--shadow-m);
+    transform: translateY(-200%);
+    transition: transform var(--motion-duration) var(--motion-easing);
+  }
+
+  .skip-link:focus {
+    transform: translateY(0);
+    outline: solid 2px var(--gui-color-1);
+    outline-offset: 2px;
+  }
+
+  .skip-link:focus:not(:focus-visible) {
+    transform: translateY(-200%);
+    outline: none;
+  }
+
+  .skip-link:focus-visible {
+    transform: translateY(0);
+  }
 }
