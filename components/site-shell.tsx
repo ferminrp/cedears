@@ -63,10 +63,18 @@ export function SiteShell({
       setPendingHref={setPendingHref}
     >
       <InstallProvider>
+        <a href="#main" className="skip-link">
+          Saltar al contenido
+        </a>
         <NavigationProgress />
         <OfflineBanner />
         <SiteNav />
-        <div aria-busy={pendingHref ? true : undefined}>
+        <div
+          id="main"
+          tabIndex={-1}
+          className="flex min-w-0 flex-1 flex-col gap-[var(--space-xxl)] outline-none"
+          aria-busy={pendingHref ? true : undefined}
+        >
           {/* No Suspense here on purpose. vinext commits navigations in a transition,
               so the old page stays on screen until the new one is ready. A shell
               boundary either flashed an empty fallback (keyed) or left slow

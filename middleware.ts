@@ -6,11 +6,7 @@ import { CATEGORY_SLUG_REDIRECTS } from '@/lib/category-redirects'
 import { isKnownCategorySlug } from '@/lib/category-slug-guard'
 import { isKnownCedearTicker } from '@/lib/cedear-ticker-guard'
 import { requestHost } from '@/lib/request-host'
-import { trustedApexOrigin } from '@/lib/www-redirect'
-
-function siteOrigin(_request: NextRequest): string {
-  return trustedApexOrigin()
-}
+import { middlewareRedirectOrigin, trustedApexOrigin } from '@/lib/www-redirect'
 
 function requestHostFromNext(request: NextRequest): string {
   return requestHost(request.headers, request.nextUrl)
@@ -20,8 +16,15 @@ function permanentRedirect(url: URL): NextResponse {
   return NextResponse.redirect(url, 301)
 }
 
-function absoluteRedirect(request: NextRequest, pathname: string): NextResponse {
-  const target = new URL(pathname, siteOrigin(request))
+function absoluteRedirect(
+  request: NextRequest,
+  pathname: string,
+  options?: { forceProductionApex?: boolean },
+): NextResponse {
+  const origin = options?.forceProductionApex
+    ? trustedApexOrigin()
+    : middlewareRedirectOrigin(request.headers, request.nextUrl)
+  const target = new URL(pathname, origin)
   target.search = request.nextUrl.search
   return permanentRedirect(target)
 }
@@ -35,7 +38,9 @@ function redirectToHttps(request: NextRequest): NextResponse | null {
 function redirectWwwToApex(request: NextRequest): NextResponse | null {
   const host = requestHostFromNext(request)
   if (!host.startsWith('www.')) return null
-  return absoluteRedirect(request, request.nextUrl.pathname)
+  return absoluteRedirect(request, request.nextUrl.pathname, {
+    forceProductionApex: true,
+  })
 }
 
 function redirectCedearTickerCase(request: NextRequest): NextResponse | null {

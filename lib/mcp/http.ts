@@ -73,6 +73,12 @@ export async function handleMcpPost(
   return jsonResponse(outcome.body)
 }
 
+export const MCP_REGISTRY_ICON = {
+  src: "https://cedears.com/mcp-icon-512.png",
+  mimeType: "image/png" as const,
+  sizes: ["512x512"] as const,
+}
+
 export function mcpWellKnownDocument(siteUrl: string) {
   return {
     name: "cedears",
@@ -80,5 +86,6 @@ export function mcpWellKnownDocument(siteUrl: string) {
       "Public unauthenticated MCP for Argentine CEDEARs. Live prices from the same cache as cedears.com.",
     endpoint: `${siteUrl}/mcp`,
     transport: "streamable-http",
+    icons: [MCP_REGISTRY_ICON],
   }
 }

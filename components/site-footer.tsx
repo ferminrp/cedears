@@ -2,7 +2,7 @@ import type { ReactNode } from "react"
 import { siteConfig } from "@/lib/site"
 
 const linkClassName =
-  "font-medium text-foreground underline underline-offset-4"
+  "inline-flex min-h-11 items-center font-medium text-foreground underline underline-offset-4"
 
 export function SiteFooter({ children }: { children: ReactNode }) {
   return (
