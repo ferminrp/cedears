@@ -41,6 +41,23 @@ describe("middlewareRedirectOrigin", () => {
     }
   })
 
+  it("forceHttps upgrades preview origin for HTTP redirects", () => {
+    process.env.NEXT_PUBLIC_SITE_URL = "https://cedears.com"
+    try {
+      const url = new URL("http://pr-foo.cedears.workers.dev/cedear/aapl")
+      const headers = new Headers({
+        Host: "pr-foo.cedears.workers.dev",
+        "x-forwarded-proto": "http",
+      })
+      assert.equal(
+        middlewareRedirectOrigin(headers, url, undefined, { forceHttps: true }),
+        "https://pr-foo.cedears.workers.dev",
+      )
+    } finally {
+      process.env.NEXT_PUBLIC_SITE_URL = prev
+    }
+  })
+
   it("classifies production hostnames", () => {
     assert.equal(isProductionCedearsHost("cedears.com"), true)
     assert.equal(isProductionCedearsHost("www.cedears.com"), true)

@@ -19,11 +19,13 @@ function permanentRedirect(url: URL): NextResponse {
 function absoluteRedirect(
   request: NextRequest,
   pathname: string,
-  options?: { forceProductionApex?: boolean },
+  options?: { forceProductionApex?: boolean; forceHttps?: boolean },
 ): NextResponse {
   const origin = options?.forceProductionApex
     ? trustedApexOrigin()
-    : middlewareRedirectOrigin(request.headers, request.nextUrl)
+    : middlewareRedirectOrigin(request.headers, request.nextUrl, undefined, {
+        forceHttps: options?.forceHttps,
+      })
   const target = new URL(pathname, origin)
   target.search = request.nextUrl.search
   return permanentRedirect(target)
@@ -32,7 +34,7 @@ function absoluteRedirect(
 function redirectToHttps(request: NextRequest): NextResponse | null {
   const proto = request.headers.get('x-forwarded-proto')
   if (proto !== 'http') return null
-  return absoluteRedirect(request, request.nextUrl.pathname)
+  return absoluteRedirect(request, request.nextUrl.pathname, { forceHttps: true })
 }
 
 function redirectWwwToApex(request: NextRequest): NextResponse | null {
