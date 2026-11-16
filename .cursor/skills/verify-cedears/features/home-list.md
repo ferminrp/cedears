@@ -30,7 +30,7 @@ Preconditions:
 
 - **Load table.** `page.goto(VERIFY_BASE_URL)`. `expect(page.getByRole('heading', { level: 1 })).toContainText('Listado de CEDEARs en Argentina')`. Table body shows at least one `link` matching `/Ver detalle de/` (SSR top-100 block or static fallback).
 - **A–Z index.** `getByRole('heading', { name: 'Índice A–Z de CEDEARs' })` is visible; at least one link whose `href` matches `/cedear/`.
-- **Search.** Focus `getByRole('searchbox', { name: 'Buscar CEDEARs' })` (focus triggers JSON load). `fill('AAPL')`. Wait briefly; a row link `Ver detalle de AAPL` is visible (or the list is empty with a clear empty state).
+- **Search.** Focus `getByRole('searchbox', { name: 'Buscar CEDEARs' })` (focus triggers JSON load). After focus, expect a visible focus ring (`focus-visible:outline-solid` on `Input`; harness asserts non-zero `outline-width`). `fill('AAPL')`. Wait briefly; a row link `Ver detalle de AAPL` is visible (or the list is empty with a clear empty state).
 - **Screenshot proof.** `page.screenshot({ path: 'home-search-desktop.png' })` after search. Harness also writes `home-1440.png` and `home-390.png` with horizontal-overflow checks at those widths.
 - **Export menu.** Open the export control and trigger CSV download if exposed as a button/menu; confirm download filename `cedears.csv` or network response `text/csv` from `/cedears.csv` for full-dataset export (see [data-exports.md](./data-exports.md)).
 

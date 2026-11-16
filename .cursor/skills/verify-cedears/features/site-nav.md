@@ -6,7 +6,8 @@ The header exposes primary routes under `nav` **Secciones** (desktop bar and mob
 
 - `nav-links` — Listado, Portfolio, Categorías, Ratios, Herramientas, ALyCs, Dólar MEP, Dólar cable, Earnings, Dividendos (`components/site-nav.tsx`).
 - `nav-touch-targets` — Desktop links use `min-h-11` (44px); mobile **Menú** trigger matches the same minimum height.
-- `nav-prefetch` — Internal `Link` entries use `prefetch={true}`.
+- `nav-prefetch` — Internal `Link` entries in **Secciones** use `prefetch={true}`. Inline body links to `/ratios` (home, dividendos, ficha CEDEAR) also use `prefetch={true}` so mobile users outside the closed sheet get the full RSC payload before click.
+- `nav-csv-no-prefetch` — **Descargar CSV** on `/ratios` and `/dividendos` is a plain `<a download>` so the router does not RSC-prefetch `/ratios.csv` or `/dividendos.csv`.
 - `nav-pending-ui` — Active link uses `aria-current="page"`; clicked target gets `aria-busy` and optional **Cargando** sr-only via `useLinkStatus`.
 - `nav-progress` — `NavigationProgress` listens for same-origin anchor clicks; after 150ms shows an accessible top bar (`role="progressbar"`, label **Cargando página**) until pathname commits or navigation idles.
 - `nav-no-full-skeleton` — Layout no longer swaps the whole shell for `SiteLoading` on route change; previous page stays on screen during vinext transitions (`components/site-shell.tsx`).
