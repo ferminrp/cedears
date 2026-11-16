@@ -6,7 +6,7 @@
   "compatibility_flags": [
     "nodejs_compat"
   ],
-  "main": "vinext/server/fetch-handler",
+  "main": "./worker/index.ts",
   "assets": {
     "directory": "dist/client",
     "not_found_handling": "none",
@@ -14,6 +14,16 @@
   },
   "cache": {
     "enabled": true
+  },
+  "exports": {
+    "default": {
+      "type": "worker",
+      "cache": { "enabled": false }
+    },
+    "CachedVinext": {
+      "type": "worker",
+      "cache": { "enabled": true }
+    }
   },
   "observability": {
     "enabled": true,
