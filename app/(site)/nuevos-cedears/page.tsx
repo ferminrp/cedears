@@ -140,10 +140,10 @@ export default function NuevosCedearsPage() {
         <p className="max-w-[60ch] text-pretty text-sm leading-relaxed text-muted-foreground">
           {NUEVOS_CEDEARS_ALTA_INTRO}{" "}
           <Link
-            href="/alycs"
+            href="/como-comprar-cedears"
             className="text-foreground underline underline-offset-4"
           >
-            dónde comprarlos (ALyCs)
+            Cómo comprar CEDEARs
           </Link>{" "}
           y la{" "}
           <Link
