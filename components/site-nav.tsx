@@ -18,6 +18,7 @@ import {
 
 const links = [
   { href: "/", label: "Listado" },
+  { href: "/nuevos-cedears", label: "Nuevos" },
   { href: "/portfolio", label: "Portfolio" },
   { href: "/categorias", label: "Categorías" },
   { href: "/ratios", label: "Ratios" },

@@ -4,7 +4,7 @@ The header exposes primary routes under `nav` **Secciones** (desktop bar and mob
 
 ## Sub-features
 
-- `nav-links` — Listado, Portfolio, Categorías, Ratios, Herramientas, ALyCs, Dólar MEP, Dólar cable, Earnings, Dividendos (`components/site-nav.tsx`).
+- `nav-links` — Listado, Nuevos, Portfolio, Categorías, Ratios, Herramientas, ALyCs, Dólar MEP, Dólar cable, Earnings, Dividendos (`components/site-nav.tsx`).
 - `nav-touch-targets` — Desktop links use `min-h-11` (44px); mobile **Menú** trigger matches the same minimum height.
 - `nav-prefetch` — Internal `Link` entries in **Secciones** use `prefetch={true}`. Inline body links to `/ratios` (home, dividendos, ficha CEDEAR) also use `prefetch={true}` so mobile users outside the closed sheet get the full RSC payload before click.
 - `nav-csv-no-prefetch` — **Descargar CSV** on `/ratios` and `/dividendos` is a plain `<a download>` so the router does not RSC-prefetch `/ratios.csv` or `/dividendos.csv`.
