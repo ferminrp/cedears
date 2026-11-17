@@ -22,7 +22,7 @@ import {
 import { MCP_CAPTURED_AT_ISO, MCP_CAPTURED_AT_LABEL, MCP_TOOL_CAPTURES } from "@/lib/mcp-docs-captures"
 import { getEarningsTimeline } from "@/lib/earnings"
 import { TOOL_DEFINITIONS } from "@/lib/mcp/tools"
-import { buildPageOpenGraph, getSiteUrl } from "@/lib/site"
+import { buildPageOpenGraph, getSiteUrl, siteConfig } from "@/lib/site"
 
 // Must stay dynamic: /mcp is shared with the MCP JSON responses, so a cached HTML render would be served to MCP clients.
 export const dynamic = "force-dynamic"
@@ -37,6 +37,12 @@ export const metadata: Metadata = {
     description: MCP_DOCS_DESCRIPTION,
     url: MCP_DOCS_PATH,
   }),
+  twitter: {
+    card: "summary_large_image",
+    title: MCP_DOCS_TITLE,
+    description: MCP_DOCS_DESCRIPTION,
+    images: [siteConfig.ogImage.url],
+  },
 }
 
 type SchemaProp = { type?: string; description?: string }
@@ -57,7 +63,7 @@ function FaqJsonLd({ faqs }: { faqs: CedearFaq[] }) {
 }
 
 const preClass =
-  "min-w-0 max-h-80 overflow-auto overscroll-contain rounded-[var(--radius-m)] border border-border bg-[#fbfbfc] p-4 text-[13px] leading-relaxed"
+  "min-w-0 max-h-80 overflow-auto overscroll-contain rounded-[var(--radius-m)] border border-border bg-[#fbfbfc] p-4 text-[13px] leading-relaxed text-[#111] [color-scheme:light]"
 const outLinkClass =
   "inline-flex min-h-11 items-center font-medium text-foreground underline underline-offset-4"
 
@@ -94,7 +100,7 @@ export default async function McpDocsPage() {
         </p>
         <ul className="flex flex-wrap items-center gap-x-1 text-sm text-muted-foreground">
           <li>
-            <a href="/cedears.csv" className={`${footerLinkClassName} inline-flex min-h-11 items-center px-1`}>CSV</a>
+            <a href="/cedears.csv" className={`${footerLinkClassName} inline-flex min-h-11 min-w-11 items-center justify-center px-2`}>CSV</a>
           </li>
           <li aria-hidden>·</li>
           <li>
@@ -149,7 +155,9 @@ export default async function McpDocsPage() {
                     <time dateTime={MCP_CAPTURED_AT_ISO}>{MCP_CAPTURED_AT_LABEL}</time>, recortada ·{" "}
                     <code translate="no">tools/call {tool.name} {JSON.stringify(capture.args)}</code>
                   </p>
-                  <pre className={preClass}><JsonHighlight value={capture.response} /></pre>
+                  <pre className={preClass}>
+                    <JsonHighlight value={capture.response} surface="light" />
+                  </pre>
                 </details>
               ) : null}
             </article>

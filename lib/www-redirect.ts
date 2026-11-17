@@ -21,27 +21,46 @@ export function trustedApexOrigin(siteUrl?: string): string {
   return DEFAULT_PRODUCTION_ORIGIN
 }
 
-function resolveConfiguredSiteUrl(siteUrl?: string): string | null {
-  for (const candidate of [
-    siteUrl,
-    process.env.NEXT_PUBLIC_SITE_URL,
-    DEFAULT_PRODUCTION_ORIGIN,
-  ]) {
-    const trimmed = candidate?.replace(/\/$/, "")
-    if (trimmed) return trimmed
+function hostnameWithoutPort(host: string): string {
+  if (host.startsWith("[")) return host
+  const sep = host.lastIndexOf(":")
+  if (sep > 0 && /^\d+$/.test(host.slice(sep + 1))) return host.slice(0, sep)
+  return host
+}
+
+export function isProductionCedearsHost(host: string): boolean {
+  const bare = hostnameWithoutPort(host)
+  return bare === "cedears.com" || bare === "www.cedears.com"
+}
+
+/**
+ * Origin for middleware absolute redirects (ticker case, slugs, /mcp-docs, …).
+ * Preview and local keep the incoming host; production apex/www keep trusted https://cedears.com.
+ */
+export function middlewareRedirectOrigin(
+  headers: Headers,
+  url: URL,
+  siteUrl?: string,
+  options?: { forceHttps?: boolean },
+): string {
+  const host = requestHost(headers, url)
+  if (isProductionCedearsHost(host)) {
+    return trustedApexOrigin(siteUrl)
   }
-  return null
+  if (options?.forceHttps) {
+    return `https://${host}`
+  }
+  const forwarded = headers.get("x-forwarded-proto")
+  const proto = forwarded ?? (url.protocol === "https:" ? "https" : "http")
+  return `${proto}://${host}`
 }
 
 export function siteOriginForRequest(
   request: Request,
   siteUrl?: string,
 ): string {
-  const configured = resolveConfiguredSiteUrl(siteUrl)
-  if (configured) return configured
   const url = new URL(request.url)
-  const host = requestHost(request.headers, url).replace(/^www\./, "")
-  return `https://${host}`
+  return middlewareRedirectOrigin(request.headers, url, siteUrl)
 }
 
 function isWwwHost(request: Request): boolean {
