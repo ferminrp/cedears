@@ -11,6 +11,7 @@ The header exposes primary routes under `nav` **Secciones** (desktop bar and mob
 - `nav-pending-ui` — Active link uses `aria-current="page"`; clicked target gets `aria-busy` and optional **Cargando** sr-only via `useLinkStatus`.
 - `nav-progress` — `NavigationProgress` listens for same-origin anchor clicks; after 150ms shows an accessible top bar (`role="progressbar"`, label **Cargando página**) until pathname commits or navigation idles.
 - `nav-no-full-skeleton` — Layout no longer swaps the whole shell for `SiteLoading` on route change; previous page stays on screen during vinext transitions (`components/site-shell.tsx`).
+- `nav-www-apex` — `www.cedears.com` permanently redirects to `https://cedears.com` (path + query preserved) with `Cache-Control: no-store` so a www 301 never shares the Workers Cache entry for apex HTML. Production gateway runs `buildWwwToApexRedirect` in `worker/index.ts` before `CachedVinext`; middleware still redirects www on cache miss. Helpers: `lib/www-redirect.ts`, `lib/request-host.ts`, `lib/workers-cache-key.ts` (`cachePartition: apex` on the cached entrypoint).
 
 ## How to get to it (user POV)
 
@@ -29,6 +30,7 @@ Preconditions:
 
 ## Gotchas
 
+- Local `pnpm dev` rejects `Host: www.cedears.com` (403). Local `pnpm start` does not exercise the gateway redirect unless the request URL hostname is `www.*`. Prove www behavior with `pnpm test` (`tests/www-apex-cache.test.ts`, `tests/worker-gateway.test.ts`) or production/preview curls from PR #96.
 - Progress bar timing depends on network; do not require it on every click—only that navigation completes without a blank full-viewport loading shell.
 - Back/forward (`popstate`) does not force scroll-to-top; forward client navigations do.
 - Mobile sheet closes after choosing a link.

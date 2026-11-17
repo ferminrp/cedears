@@ -26,7 +26,7 @@ pnpm build
 pnpm start
 ```
 
-Wrangler prints a local URL (often `http://127.0.0.1:8787`). Use that as `VERIFY_BASE_URL` for doctor and smoke. Cloudflare Workers Builds preview deployments use `preview_urls: true` in `wrangler.jsonc` (branch preview links in the dashboard; not exercised by the default local harness).
+Wrangler prints a local URL (often `http://127.0.0.1:8787`). Use that as `VERIFY_BASE_URL` for doctor and smoke. The bundled worker uses `worker/index.ts` as the default entry (cache off): it answers www with a 301 before any Workers Cache lookup, then delegates apex HTML to the `CachedVinext` export with `cachePartition: apex` (`wrangler.jsonc` `exports`). The default harness does not assert www→apex redirects (localhost hostname); see [features/site-nav.md](./features/site-nav.md#gotchas) and `pnpm test` below. Cloudflare Workers Builds preview deployments use `preview_urls: true` in `wrangler.jsonc` (branch preview links in the dashboard; not exercised by the default local harness).
 
 **Isolation:** concurrent verify runs must not share a port. Set `VERIFY_PORT` (dev) or pass `--port` to the helper. Do not attach to a dev server the user already uses on 3000 unless they set `VERIFY_BASE_URL`.
 
@@ -83,7 +83,7 @@ node scripts/verify-cedears.mjs --mode workers --port 8787 --artifact-dir /opt/c
 pnpm test
 ```
 
-Covers `lib/` tools plus registry and MCP contract tests: `tests/server-json.test.ts` (root `server.json` vs MCP Registry schema), `tests/mcp.test.ts` (`prefersMcpDocsHtml`), `tests/dividends-cache.test.ts` (failed dividend loads are not cached).
+Covers `lib/` tools plus registry, MCP, and Workers edge tests: `tests/server-json.test.ts` (root `server.json` vs MCP Registry schema), `tests/mcp.test.ts` (`prefersMcpDocsHtml`), `tests/dividends-cache.test.ts` (failed dividend loads are not cached), `tests/www-apex-cache.test.ts` and `tests/worker-gateway.test.ts` (www→apex redirect + Workers Cache host partitioning; merged #96).
 
 **Build check (no server):**
 
