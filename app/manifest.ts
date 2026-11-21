@@ -10,9 +10,15 @@ export default function manifest(): MetadataRoute.Manifest {
     start_url: '/',
     scope: '/',
     display: 'standalone',
-    background_color: '#f5f4f1',
-    theme_color: '#f5f4f1',
-    orientation: 'portrait-primary',
+    // Match the page canvas so the splash screen and status bar don't flash a different tone.
+    background_color: '#ffffff',
+    theme_color: '#ffffff',
+    categories: ['finance'],
+    shortcuts: [
+      { name: 'Portfolio', url: '/portfolio' },
+      { name: 'Dólar MEP', url: '/dolar-mep' },
+      { name: 'Ratios', url: '/ratios' },
+    ],
     lang: 'es-AR',
     icons: [
       {

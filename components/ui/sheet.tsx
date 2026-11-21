@@ -65,7 +65,12 @@ function SheetContent({
             render={
               <Button
                 variant="ghost"
-                className="absolute top-3 right-3"
+                className={cn(
+                  "absolute right-3 pointer-coarse:size-11",
+                  side === "bottom"
+                    ? "top-3"
+                    : "top-[max(0.75rem,env(safe-area-inset-top,0px))]"
+                )}
                 size="icon-sm"
               />
             }

@@ -54,6 +54,10 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  // Paint under the notch / home indicator; content is padded back with env(safe-area-inset-*).
+  viewportFit: 'cover',
   colorScheme: 'light dark',
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#ffffff' },

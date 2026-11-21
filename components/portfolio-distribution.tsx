@@ -9,12 +9,48 @@ import {
 import { type PortfolioCompositionSegment } from "@/lib/portfolio"
 import { cn } from "@/lib/utils"
 
+function distributionLabel(segments: PortfolioCompositionSegment[]): string {
+  return `Distribución: ${segments
+    .map((segment) => `${segment.ticker} ${formatPercent(segment.pct)}`)
+    .join(", ")}`
+}
+
 export function PortfolioDistribution({
   segments,
+  variant = "card",
 }: {
   segments: PortfolioCompositionSegment[]
+  /**
+   * "card": bordered panel with a disclosure legend (desktop).
+   * "inline": just the compact stacked bar, for a summary that lists each
+   * holding (with its colour swatch) right below it (mobile).
+   */
+  variant?: "card" | "inline"
 }) {
   const [expanded, setExpanded] = useState(false)
+
+  if (variant === "inline") {
+    if (segments.length === 0) return null
+    return (
+      <div
+        className="flex h-3 gap-[var(--space-xxs)]"
+        role="img"
+        aria-label={distributionLabel(segments)}
+      >
+        {segments.map((segment, index) => (
+          <span
+            key={segment.ticker}
+            className="h-full min-w-1 rounded-[var(--radius-xs)]"
+            style={{
+              flexGrow: segment.pct,
+              flexBasis: 0,
+              backgroundColor: donutColor(index),
+            }}
+          />
+        ))}
+      </div>
+    )
+  }
 
   return (
     <div className="rounded-[var(--radius-m)] border border-border bg-card p-4">
