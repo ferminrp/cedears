@@ -199,3 +199,108 @@ export function computePortfolioComposition(
     pct: totalValue > 0 ? (segment.valueArs / totalValue) * 100 : 0,
   }))
 }
+
+/* ------------------------------------------------------------------ */
+/* Mobile helpers (pure; no change to the persisted format)            */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Match a ticker from a URL param (e.g. `?agregar=spy`) against the known
+ * list, ignoring case. Returns the canonical ticker or null.
+ */
+export function resolvePortfolioTicker(
+  raw: string | null | undefined,
+  validTickers: Iterable<string>,
+): string | null {
+  if (typeof raw !== "string") return null
+  const wanted = raw.trim().toUpperCase()
+  if (wanted === "") return null
+  for (const ticker of validTickers) {
+    if (ticker.toUpperCase() === wanted) return ticker
+  }
+  return null
+}
+
+/**
+ * Parse what the user typed as nominales. Accepts "10", "1.000" (es-AR
+ * thousands), "2,5" / "2.5" (decimal). Empty → 0. Invalid or negative → null.
+ */
+export function parseQuantityInput(raw: string): number | null {
+  const value = raw.trim().replace(/\s/g, "")
+  if (value === "") return 0
+
+  let normalized: string
+  if (/^\d{1,3}(\.\d{3})+$/.test(value)) {
+    normalized = value.replace(/\./g, "")
+  } else if (/^\d{1,3}(\.\d{3})+,\d+$/.test(value)) {
+    normalized = value.replace(/\./g, "").replace(",", ".")
+  } else if (/^\d+([.,]\d+)?$/.test(value)) {
+    normalized = value.replace(",", ".")
+  } else {
+    return null
+  }
+
+  const parsed = Number(normalized)
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : null
+}
+
+/** Stepper: add `delta` nominales, never below zero. */
+export function stepQuantity(current: number, delta: number): number {
+  const base = Number.isFinite(current) && current > 0 ? current : 0
+  const next = base + delta
+  if (!Number.isFinite(next) || next <= 0) return 0
+  // Avoid float noise for fractional holdings (0.1 + 0.2).
+  return Math.round(next * 1e6) / 1e6
+}
+
+export type PortfolioHoldingRow = {
+  ticker: string
+  name: string
+  quantity: number
+  price: number | null
+  valueArs: number | null
+  /** Share of the portfolio's ARS value; null when the price is unknown. */
+  pct: number | null
+}
+
+/**
+ * Only the tickers the user holds (nominales > 0), largest value first;
+ * holdings without a price go last, alphabetically.
+ */
+export function computePortfolioHoldingRows(
+  cedears: Cedear[],
+  holdings: PortfolioHoldings,
+): PortfolioHoldingRow[] {
+  const cedearByTicker = new Map(cedears.map((cedear) => [cedear.Cedears, cedear]))
+  const rows: PortfolioHoldingRow[] = []
+  let total = 0
+
+  for (const [ticker, quantity] of Object.entries(holdings)) {
+    if (!isValidQuantity(quantity)) continue
+    const cedear = cedearByTicker.get(ticker)
+    if (!cedear) continue
+    const valueArs = cedear.price === null ? null : quantity * cedear.price
+    if (valueArs !== null && valueArs > 0) total += valueArs
+    rows.push({
+      ticker,
+      name: cedear.Name,
+      quantity,
+      price: cedear.price,
+      valueArs,
+      pct: null,
+    })
+  }
+
+  for (const row of rows) {
+    row.pct =
+      row.valueArs !== null && total > 0 ? (row.valueArs / total) * 100 : null
+  }
+
+  return rows.sort((a, b) => {
+    if (a.valueArs === null && b.valueArs === null)
+      return a.ticker.localeCompare(b.ticker, "es")
+    if (a.valueArs === null) return 1
+    if (b.valueArs === null) return -1
+    return b.valueArs - a.valueArs || a.ticker.localeCompare(b.ticker, "es")
+  })
+}
