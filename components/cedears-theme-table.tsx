@@ -255,7 +255,7 @@ export function CedearsThemeTable({
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead
-                  className={`w-[46%] md:w-auto md:min-w-[5.5rem] ${stickyHeadClassName}`}
+                  className={`w-[60%] md:w-auto md:min-w-[5.5rem] ${stickyHeadClassName}`}
                   aria-sort={ariaSortValue(sortKey, "ticker", sortDir)}
                 >
                   <SortButton
@@ -290,7 +290,7 @@ export function CedearsThemeTable({
                   </TableHead>
                 ) : null}
                 <TableHead
-                  className={`w-[27%] text-right md:w-auto md:min-w-[3.5rem] ${stickyHeadClassName}`}
+                  className={`hidden text-right md:table-cell md:w-auto md:min-w-[3.5rem] ${stickyHeadClassName}`}
                   aria-sort={ariaSortValue(sortKey, "ratio", sortDir)}
                 >
                   <span className="flex justify-end">
@@ -303,7 +303,7 @@ export function CedearsThemeTable({
                   </span>
                 </TableHead>
                 <TableHead
-                  className={`w-[27%] text-right md:w-auto md:min-w-[4.5rem] ${stickyHeadClassName}`}
+                  className={`w-[40%] text-right md:w-auto md:min-w-[4.5rem] ${stickyHeadClassName}`}
                   aria-sort={ariaSortValue(sortKey, "price", sortDir)}
                 >
                   <span className="flex justify-end">
@@ -375,14 +375,19 @@ export function CedearsThemeTable({
                     </TableCell>
                   ) : null}
                   <TableCell
-                    className={`${numericCellClassName} px-[var(--space-xs)] md:px-[var(--space-s)]`}
+                    className={`hidden md:table-cell ${numericCellClassName} px-[var(--space-xs)] md:px-[var(--space-s)]`}
                   >
                     {c.Ratio}:1
                   </TableCell>
                   <TableCell
-                    className={`${numericCellClassName} px-[var(--space-xs)] md:px-[var(--space-s)]`}
+                    className={`${numericCellClassName} px-[var(--space-s)] md:px-[var(--space-s)]`}
                   >
-                    {formatArs(c.price)}
+                    <span className="max-md:block max-md:font-medium">
+                      {formatArs(c.price)}
+                    </span>
+                    <span className={`block text-xs md:hidden ${pctClassName(pct)}`}>
+                      {formatPct(pct)}
+                    </span>
                   </TableCell>
                   <TableCell
                     className={`hidden md:table-cell ${numericCellClassName} px-[var(--space-xs)] md:px-[var(--space-s)] ${pctClassName(pct)}`}
