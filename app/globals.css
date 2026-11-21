@@ -696,6 +696,89 @@ label {
   padding-left: max(var(--space-l), env(safe-area-inset-left, 0px));
 }
 
+/* ───────────────────────────────────────────────────────────────────────────
+   Flujo 3 · Navegación y PWA — mobile bottom tab bar + Más / Instalar sheets.
+   Desktop (md+) navigation is untouched: the bar is hidden and
+   --bottom-nav-height is 0px there.
+
+   --bottom-nav-height is the bar's full height INCLUDING the bottom safe-area
+   inset. Other fixed bottom bars sit on top of it with
+   `bottom: var(--bottom-nav-height, 0px)`.
+   ─────────────────────────────────────────────────────────────────────────── */
+:root {
+  --bottom-nav-item-height: 48px;
+  --bottom-nav-height: 0px;
+}
+
+@media (max-width: 47.999rem) {
+  :root {
+    --bottom-nav-height: calc(
+      var(--space-xs) + var(--bottom-nav-item-height) +
+        max(var(--space-xs), env(safe-area-inset-bottom, 0px))
+    );
+  }
+}
+
+@layer components {
+  .bottom-tab-bar {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 40;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    align-items: start;
+    box-sizing: border-box;
+    height: var(--bottom-nav-height);
+    padding: var(--space-xs) max(var(--space-xxs), env(safe-area-inset-right, 0px))
+      max(var(--space-xs), env(safe-area-inset-bottom, 0px))
+      max(var(--space-xxs), env(safe-area-inset-left, 0px));
+    background: var(--background); /* opaque: content scrolls under it */
+    box-shadow: inset 0 1px 0 var(--border);
+  }
+
+  .bottom-tab {
+    height: var(--bottom-nav-item-height);
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .bottom-tab:active,
+  .more-row:active {
+    opacity: 0.6;
+  }
+
+  .more-group > * + * {
+    box-shadow: inset 0 1px 0 var(--border);
+  }
+}
+
+@media (min-width: 48rem) {
+  .bottom-tab-bar {
+    display: none;
+  }
+}
+
+@media print {
+  :root {
+    --bottom-nav-height: 0px;
+  }
+  .bottom-tab-bar {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bottom-tab,
+  .more-row {
+    transition: none;
+  }
+  .bottom-tab.animate-pulse,
+  .bottom-tab .animate-pulse {
+    animation: none;
+  }
+}
+
 /* ── Portfolio mobile (components/portfolio-view.tsx, portfolio-edit-sheet.tsx) ── */
 /* Quantity field reads at --size-l; beats the 16px touch rule above (still ≥16px). */
 input.portfolio-qty-input {

@@ -5,6 +5,7 @@ import { AhrefsAnalytics } from "@/components/ahrefs-analytics";
 import { GoogleAnalytics } from "@/components/google-analytics";
 import { getSiteUrl, siteConfig } from "@/lib/site";
 import { Toaster } from "@/components/ui/sonner";
+import { ServiceWorkerRegistration } from "@/components/pwa/service-worker-registration";
 
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
@@ -74,7 +75,12 @@ export default function RootLayout({
     <html lang="es-AR" className={cn("font-sans")}>
       <body className="antialiased">
         {children}
-        <Toaster />
+        {/* Mobile toasts sit above the bottom tab bar (0px on md+). */}
+        <Toaster
+          offset={{ bottom: 'calc(var(--bottom-nav-height, 0px) + 24px)' }}
+          mobileOffset={{ bottom: 'calc(var(--bottom-nav-height, 0px) + 16px)' }}
+        />
+        <ServiceWorkerRegistration />
         {process.env.NODE_ENV === 'production' && (
           <>
             <GoogleAnalytics />

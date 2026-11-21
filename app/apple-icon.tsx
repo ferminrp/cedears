@@ -1,4 +1,5 @@
 import { ImageResponse } from 'next/og'
+import { PwaIconMark } from '@/lib/pwa-icon'
 
 export const size = {
   width: 180,
@@ -7,26 +8,9 @@ export const size = {
 
 export const contentType = 'image/png'
 
+// Full-bleed square with no transparency: iOS applies its own corner mask.
 export default function AppleIcon() {
-  return new ImageResponse(
-    (
-      <div
-        style={{
-          fontSize: 120,
-          background: '#ffffff',
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderRadius: 32,
-        }}
-      >
-        📊
-      </div>
-    ),
-    {
-      ...size,
-    },
-  )
+  return new ImageResponse(<PwaIconMark size={size.width} variant="square" />, {
+    ...size,
+  })
 }

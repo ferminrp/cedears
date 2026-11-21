@@ -6,6 +6,8 @@ import { usePathname } from "next/navigation"
 import { NavigationProgress } from "@/components/navigation-progress"
 import { SiteNav } from "@/components/site-nav"
 import { NavPendingProvider } from "@/components/nav-pending"
+import { InstallProvider } from "@/components/pwa/install-provider"
+import { OfflineBanner } from "@/components/pwa/offline-banner"
 
 export function SiteShell({
   children,
@@ -60,17 +62,20 @@ export function SiteShell({
       pendingHref={pendingHref}
       setPendingHref={setPendingHref}
     >
-      <NavigationProgress />
-      <SiteNav />
-      <div aria-busy={pendingHref ? true : undefined}>
-        {/* No Suspense here on purpose. vinext commits navigations in a transition,
-            so the old page stays on screen until the new one is ready. A shell
-            boundary either flashed an empty fallback (keyed) or left slow
-            /dividendos navigations pending forever (unkeyed). The key makes the
-            new page mount fresh DOM instead of reusing the old page's nodes,
-            which counted as layout shift. */}
-        <Fragment key={pathname}>{children}</Fragment>
-      </div>
+      <InstallProvider>
+        <NavigationProgress />
+        <OfflineBanner />
+        <SiteNav />
+        <div aria-busy={pendingHref ? true : undefined}>
+          {/* No Suspense here on purpose. vinext commits navigations in a transition,
+              so the old page stays on screen until the new one is ready. A shell
+              boundary either flashed an empty fallback (keyed) or left slow
+              /dividendos navigations pending forever (unkeyed). The key makes the
+              new page mount fresh DOM instead of reusing the old page's nodes,
+              which counted as layout shift. */}
+          <Fragment key={pathname}>{children}</Fragment>
+        </div>
+      </InstallProvider>
     </NavPendingProvider>
   )
 }

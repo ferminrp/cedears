@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { DollarKindSwitch } from "@/components/dollar-kind-switch"
 import { ImplicitDollarView } from "@/components/implicit-dollar-view"
 import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -65,6 +66,7 @@ export default async function DolarMepPage() {
         <h1 className="text-balance text-[length:var(--size-xl)] leading-[var(--line-xl)] font-semibold tracking-[var(--letter-spacing-xl)] md:text-[length:var(--size-xxl)] md:leading-[var(--line-xxl)]">
           {title}
         </h1>
+        <DollarKindSwitch current="/dolar-mep" />
       </header>
 
       {content}
