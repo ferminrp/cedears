@@ -121,8 +121,7 @@ const pctFormatter = new Intl.NumberFormat("es-AR", {
   signDisplay: "exceptZero",
 })
 
-// /cedears.json carries no quotes, so after the full list loads price/pctChange are
-// `undefined`: render the dash instead of "$ NaN".
+// A CEDEAR without a live quote renders a dash instead of "$ NaN".
 function formatPrice(value: number | null | undefined): string {
   if (value == null || !Number.isFinite(value)) return "—"
   return priceFormatter.format(value)

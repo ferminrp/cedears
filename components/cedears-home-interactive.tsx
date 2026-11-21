@@ -22,9 +22,9 @@ export function CedearsHomeInteractive({ tableCaption }: CedearsHomeInteractiveP
     if (loadStarted.current) return
     loadStarted.current = true
 
-    void fetch('/cedears.json')
+    void fetch('/api/cedears-live')
       .then((res) => {
-        if (!res.ok) throw new Error(`cedears.json ${res.status}`)
+        if (!res.ok) throw new Error(`cedears-live ${res.status}`)
         return res.json() as Promise<Cedear[]>
       })
       .then((data) => {
