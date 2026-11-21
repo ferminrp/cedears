@@ -3,6 +3,7 @@ import Link from "next/link"
 import { InfoIcon } from "lucide-react"
 import { notFound } from "next/navigation"
 import { CedearCompanyProfile } from "@/components/cedear-company-profile"
+import { CedearDetailActionBar } from "@/components/cedear-detail-action-bar"
 import { CedearDetailView } from "@/components/cedear-detail-view"
 import { CedearDividendSummary } from "@/components/cedear-dividend-summary"
 import { CedearFaqs } from "@/components/cedear-faqs"
@@ -17,7 +18,13 @@ import {
 } from "@/lib/cedear-display"
 import { buildCedearFaqs } from "@/lib/cedear-faqs"
 import { categoryPath } from "@/lib/cedear-tags"
-import { formatArs } from "@/lib/cedears"
+import {
+  formatArs,
+  formatPct,
+  formatUsd,
+  formatVolume,
+  pctClassName,
+} from "@/lib/cedears"
 import { getCompanyNews } from "@/lib/company-news"
 import {
   getCedearBases,
@@ -232,7 +239,10 @@ export default async function CedearPage({ params }: PageProps) {
         pageTitle={pageTitle}
         primaryTag={primaryTag}
       />
-      <header className="flex flex-col gap-4">
+      {/* Phones (< md): one flex column re-ordered as price → chart → key data →
+          company → rest. md+: `contents`, so desktop layout is untouched. */}
+      <div className="flex flex-col gap-[var(--space-xl)] md:contents">
+      <header className="flex flex-col gap-4 max-md:contents">
         <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
           <ol className="flex flex-wrap items-center gap-1.5 break-words">
             <li>
@@ -257,24 +267,35 @@ export default async function CedearPage({ params }: PageProps) {
             <li className="font-medium text-foreground">{cedear.Cedears}</li>
           </ol>
         </nav>
-        <div className="flex items-start gap-4">
+        <div className="flex items-start gap-4 max-md:-mt-[var(--space-s)] max-md:items-center max-md:gap-[var(--space-m)]">
           <img
             src={logoUrl(cedear.TickerOriginal)}
             alt=""
             width={48}
             height={48}
-            className="size-12 shrink-0 rounded-md bg-muted object-contain"
+            className="size-12 shrink-0 rounded-md bg-muted object-contain max-md:size-10"
           />
           <div className="min-w-0">
-            <h1 className="text-balance break-words text-[length:var(--size-xl)] leading-[var(--line-xl)] font-semibold tracking-[var(--letter-spacing-xl)] md:text-[length:var(--size-xxl)] md:leading-[var(--line-xxl)]">
+            <h1 className="text-balance break-words text-[length:var(--size-l)] leading-[var(--line-l)] font-semibold tracking-[var(--letter-spacing-l)] md:text-[length:var(--size-xxl)] md:leading-[var(--line-xxl)] md:tracking-[var(--letter-spacing-xl)]">
               {empresaHeading}
             </h1>
-            <p className="mt-1 font-mono text-lg text-muted-foreground">
+            <p className="mt-1 font-mono text-lg text-muted-foreground max-md:mt-0 max-md:text-sm">
               {cedear.Cedears}
             </p>
           </div>
         </div>
-        <Alert variant="callout">
+        <div className="-mt-[var(--space-s)] flex flex-col md:hidden">
+          <p className="font-mono text-[length:var(--size-xl)] leading-[var(--line-xl)] font-medium tabular-nums">
+            {formatArs(cedear.price)}
+          </p>
+          <p
+            className={`font-mono text-[length:var(--size-m)] leading-[var(--line-m)] tabular-nums ${pctClassName(cedear.pctChange)}`}
+          >
+            {formatPct(cedear.pctChange)}
+            <span className="font-sans text-muted-foreground"> hoy</span>
+          </p>
+        </div>
+        <Alert variant="callout" className="max-md:order-3">
           <InfoIcon />
           <AlertDescription>
             Sí, existe CEDEAR de {cedear.TickerOriginal} en Argentina. Operás
@@ -299,20 +320,24 @@ export default async function CedearPage({ params }: PageProps) {
       {profile ? (
         <section
           aria-labelledby="empresa-heading"
-          className="rounded-[var(--radius-m)] border border-border bg-card p-6"
+          className="rounded-[var(--radius-m)] border border-border bg-card p-6 max-md:order-2 max-md:p-[var(--space-l)]"
         >
           <h2 id="empresa-heading" className="text-[length:var(--size-l)] leading-[var(--line-l)] font-semibold tracking-[var(--letter-spacing-l)]">
             Empresa subyacente
           </h2>
           <div className="mt-4">
-            <CedearCompanyProfile profile={profile} showHeading={false} />
+            <CedearCompanyProfile
+              profile={profile}
+              showHeading={false}
+              collapsibleDescription
+            />
           </div>
         </section>
       ) : null}
 
       <section
         aria-labelledby="historico-heading"
-        className="rounded-[var(--radius-m)] border border-border bg-card p-6"
+        className="rounded-[var(--radius-m)] border border-border bg-card p-6 max-md:order-1 max-md:p-[var(--space-l)]"
       >
         <h2 id="historico-heading" className="mb-4 text-[length:var(--size-l)] leading-[var(--line-l)] font-semibold tracking-[var(--letter-spacing-l)]">
           Precio histórico
@@ -320,9 +345,33 @@ export default async function CedearPage({ params }: PageProps) {
         <CedearPriceChart ticker={cedear.Cedears} history={history} />
       </section>
 
+      <dl className="grid grid-cols-2 gap-[var(--space-s)] max-md:order-1 md:hidden">
+        {[
+          { label: "Ratio", value: `${cedear.Ratio}:1` },
+          { label: "Mercado", value: cedear.Market, sans: true },
+          {
+            label: `Precio ${cedear.TickerOriginal}`,
+            value: formatUsd(cedear.usPrice),
+          },
+          { label: "Volumen operado", value: formatVolume(cedear.volume) },
+        ].map((item) => (
+          <div
+            key={item.label}
+            className="flex min-w-0 flex-col gap-[var(--space-xxs)] rounded-[var(--radius-m)] bg-muted px-[var(--space-m)] py-[var(--space-s)]"
+          >
+            <dt className="truncate text-sm text-muted-foreground">{item.label}</dt>
+            <dd
+              className={`truncate text-[length:var(--size-m)] leading-[var(--line-m)] font-medium ${item.sans ? "" : "font-mono tabular-nums"}`}
+            >
+              {item.value}
+            </dd>
+          </div>
+        ))}
+      </dl>
+
       <section
         aria-labelledby="cotizacion-heading"
-        className="rounded-[var(--radius-m)] border border-border bg-card p-6"
+        className="rounded-[var(--radius-m)] border border-border bg-card p-6 max-md:order-4 max-md:p-[var(--space-l)]"
       >
         <h2 id="cotizacion-heading" className="text-[length:var(--size-l)] leading-[var(--line-l)] font-semibold tracking-[var(--letter-spacing-l)]">
           Cotización y datos
@@ -333,7 +382,7 @@ export default async function CedearPage({ params }: PageProps) {
       {paysDividends && underlyingDividends ? (
         <section
           aria-labelledby="dividendos-cedear-heading"
-          className="rounded-[var(--radius-m)] border border-border bg-card p-6"
+          className="rounded-[var(--radius-m)] border border-border bg-card p-6 max-md:order-4 max-md:p-[var(--space-l)]"
         >
           <h2
             id="dividendos-cedear-heading"
@@ -351,6 +400,7 @@ export default async function CedearPage({ params }: PageProps) {
         </section>
       ) : null}
 
+      <div className="max-md:order-4 max-md:flex max-md:flex-col max-md:gap-[var(--space-xl)] md:contents">
       <CedearFaqs faqs={faqs} />
 
       {primaryTag ? (
@@ -375,6 +425,10 @@ export default async function CedearPage({ params }: PageProps) {
         </a>
         .
       </SiteFooter>
+      </div>
+      </div>
+
+      <CedearDetailActionBar ticker={cedear.Cedears} />
     </>
   )
 }

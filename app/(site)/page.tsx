@@ -118,12 +118,14 @@ export default async function Page() {
             <CedearsHomeStaticTable rows={homeTable} caption={caption} />
           </div>
         </div>
-        <CedearsTickerAzIndex groups={azGroups} />
+        <div className="max-md:order-2">
+          <CedearsTickerAzIndex groups={azGroups} />
+        </div>
       </>
     )
   } catch {
     content = (
-      <Alert variant="destructive">
+      <Alert variant="destructive" className="max-md:order-2">
         <AlertTitle>Error al cargar los datos</AlertTitle>
         <AlertDescription>
           No se pudo obtener la lista de CEDEARs. Intentá recargar la página en unos
@@ -136,11 +138,14 @@ export default async function Page() {
   return (
     <>
       {dataLoaded && <HomeJsonLd cedearCount={cedearCount} />}
-      <header className="flex flex-col gap-3">
-        <h1 className="text-balance text-[length:var(--size-xl)] leading-[var(--line-xl)] font-semibold tracking-[var(--letter-spacing-xl)] md:text-[length:var(--size-xxl)] md:leading-[var(--line-xxl)]">
+      {/* Phones (< md): compact H1, list first, intro right after the list.
+          md+: `contents`, so the desktop layout is untouched. */}
+      <div className="flex flex-col gap-[var(--space-l)] md:contents">
+      <header className="flex flex-col gap-3 max-md:contents">
+        <h1 className="text-balance text-[length:var(--size-l)] leading-[var(--line-l)] font-semibold tracking-[var(--letter-spacing-l)] md:text-[length:var(--size-xxl)] md:leading-[var(--line-xxl)] md:tracking-[var(--letter-spacing-xl)]">
           {HOME_PAGE_TITLE}
         </h1>
-        <p className="max-w-3xl text-pretty text-sm leading-relaxed text-muted-foreground md:text-base">
+        <p className="max-w-3xl text-pretty text-sm leading-relaxed text-muted-foreground max-md:order-1 md:text-base">
           {HOME_INTRO}
         </p>
       </header>
@@ -149,7 +154,7 @@ export default async function Page() {
 
       <section
         aria-labelledby="sobre-cedears"
-        className="rounded-[var(--radius-m)] border border-border bg-muted/30 p-6 text-sm leading-relaxed text-muted-foreground"
+        className="rounded-[var(--radius-m)] border border-border bg-muted/30 p-6 text-sm leading-relaxed text-muted-foreground max-md:order-2 max-md:p-[var(--space-l)]"
       >
         <h2 id="sobre-cedears" className="mb-2 text-base font-medium text-foreground">
           ¿Qué son los CEDEARs?
@@ -171,6 +176,7 @@ export default async function Page() {
         </p>
       </section>
 
+      <div className="max-md:order-2 md:contents">
       <SiteFooter>
         Listado provisto por{' '}
         <a
@@ -192,6 +198,8 @@ export default async function Page() {
         </a>
         .
       </SiteFooter>
+      </div>
+      </div>
     </>
   )
 }

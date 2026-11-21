@@ -24,6 +24,7 @@ import {
 import { type Cedear, toCsv, toMarkdown } from "@/lib/cedears"
 import { selectHomeTableCedears } from "@/lib/home-page"
 import { getUniqueTags } from "@/lib/cedear-tags"
+import { readRecentCedears } from "@/lib/recent-cedears"
 import { logoUrl } from "@/lib/logo"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -120,23 +121,40 @@ const pctFormatter = new Intl.NumberFormat("es-AR", {
   signDisplay: "exceptZero",
 })
 
-function formatPrice(value: number | null): string {
-  if (value === null) return "—"
+// /cedears.json carries no quotes, so after the full list loads price/pctChange are
+// `undefined`: render the dash instead of "$ NaN".
+function formatPrice(value: number | null | undefined): string {
+  if (value == null || !Number.isFinite(value)) return "—"
   return priceFormatter.format(value)
 }
 
-function formatPctChange(value: number | null): string {
-  if (value === null) return "—"
+function formatPctChange(value: number | null | undefined): string {
+  if (value == null || !Number.isFinite(value)) return "—"
   return `${pctFormatter.format(value)}%`
 }
 
-function pctChangeClassName(value: number | null): string {
-  if (value === null || value === 0) return "text-muted-foreground"
+function pctChangeClassName(value: number | null | undefined): string {
+  if (value == null || value === 0 || !Number.isFinite(value)) return "text-muted-foreground"
   if (value > 0) return "text-success"
   return "text-destructive"
 }
 
 const numericCellClassName = "text-right font-mono tabular-nums"
+
+/** Phones (< md): filter selects render as a scrollable row of pill chips. */
+const CHIP_CLASS_NAME =
+  "max-md:min-h-11 max-md:shrink-0 max-md:snap-start max-md:rounded-full max-md:px-[var(--space-l)] max-md:text-[length:var(--size-m)] max-md:leading-[var(--line-m)]"
+const CHIP_ACTIVE_CLASS_NAME =
+  "max-md:bg-foreground max-md:text-background max-md:[&_svg]:text-background"
+
+function ChipLabel({ mobile, desktop }: { mobile: string; desktop: string }) {
+  return (
+    <>
+      <span className="md:hidden">{mobile}</span>
+      <span className="max-md:hidden">{desktop}</span>
+    </>
+  )
+}
 const empresaCellClassName = "max-w-52 text-muted-foreground"
 
 type CedearsListProps = {
@@ -164,7 +182,10 @@ export function CedearsList({
   const [pctSort, setPctSort] = useState<PctSort>(DEFAULT_SORT)
   const [pinned, setPinned] = useState<string[]>([])
   const [selectedTicker, setSelectedTicker] = useState<string | null>(null)
+  const [searchFocused, setSearchFocused] = useState(false)
+  const [recentTickers, setRecentTickers] = useState<string[]>([])
   const pinsHydratedRef = useRef(false)
+  const recentRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     setCedears(initialCedears)
@@ -259,6 +280,15 @@ export function CedearsList({
     loadJsonOnInteraction?.()
   }
 
+  const isFiltering =
+    query.trim() !== "" || market !== ALL_MARKETS || tag !== ALL_TAGS
+
+  function clearFilters() {
+    setQuery("")
+    setMarket(ALL_MARKETS)
+    setTag(ALL_TAGS)
+  }
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
     return cedears.filter((c) => {
@@ -322,24 +352,68 @@ export function CedearsList({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="relative w-full sm:max-w-xs">
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div className="relative w-full md:max-w-xs">
           <SearchIcon className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             type="search"
             placeholder="Buscar por ticker o nombre..."
             value={query}
-            onFocus={requestDataLoad}
+            onFocus={() => {
+              requestDataLoad()
+              setRecentTickers(readRecentCedears())
+              setSearchFocused(true)
+            }}
+            onBlur={(event) => {
+              const next = event.relatedTarget
+              if (next instanceof Node && recentRef.current?.contains(next)) return
+              setSearchFocused(false)
+            }}
             onChange={(e) => {
               requestDataLoad()
               setQuery(e.target.value)
             }}
-            className="pl-9"
+            className="pl-9 max-md:min-h-12"
             aria-label="Buscar CEDEARs"
           />
         </div>
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        {searchFocused && query === "" && recentTickers.length > 0 ? (
+          <div
+            ref={recentRef}
+            className="flex flex-col gap-[var(--space-xs)] md:hidden"
+            // Keep focus in the field while tapping a chip, so the row doesn't vanish mid-tap.
+            onPointerDown={(event) => event.preventDefault()}
+            onBlur={(event) => {
+              const next = event.relatedTarget
+              if (next instanceof Node && event.currentTarget.contains(next)) return
+              setSearchFocused(false)
+            }}
+          >
+            <h2 className="text-sm font-medium text-muted-foreground">
+              Vistos hace poco
+            </h2>
+            <ul className="flex flex-wrap gap-[var(--space-s)]">
+              {recentTickers.map((ticker) => (
+                <li key={ticker}>
+                  <Link
+                    href={`/cedear/${ticker}`}
+                    onClick={() => trackSelectTicker({ ticker })}
+                    className="inline-flex min-h-11 items-center rounded-full bg-muted px-[var(--space-l)] font-mono text-[length:var(--size-m)] font-medium"
+                  >
+                    {ticker}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+
+        <div
+          className="cl-chips flex flex-row gap-[var(--space-s)] max-md:-mx-[var(--space-l)] max-md:snap-x max-md:overflow-x-auto max-md:scroll-px-[var(--space-l)] max-md:px-[var(--space-l)] md:items-center md:gap-3"
+          role="group"
+          aria-label="Filtros"
+        >
           <Select
             value={market}
             onValueChange={setMarket}
@@ -347,10 +421,17 @@ export function CedearsList({
               if (open) requestDataLoad()
             }}
           >
-            <SelectTrigger className="w-full bg-card dark:bg-card sm:w-52" aria-label="Filtrar por mercado">
+            <SelectTrigger
+              className={`bg-muted md:w-52 md:bg-card ${CHIP_CLASS_NAME} ${market !== ALL_MARKETS ? CHIP_ACTIVE_CLASS_NAME : ""}`}
+              aria-label="Filtrar por mercado"
+            >
               <SelectValue placeholder="Mercado">
                 {(value: string) =>
-                  value === ALL_MARKETS ? "Todos los mercados" : value
+                  value === ALL_MARKETS ? (
+                    <ChipLabel mobile="Mercado" desktop="Todos los mercados" />
+                  ) : (
+                    value
+                  )
                 }
               </SelectValue>
             </SelectTrigger>
@@ -373,10 +454,17 @@ export function CedearsList({
               if (open) requestDataLoad()
             }}
           >
-            <SelectTrigger className="w-full bg-card dark:bg-card sm:w-52" aria-label="Filtrar por categoría">
+            <SelectTrigger
+              className={`bg-muted md:w-52 md:bg-card ${CHIP_CLASS_NAME} ${tag !== ALL_TAGS ? CHIP_ACTIVE_CLASS_NAME : ""}`}
+              aria-label="Filtrar por categoría"
+            >
               <SelectValue placeholder="Categoría">
                 {(value: string) =>
-                  value === ALL_TAGS ? "Todas las categorías" : value
+                  value === ALL_TAGS ? (
+                    <ChipLabel mobile="Categoría" desktop="Todas las categorías" />
+                  ) : (
+                    value
+                  )
                 }
               </SelectValue>
             </SelectTrigger>
@@ -399,12 +487,19 @@ export function CedearsList({
               if (open) requestDataLoad()
             }}
           >
-            <SelectTrigger className="w-full bg-card dark:bg-card sm:w-56" aria-label="Ordenar por variación">
+            <SelectTrigger
+              className={`bg-muted md:w-56 md:bg-card ${CHIP_CLASS_NAME} ${pctSort !== DEFAULT_SORT ? CHIP_ACTIVE_CLASS_NAME : ""}`}
+              aria-label="Ordenar por variación"
+            >
               <SelectValue placeholder="Ordenar">
                 {(value: string) => {
-                  if (value === PCT_SORT_DESC) return "Var. % mayor a menor"
-                  if (value === PCT_SORT_ASC) return "Var. % menor a mayor"
-                  return "Sin ordenar"
+                  if (value === PCT_SORT_DESC) {
+                    return <ChipLabel mobile="Mayor var. %" desktop="Var. % mayor a menor" />
+                  }
+                  if (value === PCT_SORT_ASC) {
+                    return <ChipLabel mobile="Menor var. %" desktop="Var. % menor a mayor" />
+                  }
+                  return <ChipLabel mobile="Ordenar" desktop="Sin ordenar" />
                 }}
               </SelectValue>
             </SelectTrigger>
@@ -428,6 +523,18 @@ export function CedearsList({
         </div>
       </div>
 
+      {/* Count while filtering: visible on phones, announced (sr-only) on desktop. */}
+      <p
+        aria-live="polite"
+        className={`text-sm text-muted-foreground md:sr-only ${
+          isFiltering && cedears.length > 0 ? "-mt-[var(--space-xs)]" : "sr-only"
+        }`}
+      >
+        {isFiltering && cedears.length > 0
+          ? `${filtered.length} ${filtered.length === 1 ? "resultado" : "resultados"} en ${cedears.length} CEDEARs`
+          : ""}
+      </p>
+
       {toolbarOnlyUntilData && cedears.length === 0 ? null : filtered.length === 0 ? (
         <Empty className="rounded-[var(--radius-m)] border border-border">
           <EmptyHeader>
@@ -437,17 +544,32 @@ export function CedearsList({
             <EmptyTitle>Sin resultados</EmptyTitle>
             <EmptyDescription>
               No encontramos CEDEARs que coincidan con tu búsqueda.
+              {query.trim() ? (
+                <span className="block md:hidden">
+                  Probá con el ticker (p. ej. AAPL) o parte del nombre de la empresa.
+                </span>
+              ) : null}
             </EmptyDescription>
           </EmptyHeader>
+          <Button
+            type="button"
+            variant="outline"
+            className="md:hidden"
+            onClick={clearFilters}
+          >
+            {query.trim() ? "Borrar búsqueda" : "Quitar filtros"}
+          </Button>
         </Empty>
       ) : (
         <div className="max-w-full overflow-x-auto rounded-[var(--radius-m)] border border-border">
           {tableCaption ? (
-            <p className="border-b border-border bg-muted/40 px-4 py-2 text-sm text-muted-foreground">
+            <p
+              className={`border-b border-border bg-muted/40 px-4 py-2 text-sm text-muted-foreground ${isFiltering ? "max-md:hidden" : ""}`}
+            >
               {tableCaption}
             </p>
           ) : null}
-          <Table className="min-w-[44rem]">
+          <Table className="ch-list md:min-w-[44rem]">
             <TableHeader>
               <TableRow className="bg-muted hover:bg-muted">
                 <TableHead className="w-10 px-1">
