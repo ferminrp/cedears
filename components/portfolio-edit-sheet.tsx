@@ -393,7 +393,6 @@ function QuantityStep({
           <Input
             id={inputId}
             type="text"
-            // Fractional nominales are valid (parseQuantityInput): keep the decimal key on iOS.
             inputMode="decimal"
             enterKeyHint="done"
             autoComplete="off"
