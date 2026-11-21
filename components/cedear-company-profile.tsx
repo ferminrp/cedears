@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useId, useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import type { UnderlyingCompanyProfile } from "@/lib/underlying-profile"
 
@@ -8,12 +8,50 @@ function formatEmployees(value: number): string {
   return new Intl.NumberFormat("es-AR").format(value)
 }
 
+/**
+ * Long English description: on phones (< md) clamped to 4 lines behind a
+ * "Ver más" disclosure. The full text is always in the HTML; desktop shows it whole.
+ */
+function CollapsibleDescription({ text }: { text: string }) {
+  const [expanded, setExpanded] = useState(false)
+  const id = useId()
+
+  // ~4 lines at 390px; shorter texts are shown whole, no disclosure.
+  if (text.length < 220) {
+    return <p className="text-sm leading-relaxed text-muted-foreground">{text}</p>
+  }
+
+  return (
+    <div>
+      <p
+        id={id}
+        className={`text-sm leading-relaxed text-muted-foreground ${
+          expanded ? "" : "max-md:line-clamp-4"
+        }`}
+      >
+        {text}
+      </p>
+      <button
+        type="button"
+        aria-expanded={expanded}
+        aria-controls={id}
+        onClick={() => setExpanded((value) => !value)}
+        className="-mx-[var(--space-xs)] mt-[var(--space-xxs)] inline-flex min-h-11 items-center px-[var(--space-xs)] text-sm font-medium text-foreground underline underline-offset-4 active:opacity-60 md:hidden"
+      >
+        {expanded ? "Ver menos" : "Ver más"}
+      </button>
+    </div>
+  )
+}
+
 function ProfileContent({
   profile,
   compact = false,
+  collapsibleDescription = false,
 }: {
   profile: UnderlyingCompanyProfile
   compact?: boolean
+  collapsibleDescription?: boolean
 }) {
   return (
     <div className="space-y-4">
@@ -28,7 +66,9 @@ function ProfileContent({
         </div>
       )}
 
-      {profile.description ? (
+      {profile.description && collapsibleDescription ? (
+        <CollapsibleDescription text={profile.description} />
+      ) : profile.description ? (
         <p
           className={`text-sm leading-relaxed text-muted-foreground ${
             compact ? "line-clamp-4" : ""
@@ -77,10 +117,13 @@ export function CedearCompanyProfile({
   profile,
   compact = false,
   showHeading = true,
+  collapsibleDescription = false,
 }: {
   profile: UnderlyingCompanyProfile
   compact?: boolean
   showHeading?: boolean
+  /** Clamp the description on phones behind "Ver más" (detail page). */
+  collapsibleDescription?: boolean
 }) {
   return (
     <section aria-labelledby={showHeading ? "company-profile-heading" : undefined}>
@@ -93,7 +136,11 @@ export function CedearCompanyProfile({
         </h3>
       ) : null}
       <div className={showHeading ? "mt-3" : undefined}>
-        <ProfileContent profile={profile} compact={compact} />
+        <ProfileContent
+          profile={profile}
+          compact={compact}
+          collapsibleDescription={collapsibleDescription}
+        />
       </div>
     </section>
   )

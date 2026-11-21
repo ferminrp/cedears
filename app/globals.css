@@ -717,3 +717,181 @@ input.portfolio-qty-input {
   }
 }
 /* ── end Portfolio mobile ── */
+/* ==========================================================================
+   Flujo 1 · Consultar un CEDEAR (phones, < md). Desktop (md+) is untouched.
+   Unlayered on purpose: wins over the table utilities / .ch-* components.
+   ========================================================================== */
+@media (width < 48rem) {
+  /* CEDEAR list (home SSR table .ch-table + interactive .ch-list): each <tr> becomes
+     a two-line row. Same markup on every breakpoint, so the SSR HTML stays one table.
+     Columns: 1 pin · 2 logo+ticker · 3 empresa · 4 mercado · 5 precio · 6 var. % ·
+     7 ratio · 8 ticker original. 1, 4, 7, 8 are hidden here (still in the HTML). */
+  :is(.ch-table, .ch-list) {
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+
+  :is(.ch-table, .ch-list) > thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  :is(.ch-table, .ch-list) > tbody {
+    display: block;
+  }
+
+  :is(.ch-table, .ch-list) > tbody > tr {
+    position: relative;
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+    column-gap: var(--space-m);
+    align-content: center;
+    align-items: center;
+    min-height: 60px;
+    padding: var(--space-s) var(--space-m);
+    border-bottom: 1px solid var(--border);
+  }
+
+  :is(.ch-table, .ch-list) > tbody > tr:last-child {
+    border-bottom: 0;
+  }
+
+  :is(.ch-table, .ch-list) > tbody > tr:active {
+    background-color: var(--muted);
+  }
+
+  :is(.ch-table, .ch-list) > tbody > tr > td {
+    min-width: 0;
+    max-width: none;
+    padding: 0;
+    white-space: nowrap;
+  }
+
+  :is(.ch-table, .ch-list) > tbody > tr > td:is(:nth-child(1), :nth-child(4), :nth-child(7), :nth-child(8)) {
+    display: none;
+  }
+
+  :is(.ch-table, .ch-list) > tbody > tr > td:nth-child(2),
+  :is(.ch-table, .ch-list) > tbody > tr > td:nth-child(2) > span {
+    display: contents;
+  }
+
+  :is(.ch-table, .ch-list) > tbody > tr > td:nth-child(2) img {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    width: 2rem;
+    height: 2rem;
+    margin: 0;
+    border-radius: var(--radius-m);
+  }
+
+  :is(.ch-table, .ch-list) > tbody > tr > td:nth-child(2) a {
+    grid-column: 2;
+    grid-row: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: var(--size-m);
+    line-height: var(--line-m);
+    font-weight: var(--weight-ui-medium);
+  }
+
+  /* The ticker link covers the whole row: one tap target to /cedear/TICKER. */
+  :is(.ch-table, .ch-list) > tbody > tr > td:nth-child(2) a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+
+  /* The row shows the press state instead of dimming only the ticker text. */
+  :is(.ch-table, .ch-list) > tbody > tr > td:nth-child(2) a:active {
+    opacity: 1;
+  }
+
+  :is(.ch-table, .ch-list) > tbody > tr > td:nth-child(3) {
+    grid-column: 2;
+    grid-row: 2;
+    font-size: var(--size-s);
+    line-height: var(--line-s);
+  }
+
+  :is(.ch-table, .ch-list) > tbody > tr > td:nth-child(5) {
+    grid-column: 3;
+    grid-row: 1;
+    font-size: var(--size-m);
+    line-height: var(--line-m);
+    font-weight: var(--weight-ui-medium);
+    text-align: right;
+  }
+
+  :is(.ch-table, .ch-list) > tbody > tr > td:nth-child(6) {
+    grid-column: 3;
+    grid-row: 2;
+    font-size: var(--size-s);
+    line-height: var(--line-s);
+    text-align: right;
+  }
+
+  /* Filter chips: one horizontally scrollable row. */
+  .cl-chips {
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .cl-chips::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Category tables (/categoria/[label]): the ticker link covers the whole row. */
+  [data-category-theme-table] > tbody > tr {
+    position: relative;
+  }
+
+  [data-category-theme-table] > tbody > tr > td:first-child a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+
+  [data-category-theme-table] > tbody > tr:active {
+    background-color: var(--muted);
+  }
+
+  [data-category-theme-table] > tbody > tr > td:first-child a:active {
+    opacity: 1;
+  }
+
+  /* Detail page bottom action bar. Sits on top of the bottom tab bar when one exists
+     (--bottom-nav-height is owned by the shell); the safe-area padding is only added
+     when that bar does not already cover the home indicator. */
+  .cd-action-bar {
+    --cd-action-bar-pad-bottom: max(
+      var(--space-m),
+      calc(env(safe-area-inset-bottom, 0px) - var(--bottom-nav-height, 0px))
+    );
+    position: fixed;
+    inset-inline: 0;
+    bottom: var(--bottom-nav-height, 0px);
+    z-index: 30;
+    padding: var(--space-m) max(var(--space-l), env(safe-area-inset-right, 0px))
+      var(--cd-action-bar-pad-bottom) max(var(--space-l), env(safe-area-inset-left, 0px));
+    border-top: 1px solid var(--border);
+    background-color: var(--background);
+  }
+
+  /* Reserves the bar's height at the end of the page so it never covers the footer. */
+  .cd-action-spacer {
+    flex: none;
+    height: calc(
+      var(--space-m) + 44px +
+        max(var(--space-m), calc(env(safe-area-inset-bottom, 0px) - var(--bottom-nav-height, 0px)))
+    );
+  }
+}
