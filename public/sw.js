@@ -238,6 +238,12 @@ if (typeof self !== "undefined" && typeof self.addEventListener === "function" &
       const first = await Promise.race([network, timeout])
       if (first !== "timeout") {
         clearTimeout(timer)
+        if (isCacheableHtml(first)) {
+          recordMeta(clientId, request.url, startedAt, false)
+          return first
+        }
+        const cachedOnError = await fromCache()
+        if (cachedOnError) return cachedOnError
         recordMeta(clientId, request.url, startedAt, false)
         return first
       }
