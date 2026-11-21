@@ -638,3 +638,60 @@
     color: var(--negative-text);
   }
 }
+
+/* Mobile platform layer. Unlayered on purpose so it wins over component utilities. */
+html {
+  -webkit-tap-highlight-color: transparent; /* controls ship their own :active state */
+  -webkit-text-size-adjust: 100%; /* no font inflation in landscape */
+  text-size-adjust: 100%;
+}
+
+a,
+button,
+summary,
+[role="button"],
+[role="tab"],
+[role="option"],
+label {
+  touch-action: manipulation; /* no double-tap-zoom wait before click */
+}
+
+@media (pointer: coarse) {
+  /* iOS zooms into any field under 16px and never zooms back out. */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  /* 44px minimum touch targets for the shared form controls. */
+  [data-slot="input"],
+  [data-slot="select-trigger"],
+  [data-slot="select-item"],
+  [data-slot="toggle-group-item"],
+  [data-slot="button"]:not([data-size^="icon"]):not([data-variant="link"]) {
+    min-height: 44px;
+  }
+
+  /* Links without their own press state get one, since the tap highlight is gone. */
+  a:active {
+    opacity: 0.6;
+  }
+}
+
+/* Wide tables scroll inside their box: keep the gesture from dragging the page sideways. */
+.ch-wrap,
+[data-slot="table-container"] {
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+[data-slot="sheet-content"] {
+  overscroll-behavior: contain;
+  padding-bottom: max(var(--space-l), env(safe-area-inset-bottom, 0px));
+}
+
+[data-slot="sheet-content"][data-side="left"] {
+  padding-top: max(var(--space-l), env(safe-area-inset-top, 0px));
+  padding-left: max(var(--space-l), env(safe-area-inset-left, 0px));
+}
