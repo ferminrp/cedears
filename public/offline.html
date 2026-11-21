@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000000">
+<title>Sin conexión | CEDEARs Argentina</title>
+<!-- Fallback served by public/sw.js for pages that were never saved on this device.
+     Self-contained on purpose: it must not depend on hashed build assets. Token
+     values mirror app/globals.css (Untitled theme). -->
+<style>
+@font-face { font-family: "Timeless Grotesk"; src: url("/fonts/timeless/TimelessSans-GroteskRegular.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Timeless Grotesk"; src: url("/fonts/timeless/TimelessSans-GroteskMedium.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+@font-face { font-family: "Timeless Grotesk"; src: url("/fonts/timeless/TimelessSans-GroteskSemibold.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+:root {
+  color-scheme: light dark;
+  --background: #ffffff;
+  --foreground: #000000;
+  --muted: #f3f4f6;
+  --muted-foreground: #6a7075;
+  --border: #e5e7eb;
+  --primary: #000000;
+  --primary-foreground: #fbfbfc;
+  --warning-icon: #787e84;
+  --space-s: 8px;
+  --space-m: 11px;
+  --space-l: 17px;
+  --space-xl: 22px;
+  --space-xxl: 34px;
+  --radius-m: 9px;
+  --radius-l: 13px;
+  --size-s: 12px;
+  --line-s: 18px;
+  --size-m: 14px;
+  --line-m: 21px;
+  --size-xl: 32px;
+  --line-xl: 35px;
+  --focus-ring-outline: 2px solid #fc032d;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #000000;
+    --foreground: #ffffff;
+    --muted: #272b31;
+    --muted-foreground: #a6acb3;
+    --border: #393e43;
+    --primary: #ffffff;
+    --primary-foreground: #1c2026;
+    --warning-icon: #ffea00;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; }
+body {
+  margin: 0;
+  min-height: 100svh;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: "Timeless Grotesk", sans-serif;
+  font-size: var(--size-s);
+  line-height: var(--line-s);
+  -webkit-font-smoothing: antialiased;
+}
+main {
+  margin: 0 auto;
+  max-width: 64rem;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  padding:
+    max(var(--space-xxl), env(safe-area-inset-top, 0px))
+    max(var(--space-l), env(safe-area-inset-right, 0px))
+    max(var(--space-xxl), env(safe-area-inset-bottom, 0px))
+    max(var(--space-l), env(safe-area-inset-left, 0px));
+}
+.icon { width: 40px; height: 40px; border-radius: var(--radius-m); background: var(--muted); display: flex; align-items: center; justify-content: center; color: var(--warning-icon); }
+h1 { margin: 0; font-size: var(--size-xl); line-height: var(--line-xl); font-weight: 600; text-wrap: balance; }
+p { margin: 0; font-size: var(--size-m); line-height: var(--line-m); color: var(--muted-foreground); text-wrap: pretty; max-width: 36rem; }
+.actions { display: flex; flex-direction: column; gap: var(--space-s); max-width: 24rem; }
+a, button {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 44px; padding: 0 var(--space-l);
+  border-radius: var(--radius-m);
+  font: 500 var(--size-m)/var(--line-m) "Timeless Grotesk", sans-serif;
+  text-decoration: none; cursor: pointer;
+  touch-action: manipulation;
+  transition: opacity 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+a:active, button:active { opacity: 0.6; }
+a:focus-visible, button:focus-visible { outline: var(--focus-ring-outline); outline-offset: 2px; }
+.primary { background: var(--primary); color: var(--primary-foreground); border: 0; }
+.secondary { background: transparent; color: var(--foreground); border: 1px solid var(--border); }
+@media (prefers-reduced-motion: reduce) { a, button { transition: none; } }
+</style>
+</head>
+<body>
+<main>
+  <div class="icon" aria-hidden="true">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h.01"/><path d="M8.5 16.429a5 5 0 0 1 7 0"/><path d="M5 12.859a10 10 0 0 1 5.17-2.69"/><path d="M19 12.859a10 10 0 0 0-2.007-1.523"/><path d="M2 8.82a15 15 0 0 1 4.177-2.643"/><path d="M22 8.82a15 15 0 0 0-11.288-3.764"/><path d="m2 2 20 20"/></svg>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:var(--space-m)">
+    <h1>Sin conexión</h1>
+    <p>Esta página todavía no está guardada en tu dispositivo. Las páginas que ya abriste en este dispositivo se pueden ver sin conexión, con los últimos precios guardados.</p>
+  </div>
+  <div class="actions">
+    <button type="button" class="primary" id="retry">Reintentar</button>
+    <a class="secondary" href="/">Ir al listado</a>
+    <a class="secondary" href="/portfolio">Ir a tu portfolio</a>
+  </div>
+</main>
+<script>
+document.getElementById("retry").addEventListener("click", function () { location.reload() })
+window.addEventListener("online", function () { location.reload() })
+</script>
+</body>
+</html>

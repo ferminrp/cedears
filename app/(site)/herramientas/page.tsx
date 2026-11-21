@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { CalendarClockIcon, ScaleIcon } from "lucide-react"
+import { ArrowLeftRightIcon, CalendarClockIcon, ScaleIcon } from "lucide-react"
 
 import { SiteFooter, footerLinkClassName } from "@/components/site-footer"
 import { absoluteCanonical } from "@/lib/canonical"
@@ -65,6 +65,21 @@ export default function HerramientasPage() {
             </Link>
           </li>
         ))}
+        {/* Mobile only: Ratios shares the "Calcular" tab; desktop has it in the top nav. */}
+        <li className="md:hidden">
+          <Link
+            href="/ratios"
+            className="flex h-full flex-col gap-3 rounded-[var(--radius-m)] border border-border bg-card p-5 transition-colors hover:border-foreground/30 hover:bg-muted/50"
+          >
+            <span className="flex size-10 items-center justify-center rounded-md bg-muted">
+              <ArrowLeftRightIcon className="size-5" />
+            </span>
+            <span className="text-[length:var(--size-l)] leading-[var(--line-l)] font-semibold tracking-[var(--letter-spacing-l)]">Ratios de conversión</span>
+            <span className="text-sm text-muted-foreground text-pretty">
+              Cuántas acciones representa cada CEDEAR y el precio equivalente en pesos.
+            </span>
+          </Link>
+        </li>
       </ul>
 
       <SiteFooter>
