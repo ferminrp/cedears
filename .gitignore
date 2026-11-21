@@ -16,9 +16,7 @@ node_modules
 next-env.d.ts
 *.tsbuildinfo
 
-# PWA generated files
-public/sw.js
-public/sw.js.map
+# PWA generated files (public/sw.js is hand-written and tracked)
 public/workbox-*.js
 public/workbox-*.js.map
 public/fallback-*.js
