@@ -776,6 +776,9 @@ label {
   .bottom-tab.animate-pulse,
   .bottom-tab .animate-pulse {
     animation: none;
+  }
+}
+
 /* ── Portfolio mobile (components/portfolio-view.tsx, portfolio-edit-sheet.tsx) ── */
 /* Quantity field reads at --size-l; beats the 16px touch rule above (still ≥16px). */
 input.portfolio-qty-input {
