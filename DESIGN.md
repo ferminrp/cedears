@@ -311,7 +311,7 @@ Radio base `--radius: 0.625rem` (10px), con escala Tailwind derivada (`rounded-s
 Stack: **shadcn/ui (base-nova) + Base UI + Lucide**. Preferí los primitives de `components/ui` antes de inventar controles nuevos.
 
 - **Buttons:** Compactos (`h-8` default). Variantes `default` | `outline` | `secondary` | `ghost` | `destructive` | `link`. CTA principal = inversión piedra oscura, no color brand.
-- **Nav:** Desktop = links `rounded-md`; activo = `bg-foreground text-background`. Mobile = `Sheet` izquierdo + trigger `outline` `sm`.
+- **Nav:** Desktop = links `rounded-md`; activo = `bg-foreground text-background`. Mobile (< md) = barra de pestañas fija abajo (Listado, Portfolio, Dólar, Calcular, Más); "Más" abre un `Sheet` inferior con el resto de las secciones. `--bottom-nav-height` (0px en md+) incluye el safe area: otras barras fijas abajo usan `bottom: var(--bottom-nav-height, 0px)`.
 - **Inputs / selects:** Alto 32px, `bg-card`, borde `input`, focus ring. Search con icono Lucide absoluto a la izquierda (`pl-9`).
 - **Tables:** Header `bg-muted`, filas `bg-card` + hover muted; números mono alineados a la derecha.
 - **Cards / tool tiles:** Borde + `bg-card`; tiles de herramientas con icono en pozo `bg-muted` `rounded-md`.
