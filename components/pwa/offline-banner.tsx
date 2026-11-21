@@ -89,6 +89,12 @@ export function OfflineBanner() {
       await refreshMeta(pathname)
       setRetrying(false)
     }, 1500)
+    // A slow refresh can land after the first read: read once more so a stale
+    // "from cache" flag doesn't outlive fresh data (late answers for another
+    // page are ignored by refreshMeta).
+    window.setTimeout(() => {
+      void refreshMeta(pathname)
+    }, 6000)
   }, [pathname, refreshMeta, router])
 
   const metaRef = useRef(meta)

@@ -238,6 +238,12 @@ if (typeof self !== "undefined" && typeof self.addEventListener === "function" &
       const first = await Promise.race([network, timeout])
       if (first !== "timeout") {
         clearTimeout(timer)
+        // Origin/CDN failure (5xx): a saved copy with its timestamp beats an error
+        // page. 4xx is a real answer (e.g. 404) and is always passed through.
+        if (first.status >= 500) {
+          const cached = await fromCache()
+          if (cached) return cached
+        }
         recordMeta(clientId, request.url, startedAt, false)
         return first
       }
