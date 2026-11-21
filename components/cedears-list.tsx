@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import {
   ArrowDownIcon,
   ArrowUpDownIcon,
@@ -175,7 +174,6 @@ export function CedearsList({
   toolbarOnlyUntilData = false,
   previewRowLimit,
 }: CedearsListProps) {
-  const router = useRouter()
   const [cedears, setCedears] = useState(initialCedears)
   const [query, setQuery] = useState("")
   const [market, setMarket] = useState(ALL_MARKETS)
@@ -384,23 +382,9 @@ export function CedearsList({
             ref={recentRef}
             className="flex flex-col gap-[var(--space-xs)] md:hidden"
             // Keep focus in the field while tapping a chip, so the row doesn't vanish mid-tap.
-            onPointerDown={(event) => {
-              const anchor =
-                event.target instanceof Element
-                  ? event.target.closest("a[href]")
-                  : null
-              if (anchor instanceof HTMLAnchorElement && event.pointerType === "touch") {
-                event.preventDefault()
-                const href = anchor.getAttribute("href")
-                if (href) {
-                  const ticker = href.split("/").pop()
-                  if (ticker) trackSelectTicker({ ticker })
-                  router.push(href)
-                }
-                return
-              }
-              event.preventDefault()
-            }}
+            // mousedown (not pointerdown): cancelling it only blocks the focus change and
+            // never the click that follows, on touch included.
+            onMouseDown={(event) => event.preventDefault()}
             onBlur={(event) => {
               const next = event.relatedTarget
               if (next instanceof Node && event.currentTarget.contains(next)) return
