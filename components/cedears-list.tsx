@@ -382,7 +382,9 @@ export function CedearsList({
             ref={recentRef}
             className="flex flex-col gap-[var(--space-xs)] md:hidden"
             // Keep focus in the field while tapping a chip, so the row doesn't vanish mid-tap.
-            onPointerDown={(event) => event.preventDefault()}
+            // mousedown (not pointerdown): cancelling it only blocks the focus change and
+            // never the click that follows, on touch included.
+            onMouseDown={(event) => event.preventDefault()}
             onBlur={(event) => {
               const next = event.relatedTarget
               if (next instanceof Node && event.currentTarget.contains(next)) return
