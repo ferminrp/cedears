@@ -393,7 +393,7 @@ function QuantityStep({
           <Input
             id={inputId}
             type="text"
-            inputMode="numeric"
+            inputMode="decimal"
             enterKeyHint="done"
             autoComplete="off"
             placeholder="0"
