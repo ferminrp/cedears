@@ -691,6 +691,11 @@ label {
   padding-bottom: max(var(--space-l), env(safe-area-inset-bottom, 0px));
 }
 
+/* Only sheets that reach the top edge need to clear the notch; a bottom sheet's corner is sheet-local. */
+[data-slot="sheet-content"]:not([data-side="bottom"]) > [data-slot="sheet-close"] {
+  top: max(0.75rem, env(safe-area-inset-top, 0px));
+}
+
 [data-slot="sheet-content"][data-side="left"] {
   padding-top: max(var(--space-l), env(safe-area-inset-top, 0px));
   padding-left: max(var(--space-l), env(safe-area-inset-left, 0px));
