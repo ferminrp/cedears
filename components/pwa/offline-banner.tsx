@@ -16,8 +16,6 @@ type PageMeta = {
 }
 
 const SW_META_TIMEOUT_MS = 1000
-/** Re-read page meta while navigation / refresh may still be finishing in the SW. */
-const META_POLL_DELAYS_MS = [0, 1000, 2500, 4500]
 
 /**
  * Asks the service worker when the page on screen was fetched. The SW records
@@ -79,31 +77,9 @@ export function OfflineBanner() {
     return next
   }, [])
 
-  const pollMeta = useCallback(
-    async (path: string, options?: { stopWhenLive?: boolean }) => {
-      for (const delay of META_POLL_DELAYS_MS) {
-        if (path !== latestPathname.current) return
-        if (delay > 0) {
-          await new Promise<void>((resolve) => window.setTimeout(resolve, delay))
-        }
-        if (path !== latestPathname.current) return
-        const next = await refreshMeta(path)
-        if (options?.stopWhenLive && !next.fromCache) return
-      }
-    },
-    [refreshMeta],
-  )
-
   useEffect(() => {
-    let cancelled = false
-    void (async () => {
-      await pollMeta(pathname)
-      if (cancelled) return
-    })()
-    return () => {
-      cancelled = true
-    }
-  }, [pathname, pollMeta])
+    refreshMeta(pathname)
+  }, [pathname, refreshMeta])
 
   const retry = useCallback(() => {
     setRetrying(true)
