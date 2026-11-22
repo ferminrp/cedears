@@ -1,8 +1,8 @@
 "use client"
 
-import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react"
+import { Suspense, useCallback, useLayoutEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import {
   ArrowDownIcon,
   ArrowUpDownIcon,
@@ -90,6 +90,22 @@ function SortButton({
   )
 }
 
+/**
+ * Keeps the frequency filter in sync with ?frecuencia= (initial load, back/forward
+ * and soft navigations). It is the only consumer of useSearchParams() and sits in
+ * its own <Suspense>: vinext 1.x rejects useSearchParams() outside a Suspense
+ * boundary on ISR pages, and isolating it here means only this null-rendering
+ * child bails out to the client, not the table.
+ */
+function FrequencyFromUrl({ onChange }: { onChange: (value: string) => void }) {
+  const searchParams = useSearchParams()
+  const frequency = searchParams.get("frecuencia")?.trim() || "todas"
+  useLayoutEffect(() => {
+    onChange(frequency)
+  }, [frequency, onChange])
+  return null
+}
+
 type DividendsTableProps = {
   rows: CedearDividendRow[]
   referenceDateIso: string
@@ -106,21 +122,9 @@ export function DividendsTable({
   const searchStickyRef = useRef<HTMLDivElement>(null)
 
   const [query, setQuery] = useState("")
-  // Read ?frecuencia= after hydration instead of useSearchParams(): the page is ISR,
-  // and vinext 1.x fails the static render when useSearchParams() is not wrapped in
-  // <Suspense> (which would drop the table from the server HTML).
+  // ?frecuencia= is synced by <FrequencyFromUrl> (see below) so the table itself
+  // stays in the ISR server HTML.
   const [frequencyParam, setFrequencyParam] = useState("todas")
-  useLayoutEffect(() => {
-    const syncFrequencyFromUrl = () => {
-      const fromUrl = new URLSearchParams(window.location.search)
-        .get("frecuencia")
-        ?.trim()
-      setFrequencyParam(fromUrl || "todas")
-    }
-    syncFrequencyFromUrl()
-    window.addEventListener("popstate", syncFrequencyFromUrl)
-    return () => window.removeEventListener("popstate", syncFrequencyFromUrl)
-  }, [])
 
   useLayoutEffect(() => {
     const searchEl = searchStickyRef.current
@@ -207,6 +211,9 @@ export function DividendsTable({
       data-dividendos-table-root
       className="flex min-w-0 flex-col gap-3"
     >
+      <Suspense fallback={null}>
+        <FrequencyFromUrl onChange={setFrequencyParam} />
+      </Suspense>
       <CedearTableSearch
         ref={searchStickyRef}
         id="dividendos-search"
