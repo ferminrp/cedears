@@ -9,7 +9,8 @@ export async function GET() {
     return new Response(toMarkdownDocument(cedears), {
       headers: {
         'Content-Type': 'text/markdown; charset=utf-8',
-        Vary: 'Accept',
+        // No `Vary: Accept` here: the middleware already adds it to the public
+        // response, and vinext 1.x skips Workers Cache for any custom Vary.
       },
     })
   } catch {

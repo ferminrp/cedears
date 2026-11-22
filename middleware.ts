@@ -145,7 +145,9 @@ export async function middleware(request: NextRequest) {
   if (pathname === '/' && prefersMarkdown(accept)) {
     const url = request.nextUrl.clone()
     url.pathname = '/cedears.md'
-    return NextResponse.rewrite(url)
+    const res = NextResponse.rewrite(url)
+    res.headers.set('Vary', 'Accept')
+    return res
   }
 
   const response = NextResponse.next()
