@@ -7,6 +7,7 @@ settings:
 overrides:
   hono: 4.13.20
   next: 16.4.5
+  image-size: 2.0.3
 
 importers:
 
@@ -1769,10 +1770,9 @@ packages:
     resolution: {integrity: sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g==}
     engines: {node: '>= 4'}
 
-  image-size@2.0.2:
-    resolution: {integrity: sha512-IRqXKlaXwgSMAMtpNzZa1ZAe8m+Sa1770Dhk8VkSsP9LS+iHD62Zd8FQKs8fbPiagBE7BzoFX23cxFnwshpV6w==}
-    engines: {node: '>=16.x'}
-    deprecated: Use latest 2.x please
+  image-size@2.0.3:
+    resolution: {integrity: sha512-9BJAtVCBth+76NwqnEfWr3PiRnYhbquk6K/USuQ1GQajz5NgLzO7tNsnoNjHfO7LuftgkBf+CCH6j28hjMbIYQ==}
+    engines: {node: '>=18'}
     hasBin: true
 
   inherits@2.0.4:
@@ -4525,7 +4525,7 @@ snapshots:
 
   ignore@5.3.2: {}
 
-  image-size@2.0.2: {}
+  image-size@2.0.3: {}
 
   inherits@2.0.4: {}
 
@@ -5392,7 +5392,7 @@ snapshots:
       '@vercel/og': 0.8.6
       '@vinext/types': 1.0.2
       '@vitejs/plugin-react': 6.3.0(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.4))
-      image-size: 2.0.2
+      image-size: 2.0.3
       ipaddr.js: 2.5.0
       magic-string: 0.30.21
       react: 19.3.1
