@@ -123,7 +123,7 @@ function launchServer(opts) {
   const args =
     opts.mode === "workers"
       ? ["start", "--", "--port", String(opts.port)]
-      : ["dev", "-p", String(opts.port), "-H", "127.0.0.1"]
+      : ["dev", "--port", String(opts.port), "--host", "127.0.0.1"]
   const child = spawn(cmd, args, {
     cwd: REPO_ROOT,
     env: {
