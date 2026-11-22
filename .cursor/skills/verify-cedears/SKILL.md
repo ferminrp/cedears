@@ -44,7 +44,8 @@ Or run only the doctor phase manually:
 
 1. `GET $VERIFY_BASE_URL/` → 200, title text in HTML.
 2. `GET $VERIFY_BASE_URL/cedears.json` → 200 and a non-empty JSON array when GitHub data is reachable.
-3. If home HTML contains `Error al cargar los datos`, stop and fix network or retry later; do not treat an empty table as success.
+3. `GET $VERIFY_BASE_URL/api/cedears-live` → 200 and a non-empty JSON array (quoted list used by search/filters on the home page).
+4. If home HTML contains `Error al cargar los datos`, stop and fix network or retry later; do not treat an empty table as success.
 
 The full helper runs doctor internally before smoke.
 
@@ -75,7 +76,7 @@ node scripts/verify-cedears.mjs --mode workers --port 8787 --artifact-dir /opt/c
 - Search: `getByRole('searchbox', { name: 'Buscar CEDEARs' })`
 - Market filter: `getByRole('combobox', { name: 'Filtrar por mercado' })`
 - Cedear row link: `getByRole('link', { name: /Ver detalle de / })`
-- Main nav: `getByRole('navigation', { name: 'Secciones' })` — see [features/site-nav.md](./features/site-nav.md) for client navigation and progress bar behavior.
+- Main nav: desktop `getByRole('navigation', { name: 'Secciones' })`; mobile `getByRole('navigation', { name: 'Secciones principales' })` — see [features/site-nav.md](./features/site-nav.md).
 
 **Unit tests (logic only, no browser):**
 
@@ -100,13 +101,13 @@ Default artifact directory: `.verify-artifacts/<run-id>/` or pass `--artifact-di
 | Artifact | Proves |
 | --- | --- |
 | `doctor.txt` | Instance healthy, JSON feed reachable |
-| `smoke.json` | Key routes return expected status (unknown category 404, `/categoria/tecnologia` 200, `POST /mcp` `tools/list`, `smokeMcp` Accept negotiation, sitemap `CDN-Cache-Control`, filtered `/dividendos` robots) |
+| `smoke.json` | Key routes return expected status (includes `GET /api/cedears-live`, unknown category 404, `/categoria/tecnologia` 200, `POST /mcp` `tools/list`, `smokeMcp` Accept negotiation, sitemap `CDN-Cache-Control`, filtered `/dividendos` robots) |
 | `canonical-smoke.json` | Absolute `rel=canonical` in initial `<head>` for home, categorías, sample CEDEAR, tecnología — expected URLs use production origin `https://cedears.com` (+ path), not the local `VERIFY_BASE_URL` |
 | `home-desktop.png` | Home renders on desktop |
 | `home-1440.png` | Home at 1440×900 without horizontal overflow |
 | `home-390.png` | Home at 390×844 without horizontal overflow |
 | `nav-desktop-768.png` | Header bar clip at 768px width (touch targets / layout) |
-| `nav-mobile-390.png` | Header clip at 390px width |
+| `nav-mobile-390.png` | Bottom tab bar clip at 390px width |
 | `home-mobile.png` | Home renders on mobile (iPhone 13 profile) |
 | `home-search-desktop.png` | Search interaction filters the list (when data loaded) |
 | `ratios-desktop-1440.png` | `/ratios` desktop layout |

@@ -7,6 +7,7 @@ El sitio agrupa CEDEARs por etiquetas en `/categorias` y en fichas `/categoria/{
 - `categorias-index` — `/categorias` lista todas las categorías con preview de tickers (`CategoryCompanyStack`).
 - `categoria-listing` — `/categoria/{slug}` muestra H1 temático, migas, tabla `CedearsThemeTable`, bloque **Otras categorías**, y FAQs.
 - `categoria-search` — buscador **Buscar en esta categoría** (`#category-theme-search`, sticky en mobile).
+- `categoria-mobile-rows` — sub-`md`, la tabla temática usa el mismo patrón de filas de dos líneas que el listado principal (`.ch-table` / `.ch-list`).
 - `categoria-redirects` — slugs legacy (`/categoria/tech`, `/categoria/cripto`, `/categoria/farma-y-biotecnologia`) redirigen 301 al slug canónico (`tecnologia`, `cripto-y-bitcoin`, `salud`).
 - `categoria-seo` — `rel=canonical` usa slug canónico (`/categoria/tecnologia`, no `/categoria/tech`).
 
