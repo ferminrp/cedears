@@ -149,13 +149,6 @@ export async function middleware(request: NextRequest) {
   }
 
   const response = NextResponse.next()
-  if (pathname === '/sitemap.xml') {
-    // vinext ignores `revalidate` on metadata routes, so set the CDN TTL here (1h).
-    response.headers.set(
-      'CDN-Cache-Control',
-      'public, max-age=3600, stale-while-revalidate=86400',
-    )
-  }
   response.headers.append('Vary', 'Accept')
   response.headers.append(
     'Link',

@@ -2,7 +2,7 @@
 
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import {
   ArrowDownIcon,
   ArrowUpDownIcon,
@@ -101,15 +101,21 @@ export function DividendsTable({
 }: DividendsTableProps) {
   const router = useRouter()
   const pathname = usePathname()
-  const searchParams = useSearchParams()
 
   const rootRef = useRef<HTMLDivElement>(null)
   const searchStickyRef = useRef<HTMLDivElement>(null)
 
   const [query, setQuery] = useState("")
-  const [frequencyParam, setFrequencyParam] = useState(
-    () => searchParams.get("frecuencia")?.trim() || "todas",
-  )
+  // Read ?frecuencia= after hydration instead of useSearchParams(): the page is ISR,
+  // and vinext 1.x fails the static render when useSearchParams() is not wrapped in
+  // <Suspense> (which would drop the table from the server HTML).
+  const [frequencyParam, setFrequencyParam] = useState("todas")
+  useLayoutEffect(() => {
+    const fromUrl = new URLSearchParams(window.location.search)
+      .get("frecuencia")
+      ?.trim()
+    if (fromUrl) setFrequencyParam(fromUrl)
+  }, [])
 
   useLayoutEffect(() => {
     const searchEl = searchStickyRef.current
