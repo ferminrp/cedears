@@ -111,10 +111,15 @@ export function DividendsTable({
   // <Suspense> (which would drop the table from the server HTML).
   const [frequencyParam, setFrequencyParam] = useState("todas")
   useLayoutEffect(() => {
-    const fromUrl = new URLSearchParams(window.location.search)
-      .get("frecuencia")
-      ?.trim()
-    if (fromUrl) setFrequencyParam(fromUrl)
+    const syncFrequencyFromUrl = () => {
+      const fromUrl = new URLSearchParams(window.location.search)
+        .get("frecuencia")
+        ?.trim()
+      setFrequencyParam(fromUrl || "todas")
+    }
+    syncFrequencyFromUrl()
+    window.addEventListener("popstate", syncFrequencyFromUrl)
+    return () => window.removeEventListener("popstate", syncFrequencyFromUrl)
   }, [])
 
   useLayoutEffect(() => {
