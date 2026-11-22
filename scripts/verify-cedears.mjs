@@ -11,7 +11,7 @@ import { createWriteStream } from "node:fs"
 import http from "node:http"
 import https from "node:https"
 import { dirname, join } from "node:path"
-import { fileURLToPath } from "node:url"
+import { fileURLToPath, pathToFileURL } from "node:url"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const REPO_ROOT = join(__dirname, "..")
@@ -123,7 +123,7 @@ function launchServer(opts) {
   const args =
     opts.mode === "workers"
       ? ["start", "--", "--port", String(opts.port)]
-      : ["dev", "-p", String(opts.port), "-H", "127.0.0.1"]
+      : ["dev", "--port", String(opts.port), "--host", "127.0.0.1"]
   const child = spawn(cmd, args, {
     cwd: REPO_ROOT,
     env: {
@@ -432,7 +432,14 @@ async function smokeMcp(baseUrl) {
   for (const path of ["/ratios", "/dividendos", "/mcp"]) {
     assert.ok(sitemap.body.includes(`${path}</loc>`), `sitemap includes ${path}`)
   }
-  const cdn = (sitemap.headers["cdn-cache-control"] ?? "").toLowerCase()
+  // vinext 1.x keeps the edge policy inside Workers Cache and strips it from the
+  // public response, so check the declared next.config headers() rule instead.
+  const { default: nextConfig } = await import(pathToFileURL(join(REPO_ROOT, "next.config.mjs")).href)
+  const rules = typeof nextConfig.headers === "function" ? await nextConfig.headers() : []
+  const sitemapRule = rules.find((rule) => rule.source === "/sitemap.xml")
+  const cdn = (
+    sitemapRule?.headers.find((h) => h.key.toLowerCase() === "cdn-cache-control")?.value ?? ""
+  ).toLowerCase()
   assert.ok(
     cdn.includes("max-age=3600") && cdn.includes("stale-while-revalidate=86400"),
     `sitemap CDN-Cache-Control must set 1h TTL (got ${cdn || "(missing)"})`,

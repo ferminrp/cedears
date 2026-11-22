@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react"
+import { Suspense, useCallback, useLayoutEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import {
@@ -90,6 +90,22 @@ function SortButton({
   )
 }
 
+/**
+ * Keeps the frequency filter in sync with ?frecuencia= (initial load, back/forward
+ * and soft navigations). It is the only consumer of useSearchParams() and sits in
+ * its own <Suspense>: vinext 1.x rejects useSearchParams() outside a Suspense
+ * boundary on ISR pages, and isolating it here means only this null-rendering
+ * child bails out to the client, not the table.
+ */
+function FrequencyFromUrl({ onChange }: { onChange: (value: string) => void }) {
+  const searchParams = useSearchParams()
+  const frequency = searchParams.get("frecuencia")?.trim() || "todas"
+  useLayoutEffect(() => {
+    onChange(frequency)
+  }, [frequency, onChange])
+  return null
+}
+
 type DividendsTableProps = {
   rows: CedearDividendRow[]
   referenceDateIso: string
@@ -101,15 +117,14 @@ export function DividendsTable({
 }: DividendsTableProps) {
   const router = useRouter()
   const pathname = usePathname()
-  const searchParams = useSearchParams()
 
   const rootRef = useRef<HTMLDivElement>(null)
   const searchStickyRef = useRef<HTMLDivElement>(null)
 
   const [query, setQuery] = useState("")
-  const [frequencyParam, setFrequencyParam] = useState(
-    () => searchParams.get("frecuencia")?.trim() || "todas",
-  )
+  // ?frecuencia= is synced by <FrequencyFromUrl> (see below) so the table itself
+  // stays in the ISR server HTML.
+  const [frequencyParam, setFrequencyParam] = useState("todas")
 
   useLayoutEffect(() => {
     const searchEl = searchStickyRef.current
@@ -196,6 +211,9 @@ export function DividendsTable({
       data-dividendos-table-root
       className="flex min-w-0 flex-col gap-3"
     >
+      <Suspense fallback={null}>
+        <FrequencyFromUrl onChange={setFrequencyParam} />
+      </Suspense>
       <CedearTableSearch
         ref={searchStickyRef}
         id="dividendos-search"

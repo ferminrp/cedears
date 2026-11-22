@@ -145,17 +145,12 @@ export async function middleware(request: NextRequest) {
   if (pathname === '/' && prefersMarkdown(accept)) {
     const url = request.nextUrl.clone()
     url.pathname = '/cedears.md'
-    return NextResponse.rewrite(url)
+    const res = NextResponse.rewrite(url)
+    res.headers.set('Vary', 'Accept')
+    return res
   }
 
   const response = NextResponse.next()
-  if (pathname === '/sitemap.xml') {
-    // vinext ignores `revalidate` on metadata routes, so set the CDN TTL here (1h).
-    response.headers.set(
-      'CDN-Cache-Control',
-      'public, max-age=3600, stale-while-revalidate=86400',
-    )
-  }
   response.headers.append('Vary', 'Accept')
   response.headers.append(
     'Link',
