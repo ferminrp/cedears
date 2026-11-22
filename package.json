@@ -53,7 +53,8 @@
   },
   "pnpm": {
     "overrides": {
-      "hono": "4.13.20"
+      "hono": "4.13.20",
+      "next": "16.4.5"
     },
     "onlyBuiltDependencies": [
       "esbuild",
