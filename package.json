@@ -46,7 +46,7 @@
     "playwright": "1.65.1",
     "postcss": "^8.5.33",
     "tailwindcss": "^4.3.5",
-    "typescript": "5.7.3",
+    "typescript": "7.0.2",
     "vite": "^8.3.8",
     "webpack": "^5.113.0",
     "wrangler": "^4.166.0"
