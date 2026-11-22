@@ -217,6 +217,15 @@ async function doctor(baseUrl, artifactDir) {
     if (bases[0]?.Cedears) sampleTicker = String(bases[0].Cedears)
   }
 
+  if (!dataFailed) {
+    const liveRes = await fetchUrl(`${baseUrl}/api/cedears-live`)
+    push(liveRes.status === 200, `GET /api/cedears-live → ${liveRes.status}`)
+    if (liveRes.status === 200) {
+      const live = JSON.parse(liveRes.body.toString("utf8"))
+      push(Array.isArray(live) && live.length > 0, "cedears-live is non-empty array")
+    }
+  }
+
   await writeFile(join(artifactDir, "doctor.txt"), lines.join("\n") + "\n", "utf8")
   return { sampleTicker, dataLoadWarning: dataFailed }
 }
@@ -300,6 +309,7 @@ async function smokeCanonicals(baseUrl, sampleTicker, artifactDir) {
 
 const SMOKE_ROUTES = [
   { path: "/", expectStatus: 200 },
+  { path: "/api/cedears-live", expectStatus: 200 },
   { path: "/portfolio", expectStatus: 200 },
   { path: "/categorias", expectStatus: 200 },
   { path: "/herramientas", expectStatus: 200 },
@@ -1003,9 +1013,20 @@ async function captureScreenshots(baseUrl, artifactDir, setBrowser) {
       path: join(artifactDir, "home-390.png"),
       fullPage: false,
     })
+    const mobileTabBar = narrow.getByRole("navigation", {
+      name: "Secciones principales",
+    })
+    await mobileTabBar.waitFor({ state: "visible", timeout: 30_000 })
+    const tabBarBox = await mobileTabBar.boundingBox()
+    assert.ok(tabBarBox, "mobile bottom tab bar has layout box")
     await narrow.screenshot({
       path: join(artifactDir, "nav-mobile-390.png"),
-      clip: { x: 0, y: 0, width: 390, height: 72 },
+      clip: {
+        x: 0,
+        y: Math.max(0, Math.floor(tabBarBox.y)),
+        width: 390,
+        height: Math.ceil(tabBarBox.height),
+      },
     })
 
     const iphone = devices["iPhone 13"]

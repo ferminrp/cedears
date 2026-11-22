@@ -30,13 +30,13 @@ Each feature file uses H1, one intro paragraph, then these H2 sections in order:
 
 ## Features
 
-- [Site navigation](./site-nav.md) — Secciones bar, prefetch, progress bar, no full-page loading shell on route change, www→apex Workers gateway.
-- [Home list and search](./home-list.md) — top-100 table, A–Z index, search/filters, export buttons.
+- [Site navigation](./site-nav.md) — Desktop **Secciones** bar; mobile bottom tabs + **Más** sheet; prefetch, progress bar, PWA notes, www→apex gateway.
+- [Home list and search](./home-list.md) — top-100 table, A–Z index, `/api/cedears-live` interactive list, mobile row layout, search/filters, export buttons.
 - [Categorías](./categorias.md) — índice `/categorias`, listas temáticas `/categoria/{slug}`, redirects legacy.
 - [CEDEAR detail](./cedear-detail.md) — per-ticker page, breadcrumb, similares, chart, FAQs.
 - [Dividendos](./dividendos.md) — calendario `/dividendos`, filtros, CSV, sticky mobile table.
 - [Data exports and feeds](./data-exports.md) — CSV, Markdown, JSON, sitemap.
 - [MCP connection guide](./mcp-docs.md) — `/mcp` HTML docs vs JSON-RPC on the same URL.
-- [Portfolio](./portfolio.md) — local portfolio tracking view.
+- [Portfolio](./portfolio.md) — local holdings; desktop table vs mobile sheet and `?agregar=` deep links.
 - [Tools (DCA and rebalance)](./herramientas.md) — calculators under Herramientas.
 - [Ratios](./ratios.md) — conversion table, calculator, and CSV at `/ratios`.
