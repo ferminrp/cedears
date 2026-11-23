@@ -40,6 +40,7 @@ describe("server.json (MCP Registry)", () => {
       name: string
       version: string
       remotes: { type: string; url: string }[]
+      icons: { src: string; mimeType: string; sizes: string[] }[]
     }
     assert.equal(serverJson.name, "io.github.ferminrp/cedears")
     assert.equal(serverJson.version, "1.0.0")
@@ -47,6 +48,13 @@ describe("server.json (MCP Registry)", () => {
       {
         type: "streamable-http",
         url: "https://cedears.com/mcp",
+      },
+    ])
+    assert.deepEqual(serverJson.icons, [
+      {
+        src: "https://cedears.com/mcp-icon-512.png",
+        mimeType: "image/png",
+        sizes: ["512x512"],
       },
     ])
   })
