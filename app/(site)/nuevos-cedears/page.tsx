@@ -138,7 +138,7 @@ export default function NuevosCedearsPage() {
           {NUEVOS_CEDEARS_LEAD}
         </p>
         <p className="max-w-[60ch] text-pretty text-sm leading-relaxed text-muted-foreground">
-          {NUEVOS_CEDEARS_ALTA_INTRO}{" "}
+          {NUEVOS_CEDEARS_ALTA_INTRO} Consultá{" "}
           <Link
             href="/como-comprar-cedears"
             className="text-foreground underline underline-offset-4"

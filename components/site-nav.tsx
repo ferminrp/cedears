@@ -67,6 +67,7 @@ const moreGroups: readonly {
   {
     title: "Explorar",
     items: [
+      { href: "/nuevos-cedears", label: "Nuevos", hint: "Últimos CEDEARs listados en BYMA" },
       { href: "/categorias", label: "Categorías", hint: "CEDEARs agrupados por temática" },
       { href: "/earnings", label: "Earnings", hint: "Calendario de balances" },
       { href: "/dividendos", label: "Dividendos", hint: "Próximos pagos y frecuencia" },
@@ -84,7 +85,7 @@ const moreGroups: readonly {
   },
 ]
 
-const moreMatch = ["/categorias", "/categoria", "/earnings", "/dividendos", "/alycs", "/mcp"] as const
+const moreMatch = ["/nuevos-cedears", "/categorias", "/categoria", "/earnings", "/dividendos", "/alycs", "/mcp"] as const
 
 function NavLinkLabel({ label }: { label: string }) {
   const { pending } = useLinkStatus()
