@@ -1,0 +1,3040 @@
+{
+  "method": "git-first-appearance",
+  "sourceRepository": "https://github.com/ferminrp/google-sheets-argento",
+  "sourcePath": "data/cedears.json",
+  "generatedAt": "2026-11-04T13:21:50.457Z",
+  "note": "Fechas aproximadas: primera aparición del ticker en el historial git del listado público google-sheets-argento. No reemplaza una fecha oficial de alta en BYMA o CNV.",
+  "entries": [
+    {
+      "ticker": "BBAX",
+      "name": "JPMorgan BetaBuilders Developed Asia Pacific ex-Japan ETF",
+      "ratio": "13",
+      "tickerOriginal": "BBAX",
+      "detectedSince": "2026-09-16"
+    },
+    {
+      "ticker": "BBCA",
+      "name": "JPMorgan BetaBuilders Canada ETF",
+      "ratio": "20",
+      "tickerOriginal": "BBCA",
+      "detectedSince": "2026-09-16"
+    },
+    {
+      "ticker": "CORN",
+      "name": "Teucrium Corn Fund",
+      "ratio": "4",
+      "tickerOriginal": "CORN",
+      "detectedSince": "2026-09-16"
+    },
+    {
+      "ticker": "GSG",
+      "name": "iShares S&P GSCI Commodity-Indexed Trust",
+      "ratio": "6",
+      "tickerOriginal": "GSG",
+      "detectedSince": "2026-09-16"
+    },
+    {
+      "ticker": "SOYB",
+      "name": "Teucrium Soybean Fund",
+      "ratio": "5",
+      "tickerOriginal": "SOYB",
+      "detectedSince": "2026-09-16"
+    },
+    {
+      "ticker": "XME",
+      "name": "State Street SPDR S&P Metals & Mining ETF",
+      "ratio": "30",
+      "tickerOriginal": "XME",
+      "detectedSince": "2026-07-09"
+    },
+    {
+      "ticker": "SPCX",
+      "name": "Space Exploration Technologies Corp.",
+      "ratio": "50",
+      "tickerOriginal": "SPCX",
+      "detectedSince": "2026-06-12"
+    },
+    {
+      "ticker": "ANET",
+      "name": "Arista Networks Inc",
+      "ratio": "29",
+      "tickerOriginal": "ANET",
+      "detectedSince": "2026-06-03"
+    },
+    {
+      "ticker": "CCJ",
+      "name": "Cameco Corporation",
+      "ratio": "23",
+      "tickerOriginal": "CCJ",
+      "detectedSince": "2026-06-03"
+    },
+    {
+      "ticker": "COP",
+      "name": "ConocoPhillips",
+      "ratio": "25",
+      "tickerOriginal": "COP",
+      "detectedSince": "2026-06-03"
+    },
+    {
+      "ticker": "CRWD",
+      "name": "CrowdStrike Holdings, Inc.",
+      "ratio": "79",
+      "tickerOriginal": "CRWD",
+      "detectedSince": "2026-06-03"
+    },
+    {
+      "ticker": "EWY",
+      "name": "iShares MSCI South Korea ETF",
+      "ratio": "50",
+      "tickerOriginal": "EWY",
+      "detectedSince": "2026-06-03"
+    },
+    {
+      "ticker": "FISV",
+      "name": "Fiserv, Inc.",
+      "ratio": "11",
+      "tickerOriginal": "FISV",
+      "detectedSince": "2026-06-03"
+    },
+    {
+      "ticker": "GLNG",
+      "name": "Golar LNG Ltd.",
+      "ratio": "10",
+      "tickerOriginal": "GLNG",
+      "detectedSince": "2026-06-03"
+    },
+    {
+      "ticker": "HIMS",
+      "name": "Hims & Hers Health, Inc.",
+      "ratio": "4",
+      "tickerOriginal": "HIMS",
+      "detectedSince": "2026-06-03"
+    },
+    {
+      "ticker": "ICLN",
+      "name": "iShares Global Clean Energy ETF",
+      "ratio": "5",
+      "tickerOriginal": "ICLN",
+      "detectedSince": "2026-06-03"
+    },
+    {
+      "ticker": "KEEL",
+      "name": "Bitfarms Ltd.",
+      "ratio": "5",
+      "tickerOriginal": "KEEL",
+      "detectedSince": "2026-06-03"
+    },
+    {
+      "ticker": "MP",
+      "name": "MP Materials Corp.",
+      "ratio": "10",
+      "tickerOriginal": "MP",
+      "detectedSince": "2026-06-03"
+    },
+    {
+      "ticker": "NATU3",
+      "name": "Natura Cosméticos S.A.",
+      "ratio": "1",
+      "tickerOriginal": "NATU3",
+      "detectedSince": "2026-06-03"
+    },
+    {
+      "ticker": "NBIS",
+      "name": "Nebius Group N.V.",
+      "ratio": "27",
+      "tickerOriginal": "NBIS",
+      "detectedSince": "2026-06-03"
+    },
+    {
+      "ticker": "NEE",
+      "name": "NextEra Energy, Inc.",
+      "ratio": "19",
+      "tickerOriginal": "NEE",
+      "detectedSince": "2026-06-03"
+    },
+    {
+      "ticker": "NVO",
+      "name": "Novo Nordisk A/S",
+      "ratio": "7",
+      "tickerOriginal": "NVO",
+      "detectedSince": "2026-06-03"
+    },
+    {
+      "ticker": "O",
+      "name": "Realty Income Corp.",
+      "ratio": "13",
+      "tickerOriginal": "O",
+      "detectedSince": "2026-06-03"
+    },
+    {
+      "ticker": "ONDS",
+      "name": "Ondas Holdings Inc.",
+      "ratio": "2",
+      "tickerOriginal": "ONDS",
+      "detectedSince": "2026-06-03"
+    },
+    {
+      "ticker": "RSP",
+      "name": "Invesco S&P 500 Equal Weight ETF",
+      "ratio": "30",
+      "tickerOriginal": "RSP",
+      "detectedSince": "2026-06-03"
+    },
+    {
+      "ticker": "SNDK",
+      "name": "Sandisk Corporation",
+      "ratio": "170",
+      "tickerOriginal": "SNDK",
+      "detectedSince": "2026-06-03"
+    },
+    {
+      "ticker": "SPHQ",
+      "name": "Invesco S&P 500 Quality ETF",
+      "ratio": "14",
+      "tickerOriginal": "SPHQ",
+      "detectedSince": "2026-06-03"
+    },
+    {
+      "ticker": "AABA",
+      "name": "Altaba Inc.",
+      "ratio": "3",
+      "tickerOriginal": "AABA",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "ACWI",
+      "name": "iShares MSCI ACWI ETF",
+      "ratio": "26",
+      "tickerOriginal": "ACWI",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "ADS",
+      "name": "Adidas AG",
+      "ratio": "22",
+      "tickerOriginal": "ADS",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "AI",
+      "name": "C3.AI INC",
+      "ratio": "5",
+      "tickerOriginal": "AI",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "AKO.B",
+      "name": "Embotelladora Andina S.A.",
+      "ratio": "1",
+      "tickerOriginal": "AKO.B",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "ALAB",
+      "name": "Astera Labs Inc",
+      "ratio": "44",
+      "tickerOriginal": "ALAB",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "AOCA",
+      "name": "Aluminum Corp Of China",
+      "ratio": "1",
+      "tickerOriginal": "ACH",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "ARM",
+      "name": "ARM Holdings Plc",
+      "ratio": "27",
+      "tickerOriginal": "ARM",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "ASML",
+      "name": "ASML HOLDING NV",
+      "ratio": "146",
+      "tickerOriginal": "ASML",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "ASTS",
+      "name": "AST SpaceMobile Inc",
+      "ratio": "15",
+      "tickerOriginal": "ASTS",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "ATAD",
+      "name": "Pjsc Tatneft",
+      "ratio": "4",
+      "tickerOriginal": "ATAD",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "AUY",
+      "name": "Yamana Gold Inc.",
+      "ratio": "1",
+      "tickerOriginal": "AUY",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "B",
+      "name": "Barrick Gold Corp",
+      "ratio": "2",
+      "tickerOriginal": "B",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "BAYN",
+      "name": "Bayer AG",
+      "ratio": "3",
+      "tickerOriginal": "BAYN",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "BMNR",
+      "name": "Bitmine Inmersion Technologies, Inc.",
+      "ratio": "8",
+      "tickerOriginal": "BMNR",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "BPA11",
+      "name": "Banco BTG Pactual S.A.",
+      "ratio": "1",
+      "tickerOriginal": "BPA11",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "BSN",
+      "name": "Danone",
+      "ratio": "20",
+      "tickerOriginal": "BSN",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "BX",
+      "name": "Blackstone Inc.",
+      "ratio": "30",
+      "tickerOriginal": "BX",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "CAJ",
+      "name": "Canon Inc",
+      "ratio": "2",
+      "tickerOriginal": "CAJ",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "CBRD",
+      "name": "Companhia Brasileira De Dis NPV ADR",
+      "ratio": "1",
+      "tickerOriginal": "CBRD",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "CEG",
+      "name": "CONSTELLATION ENERGY CORPORATION",
+      "ratio": "45",
+      "tickerOriginal": "CEG",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "CIBR",
+      "name": "First Trust NASDAQ Cybersecurity",
+      "ratio": "10",
+      "tickerOriginal": "CIBR",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "CLS",
+      "name": "CELESTICA INC",
+      "ratio": "20",
+      "tickerOriginal": "CLS",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "COPX",
+      "name": "Global X Copper Miners ETF",
+      "ratio": "14",
+      "tickerOriginal": "COPX",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "CRWV",
+      "name": "CoreWeave Inc",
+      "ratio": "27",
+      "tickerOriginal": "CRWV",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "CS",
+      "name": "Credit Suisse Group",
+      "ratio": "1",
+      "tickerOriginal": "CS",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "DECK",
+      "name": "DECKERS OUTDOOR CORPORATION",
+      "ratio": "25",
+      "tickerOriginal": "DECK",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "ECL",
+      "name": "Ecolab Inc",
+      "ratio": "56",
+      "tickerOriginal": "ECL",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "EFA",
+      "name": "iShares MSCI EAFE ETF",
+      "ratio": "18",
+      "tickerOriginal": "EFA",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "EQNR",
+      "name": "Equinor Asa",
+      "ratio": "6",
+      "tickerOriginal": "EQNR",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "ESGU",
+      "name": "IShares ESG Aware MSCI USA ETF",
+      "ratio": "30",
+      "tickerOriginal": "ESGU",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "EWJ",
+      "name": "iShares MSCI JAPAN ETF",
+      "ratio": "14",
+      "tickerOriginal": "EWJ",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "F",
+      "name": "Ford Motor Company",
+      "ratio": "1",
+      "tickerOriginal": "F",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "GDX",
+      "name": "Van Eck Gold Miners ETF/USA",
+      "ratio": "10",
+      "tickerOriginal": "GDX",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "HNPIY",
+      "name": "Huaneng Power Intl",
+      "ratio": "1",
+      "tickerOriginal": "HNPIY",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "HOOD",
+      "name": "Robinhood Markets Inc",
+      "ratio": "29",
+      "tickerOriginal": "HOOD",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "IEMG",
+      "name": "iShares Core MSCI Emerging Markets ETF",
+      "ratio": "12",
+      "tickerOriginal": "IEMG",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "IJH",
+      "name": "iShares CORE S&P MID-CAP ETF",
+      "ratio": "12",
+      "tickerOriginal": "IJH",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "ILF",
+      "name": "IShares Latin America 40 ETF",
+      "ratio": "6",
+      "tickerOriginal": "ILF",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "IREN",
+      "name": "Iren Ltd",
+      "ratio": "12",
+      "tickerOriginal": "IREN",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "ITA",
+      "name": "iShares U.S. Aerospace & Defense",
+      "ratio": "50",
+      "tickerOriginal": "ITA",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "IVV",
+      "name": "IShares Core S&P 500 ETF",
+      "ratio": "692",
+      "tickerOriginal": "IVV",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "JCI",
+      "name": "Johnson Controls International",
+      "ratio": "2",
+      "tickerOriginal": "JCI",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "JOYY",
+      "name": "JOYY Inc.",
+      "ratio": "5",
+      "tickerOriginal": "JOYY",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "LAR",
+      "name": "Lithium Americas (Argentina) Corp",
+      "ratio": "1",
+      "tickerOriginal": "LAR",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "LFC",
+      "name": "China Life Insurance",
+      "ratio": "2",
+      "tickerOriginal": "LFC",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "LKOD",
+      "name": "Pjsc Lukoil",
+      "ratio": "4",
+      "tickerOriginal": "LKOD",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "MBT",
+      "name": "Mobile Telesystems",
+      "ratio": "2",
+      "tickerOriginal": "MBT",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "NGG",
+      "name": "National Grid Plc",
+      "ratio": "2",
+      "tickerOriginal": "NGG",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "NLM",
+      "name": "Novolipetsk Steel PJSC",
+      "ratio": "2",
+      "tickerOriginal": "NLM",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "NOW",
+      "name": "SERVICENOW INC",
+      "ratio": "172",
+      "tickerOriginal": "NOW",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "OGZD",
+      "name": "Pjsc Gazprom",
+      "ratio": "2",
+      "tickerOriginal": "OGZD",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "OKLO",
+      "name": "Oklo Inc",
+      "ratio": "28",
+      "tickerOriginal": "OKLO",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "PATH",
+      "name": "UIPATH INC",
+      "ratio": "2",
+      "tickerOriginal": "PATH",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "PCRF",
+      "name": "Panasonic Corporation",
+      "ratio": "2",
+      "tickerOriginal": "PCRF",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "PDD",
+      "name": "PDD HOLDINGS INC",
+      "ratio": "25",
+      "tickerOriginal": "PDD",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "PSO",
+      "name": "Pearson Plc",
+      "ratio": "1",
+      "tickerOriginal": "PSO",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "PSQ",
+      "name": "PROSHARES SHORT QQQ",
+      "ratio": "8",
+      "tickerOriginal": "PSQ",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "PTR",
+      "name": "Petrochina Co Ltd",
+      "ratio": "4",
+      "tickerOriginal": "PTR",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "RCTB4",
+      "name": "Telebras PN",
+      "ratio": "1000",
+      "tickerOriginal": "RCTB4",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "RGTI",
+      "name": "RIGETTI COMPUTING INC",
+      "ratio": "2",
+      "tickerOriginal": "RGTI",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "RKLB",
+      "name": "Rocket Lab Corp",
+      "ratio": "12",
+      "tickerOriginal": "RKLB",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "SHPW",
+      "name": "Shapeways Holdings Inc",
+      "ratio": "2",
+      "tickerOriginal": "SHPW",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "SI",
+      "name": "Silvergate Bancorp",
+      "ratio": "10",
+      "tickerOriginal": "SI",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "SIEGY",
+      "name": "Siemens Ag Adr",
+      "ratio": "3",
+      "tickerOriginal": "SIEGY",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "SLV",
+      "name": "iShares SILVER TRUST",
+      "ratio": "6",
+      "tickerOriginal": "SLV",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "SMH",
+      "name": "VAN ECK SEMICONDUCTOR ETF",
+      "ratio": "50",
+      "tickerOriginal": "SMH",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "SMSN",
+      "name": "Samsung Electronics Co. Ltd.",
+      "ratio": "14",
+      "tickerOriginal": "SMSN",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "SNP",
+      "name": "China Petroleum & Chem",
+      "ratio": "3",
+      "tickerOriginal": "SNP",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "SPXL",
+      "name": "DIREXION DAILY S&P 500 BULL 3X",
+      "ratio": "25",
+      "tickerOriginal": "SPXL",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "TEAM",
+      "name": "ATLASSIAN CORPORATION",
+      "ratio": "47",
+      "tickerOriginal": "TEAM",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "TEM",
+      "name": "TEMPUS AI INC",
+      "ratio": "12",
+      "tickerOriginal": "TEM",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "TQQQ",
+      "name": "ProShares UltraPro QQQ",
+      "ratio": "25",
+      "tickerOriginal": "TQQQ",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "TTM",
+      "name": "Tata Motors Ltd",
+      "ratio": "1",
+      "tickerOriginal": "TTM",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "TWTR",
+      "name": "Twitter, Inc.",
+      "ratio": "2",
+      "tickerOriginal": "TWTR",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "URA",
+      "name": "Global X Uranium ETF",
+      "ratio": "5",
+      "tickerOriginal": "URA",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "USO",
+      "name": "United States Oil Fund",
+      "ratio": "15",
+      "tickerOriginal": "USO",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "VIG",
+      "name": "VANGUARD DIVIDEND APPRECIATION",
+      "ratio": "39",
+      "tickerOriginal": "VIG",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "VRTX",
+      "name": "VERTEX PHARMACEUTICALS INC",
+      "ratio": "101",
+      "tickerOriginal": "VRTX",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "VST",
+      "name": "VISTRA CORPORATION",
+      "ratio": "26",
+      "tickerOriginal": "VST",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "VXX",
+      "name": "iPath Series B S&P 500 VIX",
+      "ratio": "5",
+      "tickerOriginal": "VXX",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "XLU",
+      "name": "Utilities Select Sector SPDR Fund",
+      "ratio": "15",
+      "tickerOriginal": "XLU",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "XPEV",
+      "name": "XPENG INC",
+      "ratio": "4",
+      "tickerOriginal": "XPEV",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "XYZ",
+      "name": "Square Inc.",
+      "ratio": "20",
+      "tickerOriginal": "XYZ",
+      "detectedSince": "2026-01-22"
+    },
+    {
+      "ticker": "AAL",
+      "name": "American Airlines Group Inc",
+      "ratio": "2",
+      "tickerOriginal": "AAL",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "AAP",
+      "name": "Advanced Auto Parts Inc",
+      "ratio": "14",
+      "tickerOriginal": "AAP",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "AAPL",
+      "name": "Apple Inc.",
+      "ratio": "20",
+      "tickerOriginal": "AAPL",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "ABBV",
+      "name": "AbbVie Inc.",
+      "ratio": "10",
+      "tickerOriginal": "ABBV",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "ABEV",
+      "name": "Ambev S.A.",
+      "ratio": "3",
+      "tickerOriginal": "ABEV",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "ABEV3",
+      "name": "Ambev S.A.",
+      "ratio": "1",
+      "tickerOriginal": "ABEV3",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "ABNB",
+      "name": "Airbnb Inc",
+      "ratio": "15",
+      "tickerOriginal": "ABNB",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "ABT",
+      "name": "Abbott Labs",
+      "ratio": "4",
+      "tickerOriginal": "ABT",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "ACN",
+      "name": "Accenture",
+      "ratio": "75",
+      "tickerOriginal": "ACN",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "ADBE",
+      "name": "Adobe Systems Incorporated",
+      "ratio": "44",
+      "tickerOriginal": "ADBE",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "ADGO",
+      "name": "Adecoagro S.A.",
+      "ratio": "1",
+      "tickerOriginal": "AGRO",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "ADI",
+      "name": "Analog Devices",
+      "ratio": "15",
+      "tickerOriginal": "ADI",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "ADP",
+      "name": "Automatic Data Processing Inc.",
+      "ratio": "6",
+      "tickerOriginal": "ADP",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "AEG",
+      "name": "Aegon N.V.",
+      "ratio": "1",
+      "tickerOriginal": "AEG",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "AEM",
+      "name": "Agnico Eagle Mines Limited",
+      "ratio": "6",
+      "tickerOriginal": "AEM",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "AIG",
+      "name": "American International Group (AIG)",
+      "ratio": "5",
+      "tickerOriginal": "AIG",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "AMAT",
+      "name": "Applied Materials Inc.",
+      "ratio": "5",
+      "tickerOriginal": "AMAT",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "AMD",
+      "name": "Advanced Micro Devices, Inc.",
+      "ratio": "10",
+      "tickerOriginal": "AMD",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "AMGN",
+      "name": "Amgen Inc.",
+      "ratio": "30",
+      "tickerOriginal": "AMGN",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "AMX",
+      "name": "America Movil",
+      "ratio": "1",
+      "tickerOriginal": "AMX",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "AMZN",
+      "name": "Amazon.Com, Inc.",
+      "ratio": "144",
+      "tickerOriginal": "AMZN",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "ANF",
+      "name": "Abercrombie & Fitch Co",
+      "ratio": "1",
+      "tickerOriginal": "ANF",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "ARCO",
+      "name": "Arcos Dorados Holdings Inc.",
+      "ratio": "2",
+      "tickerOriginal": "ARCO",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "ARKK",
+      "name": "ARK INNOVATION",
+      "ratio": "10",
+      "tickerOriginal": "ARKK",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "ASR",
+      "name": "Grupo Aeroportuario Del Sureste, S.A.B. de C.V.",
+      "ratio": "20",
+      "tickerOriginal": "ASR",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "AVGO",
+      "name": "Broadcom Inc.",
+      "ratio": "39",
+      "tickerOriginal": "AVGO",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "AVY",
+      "name": "Avery Dennison Corp.",
+      "ratio": "18",
+      "tickerOriginal": "AVY",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "AXP",
+      "name": "American Express Co",
+      "ratio": "15",
+      "tickerOriginal": "AXP",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "AZN",
+      "name": "Astrazeneca Plc",
+      "ratio": "4",
+      "tickerOriginal": "AZN",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "BA",
+      "name": "The Boeing Company",
+      "ratio": "24",
+      "tickerOriginal": "BA",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "BA.C",
+      "name": "Bank Of America Corporation",
+      "ratio": "4",
+      "tickerOriginal": "BAC",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "BABA",
+      "name": "Alibaba Group Holding Limited",
+      "ratio": "9",
+      "tickerOriginal": "BABA",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "BAK",
+      "name": "Braskem SA",
+      "ratio": "2",
+      "tickerOriginal": "BAK",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "BAS",
+      "name": "Basf SE",
+      "ratio": "2",
+      "tickerOriginal": "BAS",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "BB",
+      "name": "Blackberry Limited",
+      "ratio": "3",
+      "tickerOriginal": "BB",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "BBAS3",
+      "name": "Banco do Brasil S.A.",
+      "ratio": "2",
+      "tickerOriginal": "BBAS3",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "BBD",
+      "name": "Banco Bradesco S.A.",
+      "ratio": "1",
+      "tickerOriginal": "BBD",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "BBDC3",
+      "name": "Banco Bradesco S.A.",
+      "ratio": "1",
+      "tickerOriginal": "BBDC3",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "BBV",
+      "name": "Bilbao Vizcaya Argentaria S.A.",
+      "ratio": "1",
+      "tickerOriginal": "BBV",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "BCS",
+      "name": "Barclays Bank Plc",
+      "ratio": "1",
+      "tickerOriginal": "BCS",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "BHP",
+      "name": "Bhp Group Ltd",
+      "ratio": "2",
+      "tickerOriginal": "BHP",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "BIDU",
+      "name": "Baidu, Inc.",
+      "ratio": "11",
+      "tickerOriginal": "BIDU",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "BIIB",
+      "name": "Biogen Inc.",
+      "ratio": "13",
+      "tickerOriginal": "BIIB",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "BIOX",
+      "name": "Bioceres Crop Solutions Corp.",
+      "ratio": "1",
+      "tickerOriginal": "BIOX",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "BK",
+      "name": "The Bank Of New York Mellon Corp.",
+      "ratio": "2",
+      "tickerOriginal": "BK",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "BKNG",
+      "name": "Booking",
+      "ratio": "700",
+      "tickerOriginal": "BKNG",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "BKR",
+      "name": "Baker Hughes Co",
+      "ratio": "7",
+      "tickerOriginal": "BKR",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "BMY",
+      "name": "Bristol-Myers Squibb Company",
+      "ratio": "3",
+      "tickerOriginal": "BMY",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "BNG",
+      "name": "Bunge Limited",
+      "ratio": "5",
+      "tickerOriginal": "BNG",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "BP",
+      "name": "BP PCL",
+      "ratio": "5",
+      "tickerOriginal": "BP",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "BRFS",
+      "name": "BRF S.A.",
+      "ratio": "3",
+      "tickerOriginal": "BRFS",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "BRKB",
+      "name": "Berkshire Hathaway Inc.",
+      "ratio": "22",
+      "tickerOriginal": "BRKB",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "BSBR",
+      "name": "Banco Santander (Brasil) S.A.",
+      "ratio": "1",
+      "tickerOriginal": "BSBR",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "C",
+      "name": "Citigroup Inc",
+      "ratio": "3",
+      "tickerOriginal": "C",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "CAAP",
+      "name": "Corporación America Airports S.A.",
+      "ratio": "4",
+      "tickerOriginal": "CAAP",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "CAH",
+      "name": "Cardinal Health Inc",
+      "ratio": "3",
+      "tickerOriginal": "CAH",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "CAR",
+      "name": "Avis Budget Group Inc.",
+      "ratio": "26",
+      "tickerOriginal": "CAR",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "CAT",
+      "name": "Caterpillar Inc",
+      "ratio": "20",
+      "tickerOriginal": "CAT",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "CCL",
+      "name": "Carnival",
+      "ratio": "3",
+      "tickerOriginal": "CCL",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "CDE",
+      "name": "Coeur Mining Inc.",
+      "ratio": "1",
+      "tickerOriginal": "CDE",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "CL",
+      "name": "Colgate Palmolive Co",
+      "ratio": "3",
+      "tickerOriginal": "CL",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "COIN",
+      "name": "Coinbase Global Inc",
+      "ratio": "27",
+      "tickerOriginal": "COIN",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "COST",
+      "name": "Costco Wholesale Corp",
+      "ratio": "48",
+      "tickerOriginal": "COST",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "CRM",
+      "name": "Salesforce Inc.",
+      "ratio": "18",
+      "tickerOriginal": "CRM",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "CSCO",
+      "name": "Cisco Systems Inc",
+      "ratio": "5",
+      "tickerOriginal": "CSCO",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "CSNA3",
+      "name": "Companhia Siderúrgica Nacional S.A.",
+      "ratio": "1",
+      "tickerOriginal": "CSNA3",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "CVS",
+      "name": "CVS Health",
+      "ratio": "15",
+      "tickerOriginal": "CVS",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "CVX",
+      "name": "Chevron Corp.",
+      "ratio": "16",
+      "tickerOriginal": "CVX",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "CX",
+      "name": "Cemex S.A.B. de CV",
+      "ratio": "1",
+      "tickerOriginal": "CX",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "DAL",
+      "name": "Delta Air Lines",
+      "ratio": "8",
+      "tickerOriginal": "DAL",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "DD",
+      "name": "Dupont de Nemours Inc.",
+      "ratio": "5",
+      "tickerOriginal": "DD",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "DE",
+      "name": "Deere & Co.",
+      "ratio": "40",
+      "tickerOriginal": "DE",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "DEO",
+      "name": "Diageo PLC",
+      "ratio": "6",
+      "tickerOriginal": "DEO",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "DHR",
+      "name": "Danaher Corp",
+      "ratio": "54",
+      "tickerOriginal": "DHR",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "DIA",
+      "name": "SPDR DOW JONES INDUSTRIAL",
+      "ratio": "20",
+      "tickerOriginal": "DIA",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "DISN",
+      "name": "The Walt Disney Co.",
+      "ratio": "12",
+      "tickerOriginal": "DISN",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "DOCU",
+      "name": "DocuSign Inc.",
+      "ratio": "22",
+      "tickerOriginal": "DOCU",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "DOW",
+      "name": "DOW Inc",
+      "ratio": "6",
+      "tickerOriginal": "DOW",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "DTEA",
+      "name": "Deutsche Telekom Ag",
+      "ratio": "3",
+      "tickerOriginal": "DTEA",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "E",
+      "name": "Eni Spa",
+      "ratio": "4",
+      "tickerOriginal": "E",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "EA",
+      "name": "Electronic Arts Inc",
+      "ratio": "14",
+      "tickerOriginal": "EA",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "EBAY",
+      "name": "Ebay Inc.",
+      "ratio": "2",
+      "tickerOriginal": "EBAY",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "EBR",
+      "name": "Centrais Eléctricas Brasileiras S.A. - Eletrobras",
+      "ratio": "4",
+      "tickerOriginal": "EBR",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "EEM",
+      "name": "ISHARES MSCI EMERGING MARKET",
+      "ratio": "5",
+      "tickerOriginal": "EEM",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "EFX",
+      "name": "Equifax Inc.",
+      "ratio": "16",
+      "tickerOriginal": "EFX",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "ELP",
+      "name": "Companhia Paranaense de Energía - COPEL",
+      "ratio": "3",
+      "tickerOriginal": "ELP",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "EOAN",
+      "name": "E.On Se",
+      "ratio": "6",
+      "tickerOriginal": "EOAN",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "ERIC",
+      "name": "Lm Ericsson Telephone Co.",
+      "ratio": "2",
+      "tickerOriginal": "ERIC",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "ERJ",
+      "name": "Embraer-Empresa Brasileira de Aeronáutica S.A.",
+      "ratio": "1",
+      "tickerOriginal": "ERJ",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "ETHA",
+      "name": "ISHARES ETHEREUM TR ETF",
+      "ratio": "5",
+      "tickerOriginal": "ETHA",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "ETSY",
+      "name": "Etsy Inc.",
+      "ratio": "16",
+      "tickerOriginal": "ETSY",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "EWZ",
+      "name": "ISHARES MSCI BRAZIL CAP",
+      "ratio": "2",
+      "tickerOriginal": "EWZ",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "FCX",
+      "name": "Freeport Mcmoran Copper & Gold Inc.",
+      "ratio": "3",
+      "tickerOriginal": "FCX",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "FDX",
+      "name": "Fedex Corp",
+      "ratio": "10",
+      "tickerOriginal": "FDX",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "FMCC",
+      "name": "Freddie Mac (Federal Home Loan)",
+      "ratio": "1",
+      "tickerOriginal": "FMCC",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "FMX",
+      "name": "Fomento Economico Mexicano - Femsa",
+      "ratio": "6",
+      "tickerOriginal": "FMX",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "FNMA",
+      "name": "Fed. Natl, Mortgage - Fannie Mae",
+      "ratio": "1",
+      "tickerOriginal": "FNMA",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "FSLR",
+      "name": "First Solar Inc.",
+      "ratio": "18",
+      "tickerOriginal": "FSLR",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "FXI",
+      "name": "ISHARES CHINA LARGE-CAP ETF",
+      "ratio": "5",
+      "tickerOriginal": "FXI",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "GE",
+      "name": "General Electric Co.",
+      "ratio": "8",
+      "tickerOriginal": "GE",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "GFI",
+      "name": "Gold Fields Ltd.",
+      "ratio": "1",
+      "tickerOriginal": "GFI",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "GGB",
+      "name": "Gerdau S.A.",
+      "ratio": "4",
+      "tickerOriginal": "GGB",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "GILD",
+      "name": "Gilead Sciences, Inc.",
+      "ratio": "4",
+      "tickerOriginal": "GILD",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "GLD",
+      "name": "ETF SPDR GOLD TRUST",
+      "ratio": "50",
+      "tickerOriginal": "GLD",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "GLOB",
+      "name": "Globant S.A.",
+      "ratio": "18",
+      "tickerOriginal": "GLOB",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "GLW",
+      "name": "Corning Inc.",
+      "ratio": "4",
+      "tickerOriginal": "GLW",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "GM",
+      "name": "General Motors Co",
+      "ratio": "6",
+      "tickerOriginal": "GM",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "GOOGL",
+      "name": "Alphabet Inc.",
+      "ratio": "58",
+      "tickerOriginal": "GOOGL",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "GPRK",
+      "name": "Geopark Ltd.",
+      "ratio": "1",
+      "tickerOriginal": "GPRK",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "GRMN",
+      "name": "Garmin Ltd.",
+      "ratio": "3",
+      "tickerOriginal": "GRMN",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "GS",
+      "name": "The Goldman Sachs Group, Inc",
+      "ratio": "13",
+      "tickerOriginal": "GS",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "GSK",
+      "name": "GSK Plc.",
+      "ratio": "4",
+      "tickerOriginal": "GSK",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "GT",
+      "name": "Goodyear Tire & Rubber co./the",
+      "ratio": "2",
+      "tickerOriginal": "GT",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "HAL",
+      "name": "Halliburton Co.",
+      "ratio": "2",
+      "tickerOriginal": "HAL",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "HAPV3",
+      "name": "Hapvida Participacoes E Investimentos S.A.",
+      "ratio": "1",
+      "tickerOriginal": "HAPV3",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "HD",
+      "name": "The Home Depot Inc.",
+      "ratio": "32",
+      "tickerOriginal": "HD",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "HDB",
+      "name": "Hdfc Bank Limited.",
+      "ratio": "2",
+      "tickerOriginal": "HDB",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "HHPD",
+      "name": "Hon Hai Precision Industry Co. Ltd.",
+      "ratio": "2",
+      "tickerOriginal": "HHPD",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "HL",
+      "name": "Hecla Mining Co.",
+      "ratio": "1",
+      "tickerOriginal": "HL",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "HMC",
+      "name": "Honda Motor Co. Ltd",
+      "ratio": "1",
+      "tickerOriginal": "HMC",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "HMY",
+      "name": "Harmony Gold Mining Company Ltd.",
+      "ratio": "1",
+      "tickerOriginal": "HMY",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "HOG",
+      "name": "Harley-Davidson Inc.",
+      "ratio": "3",
+      "tickerOriginal": "HOG",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "HON",
+      "name": "Honeywell International Inc.",
+      "ratio": "8",
+      "tickerOriginal": "HON",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "HPQ",
+      "name": "Hp Inc",
+      "ratio": "1",
+      "tickerOriginal": "HPQ",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "HSBC",
+      "name": "Hsbc Holdings Plc",
+      "ratio": "2",
+      "tickerOriginal": "HSBC",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "HSY",
+      "name": "The Hershey Company",
+      "ratio": "21",
+      "tickerOriginal": "HSY",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "HUT",
+      "name": "Hut 8 Mining Corp.",
+      "ratio": "5",
+      "tickerOriginal": "HUT",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "HWM",
+      "name": "Howmet Aerospace Inc.",
+      "ratio": "1",
+      "tickerOriginal": "HWM",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "IBB",
+      "name": "iShares Nasdaq Biotechnology ETF",
+      "ratio": "27",
+      "tickerOriginal": "IBB",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "IBIT",
+      "name": "ISHARES BITCOIN TRUST",
+      "ratio": "10",
+      "tickerOriginal": "IBIT",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "IBM",
+      "name": "International Business Machines",
+      "ratio": "15",
+      "tickerOriginal": "IBM",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "IBN",
+      "name": "Icici Bank Ltd.",
+      "ratio": "1",
+      "tickerOriginal": "IBN",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "IEUR",
+      "name": "iShares Core MSCI Europe ETF",
+      "ratio": "11",
+      "tickerOriginal": "IEUR",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "IFF",
+      "name": "International Flavors & Fragrances Inc.",
+      "ratio": "12",
+      "tickerOriginal": "IFF",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "INFY",
+      "name": "Infosys Limited",
+      "ratio": "1",
+      "tickerOriginal": "INFY",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "ING",
+      "name": "Ing Groep Nv",
+      "ratio": "3",
+      "tickerOriginal": "ING",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "INTC",
+      "name": "Intel Corporation",
+      "ratio": "5",
+      "tickerOriginal": "INTC",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "IP",
+      "name": "International Paper Co.",
+      "ratio": "4",
+      "tickerOriginal": "IP",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "ISRG",
+      "name": "Intuitive Surgical inc",
+      "ratio": "90",
+      "tickerOriginal": "ISRG",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "ITUB",
+      "name": "Itaú Unibanco Holding S.A.",
+      "ratio": "1",
+      "tickerOriginal": "ITUB",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "ITUB3",
+      "name": "Banco Itaú Unibanco S.A",
+      "ratio": "1",
+      "tickerOriginal": "ITUB3",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "IVE",
+      "name": "iShares S&P 500 Value ETF",
+      "ratio": "40",
+      "tickerOriginal": "IVE",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "IVW",
+      "name": "iShares S&P 500 Growth ETF",
+      "ratio": "20",
+      "tickerOriginal": "IVW",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "IWM",
+      "name": "ISHARES TRUST RUSSELL 2000",
+      "ratio": "10",
+      "tickerOriginal": "IWM",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "JD",
+      "name": "Jd.Com, Inc.",
+      "ratio": "4",
+      "tickerOriginal": "JD",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "JMIA",
+      "name": "Adr Jumia Technologies Ag",
+      "ratio": "1",
+      "tickerOriginal": "JMIA",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "JNJ",
+      "name": "Johnson & Johnson",
+      "ratio": "15",
+      "tickerOriginal": "JNJ",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "JPM",
+      "name": "J.P. Morgan & Chase Co.",
+      "ratio": "15",
+      "tickerOriginal": "JPM",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "KB",
+      "name": "Kb Financial Group Inc.",
+      "ratio": "2",
+      "tickerOriginal": "KB",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "KEP",
+      "name": "Korea Electric Power Corp.",
+      "ratio": "1",
+      "tickerOriginal": "KEP",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "KGC",
+      "name": "Kinross Gold Corp",
+      "ratio": "1",
+      "tickerOriginal": "KGC",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "KMB",
+      "name": "Kimberly-Clark Corp.",
+      "ratio": "6",
+      "tickerOriginal": "KMB",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "KO",
+      "name": "The Coca Cola Company",
+      "ratio": "5",
+      "tickerOriginal": "KO",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "KOFM",
+      "name": "Coca-Cola Femsa, S.A.B. De C.V.",
+      "ratio": "2",
+      "tickerOriginal": "KOFM",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "LAC",
+      "name": "Lithium Americas Corp",
+      "ratio": "1",
+      "tickerOriginal": "LAC",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "LLY",
+      "name": "Eli Lilly and Company",
+      "ratio": "56",
+      "tickerOriginal": "LLY",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "LMT",
+      "name": "Lockheed Martin Corporation",
+      "ratio": "20",
+      "tickerOriginal": "LMT",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "LND",
+      "name": "Brasilagro - Co Brasileira de Propriedades Agrícolas",
+      "ratio": "1",
+      "tickerOriginal": "LND",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "LRCX",
+      "name": "Lam Research Corp",
+      "ratio": "56",
+      "tickerOriginal": "LRCX",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "LREN3",
+      "name": "Lojas Renner S.A.",
+      "ratio": "1",
+      "tickerOriginal": "LREN3",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "LVS",
+      "name": "Las Vegas Sands Corp",
+      "ratio": "2",
+      "tickerOriginal": "LVS",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "LYG",
+      "name": "Lloyds Banking Group Plc",
+      "ratio": "2",
+      "tickerOriginal": "LYG",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "MA",
+      "name": "Mastercard Inc.",
+      "ratio": "33",
+      "tickerOriginal": "MA",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "MBG",
+      "name": "Mercedes-Benz Group AG",
+      "ratio": "4",
+      "tickerOriginal": "MBG",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "MCD",
+      "name": "Mcdonald'S Corp.",
+      "ratio": "24",
+      "tickerOriginal": "MCD",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "MDLZ",
+      "name": "Mondelez",
+      "ratio": "15",
+      "tickerOriginal": "MDLZ",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "MDT",
+      "name": "Medtronic Public Limited Company",
+      "ratio": "4",
+      "tickerOriginal": "MDT",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "MELI",
+      "name": "Mercadolibre Inc.",
+      "ratio": "120",
+      "tickerOriginal": "MELI",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "META",
+      "name": "Meta Platforms Inc",
+      "ratio": "24",
+      "tickerOriginal": "META",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "MFG",
+      "name": "Mizuho Financial Group",
+      "ratio": "1",
+      "tickerOriginal": "MFG",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "MGLU3",
+      "name": "Magazine Luiza S.A.",
+      "ratio": "1",
+      "tickerOriginal": "MGLU3",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "MMC",
+      "name": "Marsh & Mclennan Companies Inc.",
+      "ratio": "16",
+      "tickerOriginal": "MMC",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "MMM",
+      "name": "3M Company",
+      "ratio": "10",
+      "tickerOriginal": "MMM",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "MO",
+      "name": "Altria Group Inc.",
+      "ratio": "4",
+      "tickerOriginal": "MO",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "MOS",
+      "name": "The Mosaic Co",
+      "ratio": "5",
+      "tickerOriginal": "MOS",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "MRK",
+      "name": "Merck & Co. Inc.",
+      "ratio": "5",
+      "tickerOriginal": "MRK",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "MRNA",
+      "name": "Moderna Inc",
+      "ratio": "19",
+      "tickerOriginal": "MRNA",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "MRVL",
+      "name": "Marvell Technology Inc",
+      "ratio": "14",
+      "tickerOriginal": "MRVL",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "MSFT",
+      "name": "Microsoft Corp.",
+      "ratio": "30",
+      "tickerOriginal": "MSFT",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "MSI",
+      "name": "Motorola Solutions, Inc.",
+      "ratio": "20",
+      "tickerOriginal": "MSI",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "MSTR",
+      "name": "Microstrategy Inc Cl A New",
+      "ratio": "20",
+      "tickerOriginal": "MSTR",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "MU",
+      "name": "Micron Technology Inc",
+      "ratio": "5",
+      "tickerOriginal": "MU",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "MUFG",
+      "name": "Mitsubishi Ufj Financial Group",
+      "ratio": "1",
+      "tickerOriginal": "MUFG",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "MUX",
+      "name": "McEwen Mining Inc",
+      "ratio": "2",
+      "tickerOriginal": "MUX",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "NEC1",
+      "name": "Nec Corporation",
+      "ratio": "3",
+      "tickerOriginal": "NEC1",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "NEM",
+      "name": "Newmont Corporation",
+      "ratio": "3",
+      "tickerOriginal": "NEM",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "NFLX",
+      "name": "Netflix, Inc.",
+      "ratio": "48",
+      "tickerOriginal": "NFLX",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "NG",
+      "name": "Novagold Resources INC.",
+      "ratio": "4",
+      "tickerOriginal": "NG",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "NIO",
+      "name": "NIO Inc.",
+      "ratio": "4",
+      "tickerOriginal": "NIO",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "NKE",
+      "name": "Nike Inc.",
+      "ratio": "12",
+      "tickerOriginal": "NKE",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "NMR",
+      "name": "Nomura Holdings, Inc",
+      "ratio": "1",
+      "tickerOriginal": "NMR",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "NOKA",
+      "name": "Nokia Corporation",
+      "ratio": "1",
+      "tickerOriginal": "NOKA",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "NSAN",
+      "name": "Nissan Motor Co., Ltd",
+      "ratio": "1",
+      "tickerOriginal": "NSAN",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "NTES",
+      "name": "Netease, Inc",
+      "ratio": "14",
+      "tickerOriginal": "NTES",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "NU",
+      "name": "NU Holdings Ltd/Cayman Islands",
+      "ratio": "2",
+      "tickerOriginal": "NU",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "NUE",
+      "name": "Nucor Corp",
+      "ratio": "16",
+      "tickerOriginal": "NUE",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "NVDA",
+      "name": "Nvidia Corporation",
+      "ratio": "24",
+      "tickerOriginal": "NVDA",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "NVS",
+      "name": "Novartis Ag",
+      "ratio": "4",
+      "tickerOriginal": "NVS",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "NXE",
+      "name": "Nexgen Energy LTD",
+      "ratio": "1",
+      "tickerOriginal": "NXE",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "ORAN",
+      "name": "Orange S.A.",
+      "ratio": "1",
+      "tickerOriginal": "ORAN",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "ORCL",
+      "name": "Oracle Corporation",
+      "ratio": "3",
+      "tickerOriginal": "ORCL",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "ORLY",
+      "name": "O'reilly Automotive Inc",
+      "ratio": "222",
+      "tickerOriginal": "ORLY",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "OXY",
+      "name": "Occidental Petroleum Corp.",
+      "ratio": "5",
+      "tickerOriginal": "OXY",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "PAAS",
+      "name": "Pan American Silver Corp.",
+      "ratio": "3",
+      "tickerOriginal": "PAAS",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "PAC",
+      "name": "Grupo Aeroportuario del Pacifico, S.A.B. de C.V.",
+      "ratio": "16",
+      "tickerOriginal": "PAC",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "PAGS",
+      "name": "Pagseguro Digital Ltd",
+      "ratio": "3",
+      "tickerOriginal": "PAGS",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "PANW",
+      "name": "Palo Alto Networks Inc",
+      "ratio": "50",
+      "tickerOriginal": "PANW",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "PBI",
+      "name": "Pitney Bowes Inc",
+      "ratio": "1",
+      "tickerOriginal": "PBI",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "PBR",
+      "name": "Petrobras (ADR)",
+      "ratio": "1",
+      "tickerOriginal": "PBR",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "PCAR",
+      "name": "Paccar Inc.",
+      "ratio": "3",
+      "tickerOriginal": "PCAR",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "PEP",
+      "name": "Pepsico Inc",
+      "ratio": "18",
+      "tickerOriginal": "PEP",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "PETR3",
+      "name": "Petrobras - Petróleo Brasileiro S.A.",
+      "ratio": "1",
+      "tickerOriginal": "PETR3",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "PFE",
+      "name": "Pfizer Inc.",
+      "ratio": "4",
+      "tickerOriginal": "PFE",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "PG",
+      "name": "Procter & Gamble",
+      "ratio": "15",
+      "tickerOriginal": "PG",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "PHG",
+      "name": "Koninklijke Philips N.V.",
+      "ratio": "5",
+      "tickerOriginal": "PHG",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "PINS",
+      "name": "Pinterest",
+      "ratio": "7",
+      "tickerOriginal": "PINS",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "PKS",
+      "name": "Posco Holdings Inc.",
+      "ratio": "3",
+      "tickerOriginal": "PKS",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "PLTR",
+      "name": "Palantir Technologies Inc",
+      "ratio": "3",
+      "tickerOriginal": "PLTR",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "PM",
+      "name": "Philip Morris International",
+      "ratio": "18",
+      "tickerOriginal": "PM",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "PRIO3",
+      "name": "Petro Rio S.A.",
+      "ratio": "2",
+      "tickerOriginal": "PRIO3",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "PSX",
+      "name": "Phillips 66",
+      "ratio": "6",
+      "tickerOriginal": "PSX",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "PYPL",
+      "name": "Paypal Holdings, Inc.",
+      "ratio": "8",
+      "tickerOriginal": "PYPL",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "QCOM",
+      "name": "Qualcomm Inc.",
+      "ratio": "11",
+      "tickerOriginal": "QCOM",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "QQQ",
+      "name": "INVESCO QQQ TRUST",
+      "ratio": "20",
+      "tickerOriginal": "QQQ",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "RACE",
+      "name": "Ferrari",
+      "ratio": "83",
+      "tickerOriginal": "RACE",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "RBLX",
+      "name": "Roblox Corp.",
+      "ratio": "2",
+      "tickerOriginal": "RBLX",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "RENT3",
+      "name": "Localiza Rent A Car S.A.",
+      "ratio": "2",
+      "tickerOriginal": "RENT3",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "RIO",
+      "name": "Rio Tinto Plc",
+      "ratio": "8",
+      "tickerOriginal": "RIO",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "RIOT",
+      "name": "Riot Platforms",
+      "ratio": "3",
+      "tickerOriginal": "RIOT",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "ROKU",
+      "name": "Roku",
+      "ratio": "13",
+      "tickerOriginal": "ROKU",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "ROST",
+      "name": "Ross Stores, Inc.",
+      "ratio": "4",
+      "tickerOriginal": "ROST",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "RTX",
+      "name": "Raytheon Technologies Corp",
+      "ratio": "5",
+      "tickerOriginal": "RTX",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "SAN",
+      "name": "Banco Santander S.A",
+      "ratio": "4",
+      "tickerOriginal": "SAN",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "SAP",
+      "name": "Sap Se",
+      "ratio": "6",
+      "tickerOriginal": "SAP",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "SATL",
+      "name": "Satellogic Inc.",
+      "ratio": "1",
+      "tickerOriginal": "SATL",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "SBS",
+      "name": "Companhia de Saneamento Básico do Estado de São Paulo–Sabesp",
+      "ratio": "2",
+      "tickerOriginal": "SBS",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "SBSP3",
+      "name": "Cia Saneamento Básico de SP",
+      "ratio": "1",
+      "tickerOriginal": "SBSP3",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "SBUX",
+      "name": "Starbucks Corporation",
+      "ratio": "12",
+      "tickerOriginal": "SBUX",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "SCCO",
+      "name": "Southern Copper Corp",
+      "ratio": "2",
+      "tickerOriginal": "SCCO",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "SCHW",
+      "name": "Charles Schwab",
+      "ratio": "13",
+      "tickerOriginal": "SCHW",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "SDA",
+      "name": "SunCar Technology Group Inc",
+      "ratio": "2",
+      "tickerOriginal": "SDA",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "SE",
+      "name": "Sea Ltd.",
+      "ratio": "32",
+      "tickerOriginal": "SE",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "SH",
+      "name": "PROSHARES SHORT S&P500",
+      "ratio": "8",
+      "tickerOriginal": "SH",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "SHEL",
+      "name": "Royal Dutch Shell Plc",
+      "ratio": "2",
+      "tickerOriginal": "SHEL",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "SHOP",
+      "name": "Shopify Inc.",
+      "ratio": "107",
+      "tickerOriginal": "SHOP",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "SID",
+      "name": "Companhia Siderúrgica Nacional",
+      "ratio": "8",
+      "tickerOriginal": "SID",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "SLB",
+      "name": "Schlumberger Ltd",
+      "ratio": "3",
+      "tickerOriginal": "SLB",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "SNA",
+      "name": "Snap-On Inc",
+      "ratio": "6",
+      "tickerOriginal": "SNA",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "SNAP",
+      "name": "Snap Inc.",
+      "ratio": "1",
+      "tickerOriginal": "SNAP",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "SNOW",
+      "name": "Snowflake Inc.",
+      "ratio": "30",
+      "tickerOriginal": "SNOW",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "SONY",
+      "name": "Sony Group Corporation",
+      "ratio": "8",
+      "tickerOriginal": "SONY",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "SPCE",
+      "name": "Virgin Galactic",
+      "ratio": "2",
+      "tickerOriginal": "SPCE",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "SPGI",
+      "name": "S&P Global Inc",
+      "ratio": "45",
+      "tickerOriginal": "SPGI",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "SPOT",
+      "name": "Spotify Technology S.A.",
+      "ratio": "28",
+      "tickerOriginal": "SPOT",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "SPY",
+      "name": "SPDR S&P 500",
+      "ratio": "60",
+      "tickerOriginal": "SPY",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "STLA",
+      "name": "Stellantis",
+      "ratio": "5",
+      "tickerOriginal": "STLA",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "STNE",
+      "name": "StoneCo Ltd",
+      "ratio": "3",
+      "tickerOriginal": "STNE",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "SUZ",
+      "name": "Suzano Papel E Celulose S.A.",
+      "ratio": "1",
+      "tickerOriginal": "SUZ",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "SUZB3",
+      "name": "Suzano S.A.",
+      "ratio": "1",
+      "tickerOriginal": "SUZB3",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "SWKS",
+      "name": "Skyworks Solutions",
+      "ratio": "21",
+      "tickerOriginal": "SWKS",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "SYY",
+      "name": "Sysco Corp.",
+      "ratio": "8",
+      "tickerOriginal": "SYY",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "T",
+      "name": "At &T Inc.",
+      "ratio": "3",
+      "tickerOriginal": "T",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "TCOM",
+      "name": "TRIP.COM Group Ltd.",
+      "ratio": "2",
+      "tickerOriginal": "TCOM",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "TEFO",
+      "name": "Telefonica S.A.",
+      "ratio": "8",
+      "tickerOriginal": "TEFO",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "TEN",
+      "name": "Tenaris",
+      "ratio": "1",
+      "tickerOriginal": "TS",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "TGT",
+      "name": "Target Corporation",
+      "ratio": "24",
+      "tickerOriginal": "TGT",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "TIIAY",
+      "name": "Telecom Italia S.P.A. Ordinary Shares",
+      "ratio": "1",
+      "tickerOriginal": "TIIAY",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "TIMB",
+      "name": "Tim Participações S.A.",
+      "ratio": "1",
+      "tickerOriginal": "TIMB",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "TIMS3",
+      "name": "TIM S.A.",
+      "ratio": "1",
+      "tickerOriginal": "TIMS3",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "TJX",
+      "name": "TJX Companies Inc/The",
+      "ratio": "22",
+      "tickerOriginal": "TJX",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "TM",
+      "name": "Toyota Motor Corporation",
+      "ratio": "15",
+      "tickerOriginal": "TM",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "TMO",
+      "name": "Thermo Fisher Scientific Inc.",
+      "ratio": "22",
+      "tickerOriginal": "TMO",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "TMUS",
+      "name": "T-mobile",
+      "ratio": "33",
+      "tickerOriginal": "TMUS",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "TRIP",
+      "name": "Tripadvisor, Inc.",
+      "ratio": "2",
+      "tickerOriginal": "TRIP",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "TRVV",
+      "name": "The Travelers Cos. Inc.",
+      "ratio": "6",
+      "tickerOriginal": "TRVV",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "TSLA",
+      "name": "Tesla, Inc.",
+      "ratio": "15",
+      "tickerOriginal": "TSLA",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "TSM",
+      "name": "Taiwan Semiconductor Manufacturing",
+      "ratio": "9",
+      "tickerOriginal": "TSM",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "TTE",
+      "name": "TotalEnergies SE",
+      "ratio": "3",
+      "tickerOriginal": "TTE",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "TV",
+      "name": "Grupo Televisa S.A.",
+      "ratio": "3",
+      "tickerOriginal": "TV",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "TWLO",
+      "name": "Twilio Inc",
+      "ratio": "36",
+      "tickerOriginal": "TWLO",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "TXN",
+      "name": "Texas Instruments Inc",
+      "ratio": "5",
+      "tickerOriginal": "TXN",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "TXR",
+      "name": "Ternium S.A.",
+      "ratio": "4",
+      "tickerOriginal": "TXR",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "UAL",
+      "name": "United Airlines Holdings Inc.",
+      "ratio": "5",
+      "tickerOriginal": "UAL",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "UBER",
+      "name": "Uber Technologies Inc.",
+      "ratio": "2",
+      "tickerOriginal": "UBER",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "UGP",
+      "name": "Ultrapar Participações S.A.",
+      "ratio": "1",
+      "tickerOriginal": "UGP",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "UL",
+      "name": "Unilever PLC - Sponsored",
+      "ratio": "3",
+      "tickerOriginal": "UL",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "UNH",
+      "name": "UnitedHealth Group Inc.",
+      "ratio": "33",
+      "tickerOriginal": "UNH",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "UNP",
+      "name": "Union Pacific Corp.",
+      "ratio": "20",
+      "tickerOriginal": "UNP",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "UPST",
+      "name": "Upstart Hldgs Inc",
+      "ratio": "5",
+      "tickerOriginal": "UPST",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "URBN",
+      "name": "Urban Outfitters INC.",
+      "ratio": "2",
+      "tickerOriginal": "URBN",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "USB",
+      "name": "U.S. Bancorp",
+      "ratio": "5",
+      "tickerOriginal": "USB",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "V",
+      "name": "Visa Inc",
+      "ratio": "18",
+      "tickerOriginal": "V",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "VALE",
+      "name": "Vale S.A.",
+      "ratio": "2",
+      "tickerOriginal": "VALE",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "VALE3",
+      "name": "Vale S.A.",
+      "ratio": "1",
+      "tickerOriginal": "VALE3",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "VEA",
+      "name": "Vanguard FTSE Developed Markets ETF",
+      "ratio": "10",
+      "tickerOriginal": "VEA",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "VIST",
+      "name": "Vista Energy S.A.B. de C.V.",
+      "ratio": "3",
+      "tickerOriginal": "VIST",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "VIV",
+      "name": "Telefônica Brasil S.A.",
+      "ratio": "1",
+      "tickerOriginal": "VIV",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "VIVT3",
+      "name": "Telefônica Brasil S.A.",
+      "ratio": "1",
+      "tickerOriginal": "VIVT3",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "VOD",
+      "name": "Vodafone Group Plc",
+      "ratio": "1",
+      "tickerOriginal": "VOD",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "VRSN",
+      "name": "Verisign, Inc.",
+      "ratio": "6",
+      "tickerOriginal": "VRSN",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "VZ",
+      "name": "Verizon Communications Inc.",
+      "ratio": "4",
+      "tickerOriginal": "VZ",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "WBA",
+      "name": "Walgreens Boots Alliance Inc.",
+      "ratio": "3",
+      "tickerOriginal": "WBA",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "WBO",
+      "name": "Weibo Corporation",
+      "ratio": "6",
+      "tickerOriginal": "WBO",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "WEGE3",
+      "name": "Weg S.A.",
+      "ratio": "1",
+      "tickerOriginal": "WEGE3",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "WFC",
+      "name": "Wells Fargo & Co.",
+      "ratio": "5",
+      "tickerOriginal": "WFC",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "WMT",
+      "name": "Walmart Inc.",
+      "ratio": "18",
+      "tickerOriginal": "WMT",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "XLB",
+      "name": "The Materials Select Sector SPDR Fund",
+      "ratio": "18",
+      "tickerOriginal": "XLB",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "XLC",
+      "name": "The Communication Services Select Sector SPDR Fund",
+      "ratio": "19",
+      "tickerOriginal": "XLC",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "XLE",
+      "name": "ENERGY SELECT SECTOR SPDR FUND",
+      "ratio": "2",
+      "tickerOriginal": "XLE",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "XLF",
+      "name": "FINANCIAL SELECT SECTOR SPDR FUND",
+      "ratio": "2",
+      "tickerOriginal": "XLF",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "XLI",
+      "name": "The Industrial Select Sector SPDR Fund",
+      "ratio": "28",
+      "tickerOriginal": "XLI",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "XLK",
+      "name": "The Technology Select Sector SPDR Fund",
+      "ratio": "46",
+      "tickerOriginal": "XLK",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "XLP",
+      "name": "The Consumer Staples Select Sector SPDR Fund",
+      "ratio": "16",
+      "tickerOriginal": "XLP",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "XLRE",
+      "name": "The Real Estate Select Sector SPDR Fund",
+      "ratio": "9",
+      "tickerOriginal": "XLRE",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "XLV",
+      "name": "The Health Care Select Sector SPDR Fund",
+      "ratio": "29",
+      "tickerOriginal": "XLV",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "XLY",
+      "name": "The Consumer Discretionary Select Sector SPDR Fund",
+      "ratio": "43",
+      "tickerOriginal": "XLY",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "XOM",
+      "name": "Exxon Mobil Corporation",
+      "ratio": "10",
+      "tickerOriginal": "XOM",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "XP",
+      "name": "XP Inc",
+      "ratio": "4",
+      "tickerOriginal": "XP",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "XROX",
+      "name": "Xerox Holding Corporation",
+      "ratio": "1",
+      "tickerOriginal": "XROX",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "YELP",
+      "name": "Yelp Inc.",
+      "ratio": "2",
+      "tickerOriginal": "YELP",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "YZCA",
+      "name": "Yanzhou Coal Mining Co. Ltd.",
+      "ratio": "2",
+      "tickerOriginal": "YZCA",
+      "detectedSince": "2025-05-19"
+    },
+    {
+      "ticker": "ZM",
+      "name": "Zoom Video Communications Inc.",
+      "ratio": "47",
+      "tickerOriginal": "ZM",
+      "detectedSince": "2025-05-19"
+    }
+  ]
+}

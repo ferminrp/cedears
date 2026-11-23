@@ -172,6 +172,13 @@ export default async function Page() {
           <a href="/mcp" className="text-foreground underline underline-offset-4">
             Conectá el MCP de CEDEARs
           </a>
+          .{" "}
+          <Link
+            href="/nuevos-cedears"
+            className="text-foreground underline underline-offset-4"
+          >
+            Nuevos CEDEARs en BYMA
+          </Link>
           .
         </p>
       </section>
@@ -196,6 +203,10 @@ export default async function Page() {
         >
           data912
         </a>
+        .{" "}
+        <Link href="/nuevos-cedears" className={footerLinkClassName}>
+          Nuevos CEDEARs
+        </Link>
         .
       </SiteFooter>
       </div>
