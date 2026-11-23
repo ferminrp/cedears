@@ -43,16 +43,17 @@ export function middlewareRedirectOrigin(
   siteUrl?: string,
   options?: { forceHttps?: boolean },
 ): string {
-  const host = requestHost(headers, url)
-  if (isProductionCedearsHost(host)) {
+  const requestHostHeader = requestHost(headers, url)
+  // Classify production from the request URL hostname (not spoofable x-forwarded-host).
+  if (isProductionCedearsHost(url.hostname)) {
     return trustedApexOrigin(siteUrl)
   }
   if (options?.forceHttps) {
-    return `https://${host}`
+    return `https://${requestHostHeader}`
   }
   const forwarded = headers.get("x-forwarded-proto")
   const proto = forwarded ?? (url.protocol === "https:" ? "https" : "http")
-  return `${proto}://${host}`
+  return `${proto}://${requestHostHeader}`
 }
 
 export function siteOriginForRequest(

@@ -41,6 +41,23 @@ describe("middlewareRedirectOrigin", () => {
     }
   })
 
+  it("ignores spoofed x-forwarded-host on production URL", () => {
+    process.env.NEXT_PUBLIC_SITE_URL = "https://cedears.com"
+    try {
+      const url = new URL("https://cedears.com/cedear/aapl")
+      const headers = new Headers({
+        Host: "cedears.com",
+        "x-forwarded-host": "evil.example",
+      })
+      assert.equal(
+        middlewareRedirectOrigin(headers, url),
+        trustedApexOrigin(),
+      )
+    } finally {
+      process.env.NEXT_PUBLIC_SITE_URL = prev
+    }
+  })
+
   it("forceHttps upgrades preview origin for HTTP redirects", () => {
     process.env.NEXT_PUBLIC_SITE_URL = "https://cedears.com"
     try {

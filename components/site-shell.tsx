@@ -72,7 +72,7 @@ export function SiteShell({
         <div
           id="main"
           tabIndex={-1}
-          className="flex min-w-0 flex-1 flex-col gap-[var(--space-xxl)] outline-none"
+          className="min-w-0 outline-none"
           aria-busy={pendingHref ? true : undefined}
         >
           {/* No Suspense here on purpose. vinext commits navigations in a transition,
